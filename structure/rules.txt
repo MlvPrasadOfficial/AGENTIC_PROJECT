@@ -6,3 +6,4 @@
 rule 5 : run frontend as 'cd C:\JUL7PROJECT\frontend; npm run dev'
 rule 6 : always read the entire file before making changes
 rule 7 : always use structured way to solve queries in terms of tasks and acknowledge tasks done in the end.
+rule 8 : follow the tasks in the order number wise

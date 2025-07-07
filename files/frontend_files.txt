@@ -1,0 +1,162 @@
+# FRONTEND FILES STRUCTURE
+# File: frontend_files.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Complete list of frontend files implementing the Enterprise Insights Copilot layout
+
+## CURRENT IMPLEMENTED FILES
+
+### Core App Structure
+- frontend/src/app/layout.tsx                    # Root layout with glassmorphism support
+- frontend/src/app/page.tsx                      # Main home page with 3-section layout  
+- frontend/src/app/page-fixed.tsx                # Clean backup version
+- frontend/src/app/page-simple.tsx               # Simplified test version
+- frontend/src/app/globals.css                   # Global styles with glassmorphism
+- frontend/src/app/test-layout/page.tsx          # Layout testing page
+
+### Layout Components
+- frontend/src/components/layout/unified-layout.tsx    # Main 3-section layout (40%/60%)
+- frontend/src/components/layout/header.tsx            # Secondary header component  
+- frontend/src/components/layout/footer.tsx            # Footer component
+- frontend/src/components/navigation/header.tsx        # Primary navigation header
+
+### Feature Components
+- frontend/src/features/upload/upload-section.tsx      # Glass Card 1 - Upload component
+- frontend/src/features/chat/chat-section.tsx          # Glass Card 2 - Chat interface  
+- frontend/src/features/agents/agent-workflow.tsx      # Glass Card 3 - 11-agent pipeline
+- frontend/src/features/dashboard/visualization-dashboard.tsx  # Full-width dashboard
+
+### UI Components
+- frontend/src/components/ui/button.tsx                 # Button components
+- frontend/src/components/ui/card.tsx                   # Card components  
+- frontend/src/components/ui/loading-spinner.tsx       # Loading indicators
+- frontend/src/components/ui/toast.tsx                  # Toast notifications
+
+### Utilities & Shared
+- frontend/src/lib/utils.ts                             # Utility functions (cn, etc.)
+- frontend/src/components/providers.tsx                 # React providers
+- frontend/src/components/shared/error-boundary.tsx     # Error handling
+
+### Testing
+- frontend/src/__tests__/upload-section.test.tsx       # Upload component tests
+
+### Configuration Files  
+- frontend/package.json                                 # Dependencies and scripts
+- frontend/tailwind.config.ts                          # Tailwind configuration
+- frontend/next.config.mjs                              # Next.js configuration
+- frontend/tsconfig.json                                # TypeScript configuration
+
+### Public Assets
+- frontend/public/css/critical.css                     # Critical glassmorphism styles
+- frontend/public/fonts/inter-var.woff2                # Inter font file
+
+## MISSING FILES (Per Layout Specification)
+
+### Required Layout Components
+- [ ] frontend/src/components/layout/MainLayout.tsx    # 2-column layout wrapper
+- [ ] frontend/src/components/layout/DashboardLayout.tsx # Full-width dashboard layout
+
+### Required Feature Components
+
+#### Upload Feature (Glass Card 1)
+- [ ] frontend/src/features/upload/FilePreview.tsx     # File preview component
+
+#### Chat Feature (Glass Card 2)  
+- [ ] frontend/src/features/chat/ChatInterface.tsx     # Main chat interface
+- [ ] frontend/src/features/chat/MessageBubble.tsx     # Individual message bubbles
+
+#### Agent Feature (Glass Card 3)
+- [ ] frontend/src/features/agents/AgentPipeline.tsx   # Complete pipeline component
+- [ ] frontend/src/features/agents/AgentCard.tsx       # Individual agent cards
+- [ ] frontend/src/features/agents/StatusIndicator.tsx # Agent status indicators
+
+#### Dashboard Feature (Full-Width)
+- [ ] frontend/src/features/dashboard/ChartGrid.tsx    # Chart layout grid
+- [ ] frontend/src/features/dashboard/ChartCard.tsx    # Individual chart cards  
+- [ ] frontend/src/features/dashboard/ChartControls.tsx # Dashboard controls
+
+### Required UI Components
+- [ ] frontend/src/components/ui/GlassCard.tsx         # Reusable glass card component
+- [ ] frontend/src/components/ui/GlassButton.tsx       # Glass-styled buttons
+- [ ] frontend/src/components/ui/ProgressBar.tsx       # Progress indicators
+
+### Agent-Specific Components (11 Agents)
+- [ ] frontend/src/features/agents/DataAgent.tsx       # 📊 Data processing agent
+- [ ] frontend/src/features/agents/SqlAgent.tsx        # 🗄️ SQL database agent  
+- [ ] frontend/src/features/agents/CleanerAgent.tsx    # 🧹 Data cleaning agent
+- [ ] frontend/src/features/agents/InsightAgent.tsx    # 💡 AI insights agent
+- [ ] frontend/src/features/agents/PlanningAgent.tsx   # 🎯 Planning/strategy agent
+- [ ] frontend/src/features/agents/ChartAgent.tsx      # 📈 Visualization agent
+- [ ] frontend/src/features/agents/QueryAgent.tsx      # ❓ Query processing agent  
+- [ ] frontend/src/features/agents/CritiqueAgent.tsx   # ⚖️ Quality review agent
+- [ ] frontend/src/features/agents/DebateAgent.tsx     # 🤝 Multi-perspective agent
+- [ ] frontend/src/features/agents/NarrativeAgent.tsx  # 📄 Story generation agent
+- [ ] frontend/src/features/agents/ReportAgent.tsx     # 📋 Report export agent
+
+### Context & State Management
+- [ ] frontend/src/contexts/AgentContext.tsx           # Agent state management
+- [ ] frontend/src/contexts/DashboardContext.tsx       # Dashboard state  
+- [ ] frontend/src/contexts/ThemeContext.tsx           # Theme switching
+- [ ] frontend/src/hooks/useAgentPipeline.tsx          # Agent pipeline hooks
+- [ ] frontend/src/hooks/useWebSocket.tsx              # Real-time updates
+- [ ] frontend/src/hooks/useFileUpload.tsx             # File upload logic
+
+### Type Definitions
+- [ ] frontend/src/types/agent.ts                      # Agent-related types
+- [ ] frontend/src/types/dashboard.ts                  # Dashboard types
+- [ ] frontend/src/types/upload.ts                     # Upload types  
+- [ ] frontend/src/types/chat.ts                       # Chat types
+
+### API Integration
+- [ ] frontend/src/api/agents.ts                       # Agent API calls
+- [ ] frontend/src/api/dashboard.ts                    # Dashboard API
+- [ ] frontend/src/api/upload.ts                       # Upload API
+- [ ] frontend/src/api/websocket.ts                    # WebSocket client
+
+## IMPLEMENTATION PRIORITY
+
+### Phase 1: Core Components (Complete ✅)
+- ✅ UnifiedLayout with 40%/60% grid
+- ✅ Glassmorphism base styles
+- ✅ Basic upload, chat, and agent workflow
+- ✅ Full-width dashboard
+
+### Phase 2: Modular Components (Next)
+1. Create reusable GlassCard, GlassButton, ProgressBar
+2. Separate individual agent components  
+3. Implement proper file preview and chat interface
+4. Add chart grid and controls to dashboard
+
+### Phase 3: State Management & API
+1. Add context providers for state management
+2. Implement WebSocket for real-time updates
+3. Create API integration layers
+4. Add proper TypeScript definitions
+
+### Phase 4: Advanced Features  
+1. Theme switching system
+2. Advanced chart interactions
+3. File upload with progress tracking
+4. Agent log viewing and debugging
+
+## LAYOUT COMPLIANCE STATUS
+
+### ✅ Implemented (Current)
+- 3-section layout structure (Header + 2-Column + Dashboard)
+- Glassmorphism effects with backdrop blur
+- 40%/60% column proportions  
+- All 11 agents displayed with status
+- Basic interactive controls
+- Responsive design with mobile support
+
+### 🔄 In Progress  
+- Modular component architecture
+- Individual agent components
+- Enhanced dashboard features
+- Real-time state management
+
+### ⏳ Planned
+- WebSocket integration for live updates
+- Advanced chart libraries (D3.js, Chart.js)
+- File upload with backend processing
+- Theme switching and user preferences

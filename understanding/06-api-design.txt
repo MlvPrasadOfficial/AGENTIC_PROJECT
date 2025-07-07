@@ -1,0 +1,722 @@
+# API DESIGN UNDERSTANDING
+# File: 06-api-design.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Complete understanding of RESTful API design and implementation
+
+## API ARCHITECTURE OVERVIEW
+
+### Design Philosophy
+The Agentic Copilot API follows RESTful principles with modern best practices:
+- **Resource-Oriented**: URLs represent resources, not actions
+- **HTTP Semantics**: Proper use of HTTP methods and status codes
+- **Stateless**: No server-side session storage
+- **Cacheable**: Responses include appropriate cache headers
+- **Layered**: Clean separation between API, business logic, and data layers
+
+### API Structure
+```
+/api/v1/
+├── health/              # System health and monitoring
+├── upload/              # File management operations
+├── data/                # Data processing and analysis
+├── agents/              # AI agent execution
+├── conversations/       # Chat and message history
+├── rag/                 # Vector search and retrieval
+└── visualizations/      # Chart and dashboard data
+```
+
+## ENDPOINT DESIGN PATTERNS
+
+### Resource Naming Conventions
+- **Collections**: Plural nouns (`/files`, `/agents`, `/conversations`)
+- **Resources**: Singular with identifier (`/files/{file_id}`)
+- **Sub-resources**: Nested under parent (`/files/{file_id}/analysis`)
+- **Actions**: Verb-based when needed (`/agents/execute`, `/data/analyze`)
+
+### HTTP Methods Usage
+- **GET**: Retrieve resources (idempotent, cacheable)
+- **POST**: Create resources or trigger actions
+- **PUT**: Update entire resources (idempotent)
+- **PATCH**: Partial resource updates
+- **DELETE**: Remove resources (idempotent)
+- **OPTIONS**: CORS preflight and capability discovery
+
+### Status Code Strategy
+```python
+# Success codes
+200: "OK"                    # Successful GET, PUT, PATCH
+201: "Created"               # Successful POST with resource creation
+202: "Accepted"              # Async operation accepted
+204: "No Content"            # Successful DELETE
+
+# Client error codes
+400: "Bad Request"           # Invalid request syntax/data
+401: "Unauthorized"          # Authentication required
+403: "Forbidden"             # Access denied
+404: "Not Found"             # Resource doesn't exist
+409: "Conflict"              # Resource conflict
+422: "Unprocessable Entity"  # Validation errors
+429: "Too Many Requests"     # Rate limiting
+
+# Server error codes
+500: "Internal Server Error" # Unexpected server error
+502: "Bad Gateway"           # Upstream service error
+503: "Service Unavailable"   # Temporary service outage
+504: "Gateway Timeout"       # Upstream timeout
+```
+
+## HEALTH AND MONITORING ENDPOINTS
+
+### Health Check Hierarchy
+```python
+# Basic health - lightweight check
+GET /api/v1/health
+{
+  "status": "healthy",
+  "timestamp": "2025-07-07T10:30:00Z",
+  "version": "1.0.0",
+  "environment": "production"
+}
+
+# Readiness check - dependency verification
+GET /api/v1/readiness
+{
+  "status": "ready",
+  "timestamp": "2025-07-07T10:30:00Z",
+  "dependencies": {
+    "database": "healthy",
+    "ollama": "healthy",
+    "pinecone": "healthy",
+    "file_storage": "healthy"
+  }
+}
+
+# Liveness check - container health
+GET /api/v1/liveness
+{
+  "status": "alive",
+  "timestamp": "2025-07-07T10:30:00Z",
+  "uptime": 3600,
+  "memory_usage": "45%",
+  "cpu_usage": "12%"
+}
+```
+
+### Implementation
+```python
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from datetime import datetime
+import psutil
+
+router = APIRouter(prefix="/health", tags=["health"])
+
+class HealthResponse(BaseModel):
+    status: str
+    timestamp: datetime
+    version: str
+    environment: str
+
+@router.get("/", response_model=HealthResponse)
+async def health_check():
+    return HealthResponse(
+        status="healthy",
+        timestamp=datetime.utcnow(),
+        version="1.0.0",
+        environment=os.getenv("ENVIRONMENT", "development")
+    )
+
+@router.get("/readiness")
+async def readiness_check():
+    dependencies = {}
+    
+    try:
+        # Check database connection
+        await database.execute("SELECT 1")
+        dependencies["database"] = "healthy"
+    except Exception:
+        dependencies["database"] = "unhealthy"
+    
+    try:
+        # Check Ollama connection
+        response = await ollama_client.health()
+        dependencies["ollama"] = "healthy" if response else "unhealthy"
+    except Exception:
+        dependencies["ollama"] = "unhealthy"
+    
+    # Determine overall status
+    overall_status = "ready" if all(
+        status == "healthy" for status in dependencies.values()
+    ) else "not_ready"
+    
+    return {
+        "status": overall_status,
+        "timestamp": datetime.utcnow(),
+        "dependencies": dependencies
+    }
+```
+
+## FILE MANAGEMENT ENDPOINTS
+
+### Upload Flow Design
+```python
+# File upload with multipart form data
+POST /api/v1/upload/files/upload
+Content-Type: multipart/form-data
+
+file: [binary file data]
+metadata: {
+  "description": "Sales data Q4 2024",
+  "tags": ["sales", "quarterly"]
+}
+
+# Response
+HTTP/1.1 201 Created
+{
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "filename": "sales_data_q4.csv",
+  "size": 2048576,
+  "mime_type": "text/csv",
+  "upload_status": "processing",
+  "created_at": "2025-07-07T10:30:00Z",
+  "metadata": {
+    "description": "Sales data Q4 2024",
+    "tags": ["sales", "quarterly"]
+  },
+  "links": {
+    "self": "/api/v1/upload/files/f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "status": "/api/v1/upload/files/status/f47ac10b-58cc-4372-a567-0e02b2c3d479"
+  }
+}
+```
+
+### File Status Tracking
+```python
+# Check processing status
+GET /api/v1/upload/files/status/{file_id}
+
+# Response - Processing
+HTTP/1.1 200 OK
+{
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status": "processing",
+  "progress": 65,
+  "stage": "data_profiling",
+  "processing_info": {
+    "rows_processed": 10000,
+    "estimated_total": 15420,
+    "errors": []
+  },
+  "updated_at": "2025-07-07T10:32:15Z"
+}
+
+# Response - Completed
+HTTP/1.1 200 OK
+{
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status": "completed",
+  "progress": 100,
+  "processing_info": {
+    "rows_processed": 15420,
+    "columns_detected": 12,
+    "data_types": {
+      "date": 1,
+      "numeric": 8,
+      "text": 3
+    },
+    "quality_score": 0.95,
+    "errors": []
+  },
+  "updated_at": "2025-07-07T10:32:45Z"
+}
+```
+
+### File Listing and Management
+```python
+# List files with pagination and filtering
+GET /api/v1/upload/files?page=1&limit=20&status=completed&tags=sales
+
+{
+  "files": [
+    {
+      "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "filename": "sales_data_q4.csv",
+      "size": 2048576,
+      "status": "completed",
+      "created_at": "2025-07-07T10:30:00Z",
+      "tags": ["sales", "quarterly"]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 45,
+    "pages": 3
+  }
+}
+
+# Delete file
+DELETE /api/v1/upload/files/{file_id}
+HTTP/1.1 204 No Content
+```
+
+## DATA PROCESSING ENDPOINTS
+
+### Analysis Trigger
+```python
+# Trigger data analysis
+POST /api/v1/data/analyze/{file_id}
+{
+  "analysis_type": "full",
+  "options": {
+    "include_correlation": true,
+    "outlier_detection": true,
+    "missing_value_analysis": true,
+    "statistical_summary": true
+  }
+}
+
+# Response
+HTTP/1.1 202 Accepted
+{
+  "analysis_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status": "processing",
+  "estimated_completion": "2025-07-07T10:35:00Z",
+  "links": {
+    "status": "/api/v1/data/analysis/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "results": "/api/v1/data/results/a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  }
+}
+```
+
+### Data Preview
+```python
+# Get data preview
+GET /api/v1/data/preview/{file_id}?rows=10&columns=date,revenue,region
+
+{
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "metadata": {
+    "total_rows": 15420,
+    "total_columns": 12,
+    "column_info": [
+      {
+        "name": "date",
+        "type": "datetime",
+        "null_count": 0,
+        "unique_count": 365,
+        "sample_values": ["2024-01-01", "2024-01-02", "2024-01-03"]
+      },
+      {
+        "name": "revenue",
+        "type": "float",
+        "null_count": 15,
+        "min": 12500.00,
+        "max": 450000.00,
+        "mean": 125430.50,
+        "median": 98750.00
+      }
+    ]
+  },
+  "sample_data": [
+    {
+      "date": "2024-01-01",
+      "revenue": 125430.50,
+      "region": "North"
+    }
+  ]
+}
+```
+
+## AI AGENT ENDPOINTS
+
+### Agent Execution
+```python
+# Execute agent workflow
+POST /api/v1/agents/execute
+{
+  "agent_type": "data_analysis",
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "query": "What are the key trends in this sales data?",
+  "parameters": {
+    "include_visualization": true,
+    "analysis_depth": "detailed",
+    "confidence_threshold": 0.8
+  }
+}
+
+# Response
+HTTP/1.1 202 Accepted
+{
+  "execution_id": "exec_1b2c3d4e5f6g7h8i9j0k",
+  "agent_type": "data_analysis",
+  "status": "running",
+  "estimated_completion": "2025-07-07T10:32:00Z",
+  "workflow_steps": [
+    "planning",
+    "data_analysis",
+    "insight_generation",
+    "critique",
+    "debate",
+    "report_generation"
+  ],
+  "links": {
+    "status": "/api/v1/agents/status/exec_1b2c3d4e5f6g7h8i9j0k",
+    "results": "/api/v1/agents/results/exec_1b2c3d4e5f6g7h8i9j0k",
+    "logs": "/api/v1/agents/logs/exec_1b2c3d4e5f6g7h8i9j0k"
+  }
+}
+```
+
+### Agent Status and Results
+```python
+# Check execution status
+GET /api/v1/agents/status/{execution_id}
+
+{
+  "execution_id": "exec_1b2c3d4e5f6g7h8i9j0k",
+  "status": "running",
+  "progress": 60,
+  "current_step": "insight_generation",
+  "steps_completed": [
+    "planning",
+    "data_analysis"
+  ],
+  "steps_remaining": [
+    "insight_generation",
+    "critique",
+    "debate", 
+    "report_generation"
+  ],
+  "execution_time": 25.4,
+  "estimated_remaining": 15.6,
+  "updated_at": "2025-07-07T10:31:25Z"
+}
+
+# Get execution results
+GET /api/v1/agents/results/{execution_id}
+
+{
+  "execution_id": "exec_1b2c3d4e5f6g7h8i9j0k",
+  "agent_type": "data_analysis",
+  "status": "completed",
+  "results": {
+    "summary": "The sales data shows strong seasonal patterns with peak performance in Q4.",
+    "insights": [
+      {
+        "title": "Seasonal Revenue Pattern",
+        "description": "Revenue increases by 35% during Q4 compared to Q1-Q3 average",
+        "confidence": 0.92,
+        "supporting_data": {
+          "q1_avg": 95000,
+          "q4_avg": 128250
+        }
+      }
+    ],
+    "recommendations": [
+      {
+        "title": "Inventory Management",
+        "description": "Increase inventory by 40% in Q3 to prepare for Q4 demand",
+        "priority": "high",
+        "impact": "revenue_increase"
+      }
+    ],
+    "visualizations": [
+      {
+        "type": "line_chart",
+        "title": "Monthly Revenue Trend",
+        "data_url": "/api/v1/visualizations/chart_data_1234"
+      }
+    ]
+  },
+  "agent_workflow": {
+    "planning_agent": {
+      "decision": "route_to_insight",
+      "reasoning": "Query asks for trends analysis",
+      "execution_time": 2.1
+    },
+    "insight_agent": {
+      "insights_generated": 3,
+      "confidence_avg": 0.89,
+      "execution_time": 18.7
+    },
+    "critique_agent": {
+      "quality_score": 0.94,
+      "improvements_suggested": 1,
+      "execution_time": 4.2
+    },
+    "debate_agent": {
+      "perspectives_considered": 3,
+      "final_confidence": 0.91,
+      "execution_time": 8.8
+    }
+  },
+  "completed_at": "2025-07-07T10:31:45Z"
+}
+```
+
+## ERROR HANDLING DESIGN
+
+### Error Response Format
+```python
+class ErrorResponse(BaseModel):
+    error: dict
+
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+    details: Optional[dict] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    request_id: Optional[str] = None
+
+# Example error responses
+HTTP/1.1 400 Bad Request
+{
+  "error": {
+    "code": "INVALID_FILE_TYPE",
+    "message": "File type not supported",
+    "details": {
+      "supported_types": ["csv", "json", "xlsx", "txt"],
+      "received_type": "pdf"
+    },
+    "timestamp": "2025-07-07T10:30:00Z",
+    "request_id": "req_123456"
+  }
+}
+
+HTTP/1.1 422 Unprocessable Entity
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Request validation failed",
+    "details": {
+      "field_errors": [
+        {
+          "field": "file_size",
+          "error": "File size exceeds maximum limit of 50MB"
+        },
+        {
+          "field": "query",
+          "error": "Query cannot be empty"
+        }
+      ]
+    },
+    "timestamp": "2025-07-07T10:30:00Z",
+    "request_id": "req_123457"
+  }
+}
+```
+
+### Error Handling Implementation
+```python
+from fastapi import HTTPException, Request
+from fastapi.exception_handlers import http_exception_handler
+import uuid
+
+class APIError(Exception):
+    def __init__(self, code: str, message: str, details: dict = None, status_code: int = 400):
+        self.code = code
+        self.message = message
+        self.details = details
+        self.status_code = status_code
+
+@app.exception_handler(APIError)
+async def api_error_handler(request: Request, exc: APIError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": {
+                "code": exc.code,
+                "message": exc.message,
+                "details": exc.details,
+                "timestamp": datetime.utcnow().isoformat(),
+                "request_id": str(uuid.uuid4())
+            }
+        }
+    )
+
+@app.exception_handler(ValidationError)
+async def validation_error_handler(request: Request, exc: ValidationError):
+    field_errors = []
+    for error in exc.errors():
+        field_errors.append({
+            "field": ".".join(str(x) for x in error["loc"]),
+            "error": error["msg"]
+        })
+    
+    raise APIError(
+        code="VALIDATION_ERROR",
+        message="Request validation failed",
+        details={"field_errors": field_errors},
+        status_code=422
+    )
+```
+
+## SECURITY IMPLEMENTATION
+
+### Input Validation
+```python
+from pydantic import BaseModel, validator, Field
+from typing import Optional, List
+
+class FileUploadRequest(BaseModel):
+    description: Optional[str] = Field(None, max_length=500)
+    tags: Optional[List[str]] = Field(None, max_items=10)
+    
+    @validator('tags')
+    def validate_tags(cls, v):
+        if v:
+            for tag in v:
+                if len(tag) > 50:
+                    raise ValueError("Tag length cannot exceed 50 characters")
+                if not tag.replace('-', '').replace('_', '').isalnum():
+                    raise ValueError("Tags can only contain alphanumeric characters, hyphens, and underscores")
+        return v
+
+class AgentExecutionRequest(BaseModel):
+    agent_type: str = Field(..., regex="^[a-z_]+$")
+    file_id: str = Field(..., regex="^[a-f0-9-]{36}$")
+    query: str = Field(..., min_length=3, max_length=1000)
+    parameters: Optional[dict] = Field(None)
+    
+    @validator('parameters')
+    def validate_parameters(cls, v):
+        if v and len(str(v)) > 5000:
+            raise ValueError("Parameters object too large")
+        return v
+```
+
+### Rate Limiting
+```python
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@app.post("/api/v1/upload/files/upload")
+@limiter.limit("10/minute")
+async def upload_file(request: Request, file: UploadFile):
+    # Upload logic here
+    pass
+
+@app.post("/api/v1/agents/execute")
+@limiter.limit("30/hour")
+async def execute_agent(request: Request, execution_request: AgentExecutionRequest):
+    # Agent execution logic here
+    pass
+```
+
+### CORS Configuration
+```python
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://enterpriseinsights.app",
+        "https://www.enterpriseinsights.app",
+        "http://localhost:3000"  # Development only
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["*"],
+    expose_headers=["X-Total-Count", "X-Request-ID"]
+)
+```
+
+## API DOCUMENTATION
+
+### OpenAPI Configuration
+```python
+from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    
+    openapi_schema = get_openapi(
+        title="Agentic Copilot API",
+        version="1.0.0",
+        description="""
+        A comprehensive API for AI-powered data analysis and insights generation.
+        
+        ## Features
+        - File upload and processing
+        - Multi-agent AI workflows
+        - Real-time analysis results
+        - Interactive visualizations
+        - RAG-powered insights
+        """,
+        routes=app.routes,
+    )
+    
+    openapi_schema["info"]["x-logo"] = {
+        "url": "https://enterpriseinsights.app/logo.png"
+    }
+    
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+```
+
+### Response Models
+```python
+from pydantic import BaseModel
+from typing import Optional, List, Dict, Any
+from datetime import datetime
+
+class FileInfo(BaseModel):
+    file_id: str
+    filename: str
+    size: int
+    mime_type: str
+    upload_status: str
+    created_at: datetime
+    metadata: Optional[Dict[str, Any]]
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                "filename": "sales_data.csv",
+                "size": 2048576,
+                "mime_type": "text/csv",
+                "upload_status": "completed",
+                "created_at": "2025-07-07T10:30:00Z",
+                "metadata": {
+                    "description": "Q4 sales data",
+                    "tags": ["sales", "quarterly"]
+                }
+            }
+        }
+
+class AgentResult(BaseModel):
+    execution_id: str
+    agent_type: str
+    status: str
+    results: Dict[str, Any]
+    completed_at: Optional[datetime]
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "execution_id": "exec_123",
+                "agent_type": "data_analysis",
+                "status": "completed",
+                "results": {
+                    "summary": "Analysis complete",
+                    "insights": []
+                },
+                "completed_at": "2025-07-07T10:35:00Z"
+            }
+        }
+```
+
+This API design provides a robust, scalable, and well-documented interface for the Agentic Copilot application, following modern REST principles and best practices for security, error handling, and user experience.

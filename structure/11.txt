@@ -1,0 +1,109 @@
+# Agentic Copilot Home UI Layout
+
+## 📊 Home Dashboard: 2-Column Structure (Glassmorphism, Hierarchical Agents, Real-Time BI)
+
+### Diagram (Textual)
+
+```
+┌───────────────────────────────────────────────────────────────────────────┐
+│                             HOME DASHBOARD (Next.js)                      │
+├───────────────────────────────────────────────────────────────────────────┤
+│ ┌──────────── Left Column ───────────┐   ┌──────────── Right Column ──────┐ │
+│ │                                  │   │                                 │ │
+│ │ [Glass Card: File Upload]        │   │ [Vertical Agent Pipeline]       │ │
+│ │  ├─ Drag/Drop File Upload        │   │   ├─ File Upload Agent          │ │
+│ │  ├─ Upload Progress/Metadata     │   │   ├─ Data Profile Agent         │ │
+│ │  └─ Data Table Preview (5 rows)  │   │   ├─ Planning Agent             │ │
+│ │                                  │   │   ├─ Insight Agent              │ │
+│ │ [Glass Card: RAG Copilot Chat]   │   │   ├─ Viz Agent                  │ │
+│ │  └─ Chat Input & Final Output    │   │   ├─ Critique Agent             │ │
+│ │     (Debate Agent response only) │   │   ├─ Debate Agent               │ │
+│ │                                  │   │   ├─ Report Agent               │ │
+│ └──────────────────────────────────┘   │   └─ [All agent cards:          │ │
+│                                        │      Collapsible, hierarchical] │ │
+│                                        └─────────────────────────────────┘ │
+├───────────────────────────────────────────────────────────────────────────┤
+│             └────── Full-Width Visualization Panel (D3.js Glass Card) ────┘ │
+│    (All charts/data visuals rendered here, auto-update on Viz Agent run)   │
+└───────────────────────────────────────────────────────────────────────────┘
+```
+
+### Full Description (from chat, merged for clarity)
+
+#### **Left Column (Data + Conversation)**
+
+* **File Upload Card** (top)
+
+  * Drag-and-drop upload zone (accepts CSV, Excel, JSON, TXT)
+  * Progress bar, file size/type validation, error display
+  * Shows preview (5 rows) of uploaded file (sortable, inline filter)
+  * Data issues (nulls, outliers, type mismatches) flagged inline
+* **RAG Chat Copilot Card** (below upload)
+
+  * Chat with AI Copilot (post-debate final answers only)
+  * Suggestions/hints under chat input (e.g., "Try asking about trends...")
+  * Conversation history panel (expandable)
+  * PDF report download button (appears when available)
+
+#### **Right Column (Agent Pipeline)**
+
+* **Vertical stack of glassmorphic cards** (each agent = one collapsible card)
+
+  * **File Upload Agent:** Triggers on upload event
+  * **Data Profile Agent:** Schema/stats/null profiling after upload
+  * **Planning Agent:** Parses query, picks next agent(s) (either insight agent or viz agent)
+  * **Insight Agent:** Text/narrative/summary insights
+  * **Viz Agent:** Returns D3.js chart config/data
+  * **Critique Agent:** Reviews prior result, gives quality/fix feedback
+  * **Debate Agent:** Multi-perspective, final answer (shown in chat)
+  * **Report Agent:** Gathers all outputs, PDF download link
+* **Each agent card features:**
+
+  * Collapsible/expandable for step logs/full output
+  * Agent icon (Lucide/custom, glass 3D style)
+  * Animated status: processing, done, error, etc.
+  * On hover: agent rationale (why/how result was generated)
+  * Log/download icons for debugging and transparency
+
+#### **Bottom: Full-Width Visualization Panel**
+
+* Glassmorphic persistent panel across both columns
+* All visualizations/charts shown here (live D3.js, Recharts)
+* Real-time update as Viz Agent outputs new results
+* Export chart as PNG/SVG/PDF
+
+### **UI/UX & Advanced Enhancements**
+
+* Animated glassmorphism, drop shadows, parallax/particle effects
+* Vertical agent stepper with active state, animated connections
+* Microinteractions: checkmarks, glows, skeleton loaders
+* Data preview: sort/filter, callouts for issues, live edit (future)
+* Accessibility: keyboard navigation, high-contrast toggle, ARIA labels
+* Theme: Dark mode by default, accent color selector
+* All agent pipeline steps and logs fully transparent and explorable (for MAANG-level demo)
+
+### **User Workflow**
+
+1. **Upload file:**
+
+   * Triggers pipeline, profiles data
+2. **Ask query:**
+
+   * Chat to Copilot, triggers Planning Agent
+   * Routed to either Insight (text) or Viz (chart)
+3. **Critique/Debate/Report:**
+
+   * All responses critiqued, debated, final shown in chat
+   * Downloadable PDF report after each workflow
+4. **Everything visible/transparent:**
+
+   * Collapsible agent cards show all steps/logs for interviews/demo
+
+### **Tech Stack (Recap)**
+
+* **Frontend:** Next.js 14+, Tailwind, shadcn/ui, D3.js, Recharts, Lucide-react
+* **Backend:** FastAPI, LangChain, LangGraph, Pinecone, OLLAMA (Llama 3.1), Docker
+
+---
+
+*This Home UI layout is architected for maximum portfolio/interview value and real-world readiness. All agent steps, data preview, chat, and advanced visualizations are immediately discoverable, beautiful, and MAANG-demo ready.*

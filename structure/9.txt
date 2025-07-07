@@ -1,0 +1,557 @@
+# API DESIGN SPECIFICATION – Agentic Copilot
+
+# RESTful API Design and OpenAPI Documentation
+
+---
+
+## 📋 API OVERVIEW
+
+### Base Information
+
+* **Base URL**: `https://api.enterpriseinsights.app/api/v1` (Production)
+* **Development URL**: `http://localhost:8000/api/v1`
+* **API Version**: 1.0.0
+* **Protocol**: HTTPS (HTTP in development)
+* **Authentication**: None (future: JWT Bearer tokens)
+* **Content Type**: `application/json`
+* **Documentation**: OpenAPI 3.0 with Swagger UI
+
+### Design Principles
+
+1. **RESTful**: Follow REST architectural constraints
+2. **Consistency**: Uniform naming and response patterns
+3. **Versioning**: URL path versioning (/api/v1/)
+4. **Stateless**: No server-side session storage
+5. **HATEOAS**: Include relevant links in responses
+6. **Error Handling**: Consistent error response format
+
+---
+
+## 🏗️ API ARCHITECTURE
+
+### Endpoint Categories
+
+1. **Health & Monitoring**: System status and health checks
+2. **File Management**: Upload, storage, and metadata
+3. **Data Processing**: Analysis and transformation
+4. **AI Agents**: Agent execution and orchestration
+5. **Conversations**: Chat and message history
+6. **RAG System**: Vector operations and search
+7. **Visualization**: Chart and dashboard data
+
+### HTTP Status Codes
+
+| Code | Usage               | Description                           |
+| ---- | ------------------- | ------------------------------------- |
+| 200  | Success             | Request succeeded                     |
+| 201  | Created             | Resource created successfully         |
+| 202  | Accepted            | Request accepted for async processing |
+| 400  | Bad Request         | Invalid request data                  |
+| 401  | Unauthorized        | Authentication required               |
+| 403  | Forbidden           | Access denied                         |
+| 404  | Not Found           | Resource not found                    |
+| 409  | Conflict            | Resource conflict                     |
+| 422  | Validation Error    | Request validation failed             |
+| 429  | Rate Limited        | Too many requests                     |
+| 500  | Server Error        | Internal server error                 |
+| 503  | Service Unavailable | Service temporarily unavailable       |
+
+---
+
+## 🔍 HEALTH & MONITORING ENDPOINTS
+
+### GET /health
+
+**Purpose**: Basic health check endpoint
+**Method**: GET
+**Authentication**: None
+
+**Response 200**:
+
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-01-07T10:30:00Z",
+  "version": "1.0.0",
+  "environment": "production"
+}
+```
+
+### GET /readiness
+
+**Purpose**: Readiness check for load balancers
+**Method**: GET
+**Authentication**: None
+
+**Response 200**:
+
+```json
+{
+  "status": "ready",
+  "timestamp": "2025-01-07T10:30:00Z",
+  "dependencies": {
+    "database": "healthy",
+    "ollama": "healthy",
+    "pinecone": "healthy"
+  }
+}
+```
+
+### GET /liveness
+
+**Purpose**: Liveness check for container orchestration
+**Method**: GET
+**Authentication**: None
+
+**Response 200**:
+
+```json
+{
+  "status": "alive",
+  "timestamp": "2025-01-07T10:30:00Z",
+  "uptime": 3600
+}
+```
+
+---
+
+## 📁 FILE MANAGEMENT ENDPOINTS
+
+### POST /upload/files/upload
+
+**Purpose**: Upload data files for processing
+**Method**: POST
+**Content-Type**: multipart/form-data
+**Authentication**: None
+
+**Request**:
+
+```
+POST /api/v1/upload/files/upload
+Content-Type: multipart/form-data
+
+file: [binary file data]
+metadata: {
+  "description": "Sales data Q4 2024",
+  "tags": ["sales", "quarterly"]
+}
+```
+
+**Response 201**:
+
+```json
+{
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "filename": "sales_data_q4.csv",
+  "size": 2048576,
+  "mime_type": "text/csv",
+  "upload_status": "processing",
+  "created_at": "2025-01-07T10:30:00Z",
+  "metadata": {
+    "description": "Sales data Q4 2024",
+    "tags": ["sales", "quarterly"]
+  },
+  "links": {
+    "self": "/api/v1/upload/files/f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "status": "/api/v1/upload/files/status/f47ac10b-58cc-4372-a567-0e02b2c3d479"
+  }
+}
+```
+
+**Response 400** (Validation Error):
+
+```json
+{
+  "error": {
+    "code": "INVALID_FILE_TYPE",
+    "message": "File type not supported",
+    "details": {
+      "supported_types": ["csv", "json", "xlsx", "txt"],
+      "received_type": "pdf"
+    }
+  }
+}
+```
+
+### GET /upload/files/status/{file\_id}
+
+**Purpose**: Get file upload and processing status
+**Method**: GET
+**Authentication**: None
+
+**Path Parameters**:
+
+* `file_id` (string): Unique file identifier
+
+**Response 200**:
+
+```json
+{
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status": "completed",
+  "progress": 100,
+  "processing_info": {
+    "rows_processed": 15420,
+    "columns_detected": 12,
+    "data_types": {
+      "date": 1,
+      "numeric": 8,
+      "text": 3
+    },
+    "quality_score": 0.95,
+    "errors": []
+  },
+  "updated_at": "2025-01-07T10:32:15Z"
+}
+```
+
+### GET /upload/files
+
+**Purpose**: List uploaded files with pagination
+**Method**: GET
+**Authentication**: None
+
+**Query Parameters**:
+
+* `page` (integer, default: 1): Page number
+* `limit` (integer, default: 20): Items per page
+* `status` (string, optional): Filter by status
+* `tags` (string, optional): Filter by tags
+
+**Response 200**:
+
+```json
+{
+  "files": [
+    {
+      "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "filename": "sales_data_q4.csv",
+      "size": 2048576,
+      "status": "completed",
+      "created_at": "2025-01-07T10:30:00Z",
+      "tags": ["sales", "quarterly"]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 45,
+    "pages": 3
+  }
+}
+```
+
+### DELETE /upload/files/{file\_id}
+
+**Purpose**: Delete uploaded file and metadata
+**Method**: DELETE
+**Authentication**: None
+
+**Path Parameters**:
+
+* `file_id` (string): Unique file identifier
+
+**Response 204**: No content (successful deletion)
+
+**Response 404**:
+
+```json
+{
+  "error": {
+    "code": "FILE_NOT_FOUND",
+    "message": "File not found",
+    "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+  }
+}
+```
+
+---
+
+## 📊 DATA PROCESSING ENDPOINTS
+
+### POST /data/analyze/{file\_id}
+
+**Purpose**: Trigger data analysis for uploaded file
+**Method**: POST
+**Authentication**: None
+
+**Path Parameters**:
+
+* `file_id` (string): Unique file identifier
+
+**Request Body**:
+
+```json
+{
+  "analysis_type": "full",
+  "options": {
+    "include_correlation": true,
+    "outlier_detection": true,
+    "missing_value_analysis": true
+  }
+}
+```
+
+**Response 202**:
+
+```json
+{
+  "analysis_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status": "processing",
+  "estimated_completion": "2025-01-07T10:35:00Z",
+  "links": {
+    "status": "/api/v1/data/analysis/a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "results": "/api/v1/data/results/a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  }
+}
+```
+
+### GET /data/results/{analysis\_id}
+
+**Purpose**: Get analysis results
+**Method**: GET
+**Authentication**: None
+
+**Response 200**:
+
+```json
+{
+  "analysis_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "status": "completed",
+  "results": {
+    "summary": {
+      "total_rows": 15420,
+      "total_columns": 12,
+      "data_quality_score": 0.95,
+      "completeness": 0.98
+    },
+    "statistics": {
+      "revenue": {
+        "mean": 125430.50,
+        "median": 98750.00,
+        "std": 45230.75,
+        "min": 12500.00,
+        "max": 450000.00
+      }
+    },
+    "correlations": [
+      {
+        "column1": "marketing_spend",
+        "column2": "revenue",
+        "correlation": 0.78,
+        "significance": 0.001
+      }
+    ],
+    "insights": [
+      {
+        "type": "correlation",
+        "description": "Strong positive correlation between marketing spend and revenue",
+        "confidence": 0.95
+      }
+    ]
+  },
+  "completed_at": "2025-01-07T10:33:45Z"
+}
+```
+
+### GET /data/preview/{file\_id}
+
+**Purpose**: Get data preview with sample rows
+**Method**: GET
+**Authentication**: None
+
+**Query Parameters**:
+
+* `rows` (integer, default: 10): Number of sample rows
+* `columns` (string, optional): Comma-separated column names
+
+**Response 200**:
+
+```json
+{
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "metadata": {
+    "total_rows": 15420,
+    "total_columns": 12,
+    "column_info": [
+      {
+        "name": "date",
+        "type": "datetime",
+        "null_count": 0,
+        "unique_count": 365
+      },
+      {
+        "name": "revenue",
+        "type": "float",
+        "null_count": 15,
+        "min": 12500.00,
+        "max": 450000.00
+      }
+    ]
+  },
+  "sample_data": [
+    {
+      "date": "2024-01-01",
+      "revenue": 125430.50,
+      "region": "North",
+      "product": "Widget A"
+    }
+  ]
+}
+```
+
+---
+
+## 🤖 AI AGENTS ENDPOINTS
+
+### POST /agents/execute
+
+**Purpose**: Execute AI agent workflow
+**Method**: POST
+**Authentication**: None
+
+**Request Body**:
+
+```json
+{
+  "agent_type": "data_analysis",
+  "file_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "query": "What are the key trends in this sales data?",
+  "parameters": {
+    "include_visualization": true,
+    "analysis_depth": "detailed"
+  }
+}
+```
+
+**Response 202**:
+
+```json
+{
+  "execution_id": "exec_1b2c3d4e5f6g7h8i9j0k",
+  "agent_type": "data_analysis",
+  "status": "running",
+  "estimated_completion": "2025-01-07T10:32:00Z",
+  "links": {
+    "status": "/api/v1/agents/status/exec_1b2c3d4e5f6g7h8i9j0k",
+    "results": "/api/v1/agents/results/exec_1b2c3d4e5f6g7h8i9j0k",
+    "logs": "/api/v1/agents/logs/exec_1b2c3d4e5f6g7h8i9j0k"
+  }
+}
+```
+
+### GET /agents/status/{execution\_id}
+
+**Purpose**: Get agent execution status
+**Method**: GET
+**Authentication**: None
+
+**Response 200**:
+
+```json
+{
+  "execution_id": "exec_1b2c3d4e5f6g7h8i9j0k",
+  "status": "completed",
+  "progress": 100,
+  "current_step": "generating_insights",
+  "steps_completed": [
+    "data_loading",
+    "preprocessing",
+    "analysis",
+    "pattern_recognition",
+    "generating_insights"
+  ],
+  "execution_time": 45.2,
+  "updated_at": "2025-01-07T10:31:45Z"
+}
+```
+
+### GET /agents/results/{execution\_id}
+
+**Purpose**: Get agent execution results
+**Method**: GET
+**Authentication**: None
+
+**Response 200**:
+
+```json
+{
+  "execution_id": "exec_1b2c3d4e5f6g7h8i9j0k",
+  "agent_type": "data_analysis",
+  "status": "completed",
+  "results": {
+    "summary": "The sales data shows strong seasonal patterns with peak performance in Q4.",
+    "insights": [
+      {
+        "title": "Seasonal Revenue Pattern",
+        "description": "Revenue increases by 35% during Q4 compared to Q1-Q3 average",
+        "confidence": 0.92,
+        "supporting_data": {
+          "q1_avg": 95000,
+          "q4_avg": 128250
+        }
+      }
+    ],
+    "recommendations": [
+      {
+        "title": "Inventory Management",
+        "description": "Increase inventory by 40% in Q3 to prepare for Q4 demand",
+        "priority": "high",
+        "impact": "revenue_increase"
+      }
+    ],
+    "visualizations": [
+      {
+        "type": "line_chart",
+        "title": "Monthly Revenue Trend",
+        "data_url": "/api/v1/visualizations/chart_data_1234"
+      }
+    ]
+  },
+  "completed_at": "2025-01-07T10:31:45Z"
+}
+```
+
+### GET /agents/types
+
+**Purpose**: List available agent types and capabilities
+**Method**: GET
+**Authentication**: None
+
+**Response 200**:
+
+```json
+{
+  "agent_types": [
+    {
+      "type": "planning",
+      "name": "Planning Agent",
+      "description": "Breaks down complex analytical tasks into manageable steps",
+      "capabilities": [
+        "task_decomposition",
+        "strategy_planning",
+        "resource_allocation"
+      ],
+      "estimated_time": "5-15 seconds"
+    },
+    {
+      "type": "data_analysis",
+      "name": "Data Analysis Agent",
+      "description": "Performs statistical analysis and data exploration",
+      "capabilities": [
+        "statistical_analysis",
+        "correlation_detection",
+        "trend_analysis",
+        "outlier_detection"
+      ],
+      "estimated_time": "30-60 seconds"
+    }
+  ]
+}
+```
+
+---
+
+## 💬 CONVERSATION END

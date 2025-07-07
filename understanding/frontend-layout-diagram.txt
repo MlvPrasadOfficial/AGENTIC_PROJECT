@@ -1,0 +1,279 @@
+# FRONTEND LAYOUT DIAGRAM
+========================
+
+> **Note**: This is the detailed UI layout diagram for the Enterprise Insights Copilot frontend.
+> **Referenced from**: `09-frontend-architecture.txt`
+> **Created**: December 2024
+> **Purpose**: Centralized layout specification for development reference
+
+## Main Layout Structure (Ultra-Detailed Specification)
+
+The home page follows a professional enterprise-grade 2-column layout with full-width visualization panel:
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           🏢 Enterprise Insights Copilot                                                   │
+│  [Logo] [Nav: Home|Analytics|Reports|Settings]                                    [User Avatar] [Theme]    │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                             │
+│ ┌──────────────────── Left Column (40%) ────────────────────┐ ┌────── Right Column (60%) ──────────────┐   │
+│ │                                                          │ │                                        │   │
+│ │ ┌──────────────────────────────────────────────────────┐ │ │ ┌──────── Agent Workflow ─────────────┐ │   │
+│ │ │                📤 Upload your Data                    │ │ │ │                                  │ │   │
+│ │ │ ┌──────────────────────────────────────────────────┐ │ │ │ │ ▼ [📊] Data Agent              │ │   │
+│ │ │ │                                                │ │ │ │ │   Status: ⚪ Idle               │ │   │
+│ │ │ │        Drag and drop a file here,             │ │ │ │ │   Progress: ▓▓▓▓▓░░░░░ 50%    │ │   │
+│ │ │ │          or click to browse                    │ │ │ │ │   [📋 View Logs] [⚙️ Settings] │ │   │
+│ │ │ │                                                │ │ │ │ │                                  │ │   │
+│ │ │ │         [📎 Browse Files]                      │ │ │ │ │ ▼ [🧹] Cleaner Agent           │ │   │
+│ │ │ └──────────────────────────────────────────────────┘ │ │ │ │   Status: 🟡 Processing        │ │   │
+│ │ │   ℹ️ CSV, XLSX, JSON files supported (Max: 10MB)     │ │ │ │   Progress: ▓▓▓▓▓▓▓▓░░ 80%    │ │   │
+│ │ │   📊 Preview: [sample-data.csv] [❌ Remove]          │ │ │ │   [📋 View Logs] [⏸️ Pause]    │ │   │
+│ │ └──────────────────────────────────────────────────────┘ │ │ │                                  │ │   │
+│ │                                                          │ │ │ ▼ [🎯] Planning Agent          │ │   │
+│ │ ┌──────────────────────────────────────────────────────┐ │ │ │   Status: ⚪ Waiting            │ │   │
+│ │ │               💬 Ask Copilot                         │ │ │ │   Queue Position: #3              │ │   │
+│ │ │ ┌──────────────────────────────────────────────────┐ │ │ │ │   [📋 View Logs] [⚙️ Settings] │ │   │
+│ │ │ │ Type your analytics query...                   │ │ │ │ │                                  │ │   │
+│ │ │ └──────────────────────────────────────────────────┘ │ │ │ │ ▼ [❓] Query Agent             │ │   │
+│ │ │                                          [Send] 📤   │ │ │ │   Status: ⚪ Idle               │ │   │
+│ │ │                                                      │ │ │ │   Dependencies: Planning ✅      │ │   │
+│ │ │ 💡 Suggestions:                                      │ │ │ │   [📋 View Logs] [⚙️ Settings] │ │   │
+│ │ │ • "Show me sales trends by region"                   │ │ │ │                                  │ │   │
+│ │ │ • "What are the top performing products?"            │ │ │ │ ▼ [🗄️] SQL Agent               │ │   │
+│ │ │ • "Generate quarterly revenue report"                │ │ │ │   Status: ⚪ Idle               │ │   │
+│ │ │                                                      │ │ │ │   Database: Connected 🟢        │ │   │
+│ │ │ 📜 Chat History: [3 conversations] [Clear]          │ │ │ │   [📋 View Logs] [🔗 Config]   │ │   │
+│ │ │ ┌──────────────────────────────────────────────────┐ │ │ │ │                                  │ │   │
+│ │ │ │ 👤 You: "Show me revenue trends"                 │ │ │ │ │ ▼ [💡] Insight Agent           │ │   │
+│ │ │ │ 🤖 AI: "I found increasing trends in Q3..."      │ │ │ │ │   Status: ⚪ Idle               │ │   │
+│ │ │ └──────────────────────────────────────────────────┘ │ │ │ │   Model: llAMA 3.1🧠              │ │   │
+│ │ │                                                      │ │ │ │   [📋 View Logs] [🔧 Tune]     │ │   │
+│ │ │ 📄 Reports Ready: [Q3-Analysis.pdf] [Download]       │ │ │ │                                  │ │   │
+│ │ └──────────────────────────────────────────────────────┘ │ │ │ ▼ [📈] Chart Agent             │ │   │
+│ │                                                          │ │ │ │   Status: ⚪ Idle               │ │   │
+│ │ 🔄 Active Workflows: [2 running] [View All]             │ │ │ │   Chart Types: Bar,Line,Pie 📊  │ │   │
+│ │ ⚠️  Network Status: Connected 🟢                         │ │ │ │   [📋 View Logs] [🎨 Style]    │ │   │
+│ └──────────────────────────────────────────────────────────┘ │ │ │                                  │ │   │
+│                                                              │ │ │ ▼ [⚖️] Critique Agent          │ │   │
+│                                                              │ │ │   Status: ⚪ Idle               │ │   │
+│                                                              │ │ │   Quality Score: N/A            │ │   │
+│                                                              │ │ │   [📋 View Logs] [⚙️ Settings] │ │   │
+│                                                              │ │ │                                  │ │   │
+│                                                              │ │ │ ▼ [🤝] Debate Agent            │ │   │
+│                                                              │ │ │   Status: ⚪ Idle               │ │   │
+│                                                              │ │ │   Perspectives: Multi-view 👥   │ │   │
+│                                                              │ │ │   [📋 View Logs] [🔄 Retry]    │ │   │
+│                                                              │ │ │                                  │ │   │
+│                                                              │ │ │ ▼ [📄] Narrative Agent         │ │   │
+│                                                              │ │ │   Status: ⚪ Idle               │ │   │
+│                                                              │ │ │   Language: English 🇺🇸         │ │   │
+│                                                              │ │ │   [📋 View Logs] [🌐 Lang]     │ │   │
+│                                                              │ │ │                                  │ │   │
+│                                                              │ │ │ ▼ [📋] Report Agent            │ │   │
+│                                                              │ │ │   Status: ⚪ Idle               │ │   │
+│                                                              │ │ │   Format: PDF,DOCX,HTML 📄     │ │   │
+│                                                              │ │ │   [📋 View Logs] [📤 Export]   │ │   │
+│                                                              │ │ └──────────────────────────────────┘ │   │
+│                                                              │ │                                        │   │
+│                                                              │ │ 🔄 Pipeline Status: Ready              │   │
+│                                                              │ │                                           │   │
+│                                                              │ │                                       │   │
+│                                                              │ │ [▶️ Start Pipeline] [⏸️ Pause] [🔄 Reset] │   │
+│                                                              │ └────────────────────────────────────────┘   │
+├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                              📊 Full-Width Visualization Dashboard                                       │
+│ ┌────────────────────────────────────────────────────────────────────────────────────────────────────┐   │
+│ │  [📊 Charts] [📈 Analytics] [📋 Reports] [⚙️ Settings]                    [🔍 Search] [📤 Export]   │   │
+│ │                                                                                                    │   │
+│ │  ┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐   │   │
+│ │  │   📊 Bar Chart      │ │   📈 Line Chart     │ │   🥧 Pie Chart      │ │   📉 Trend Chart   │   │
+│ │  │                     │ │                     │ │                     │ │                     │   │
+│ │  │  ████████████████   │ │   /\    /\          │ │      ████████       │ │  ↗️↗️↗️↗️↗️↗️↗️        │   │
+│ │  │  ████████████████   │ │  /  \  /  \         │ │     ██████████      │ │ ↗️ ↗️ ↗️ ↗️ ↗️ ↗️      │   │
+│ │  │  ████████████████   │ │ /    \/    \        │ │    ████████████     │ │↗️   ↗️   ↗️   ↗️     │   │
+│ │  │                     │ │/            \       │ │   ██████████████    │ │                     │   │
+│ │  │ [📋 Data] [⚙️ Edit]  │ │ [📋 Data] [⚙️ Edit] │ │ [📋 Data] [⚙️ Edit]  │ │ [📋 Data] [⚙️ Edit] │   │
+│ │  └─────────────────────┘ └─────────────────────┘ └─────────────────────┘ └─────────────────────┘   │   │
+│ │                                                                                                    │   │
+│ │  📊 Live Data: Updating every 30s                    🎯 KPIs: Revenue ↑12%, Users ↑8%           │   │
+│ │  🔄 Auto-refresh: ON                                  ⚠️  Alerts: 2 new notifications             │   │
+│ │                                                                                                    │   │
+│ │  [📱 Responsive View] [🖥️ Desktop] [📺 Fullscreen] [🎨 Themes] [📤 Share] [💾 Save]               │   │
+│ └────────────────────────────────────────────────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Simplified Layout Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                    🏢 Enterprise Insights Copilot                                       │
+│                           [Header: Dark glassmorphic navbar]                           │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌─────────────── Left Column (40%) ──────────────┐ ┌──── Right Column (60%) ──────────┐ │
+│ │                                               │ │                                  │ │
+│ │ ┌─────────────────────────────────────────────┐ │ │ ┌──── Agent Workflow ──────────┐ │
+│ │ │          📤 Upload your Data                │ │ │ │                              │ │
+│ │ │ ┌─────────────────────────────────────────┐ │ │ │ │ ▼ [📊] Data Agent          │ │
+│ │ │ │                                       │ │ │ │ │ ▼ [🧹] Cleaner Agent       │ │
+│ │ │ │     Drag and drop a file here,       │ │ │ │ │ ▼ [🎯] Planning Agent      │ │
+│ │ │ │       or click to browse             │ │ │ │ │ ▼ [❓] Query Agent         │ │
+│ │ │ │                                       │ │ │ │ │ ▼ [🗄️] SQL Agent           │ │
+│ │ │ └─────────────────────────────────────────┘ │ │ │ │ ▼ [💡] Insight Agent       │ │
+│ │ │   CSV and XLSX files are supported         │ │ │ │ ▼ [📈] Chart Agent         │ │
+│ │ └─────────────────────────────────────────────┘ │ │ │ ▼ [⚖️] Critique Agent      │ │
+│ │                                               │ │ │ │ ▼ [🤝] Debate Agent        │ │
+│ │ ┌─────────────────────────────────────────────┐ │ │ │ ▼ [📄] Narrative Agent     │ │
+│ │ │            💬 Ask Copilot                   │ │ │ │ ▼ [📋] Report Agent        │ │
+│ │ │ ┌─────────────────────────────────────────┐ │ │ │ │                              │ │
+│ │ │ │ Type your analytics query...          │ │ │ │ │ [Each agent: collapsible     │ │
+│ │ │ └─────────────────────────────────────────┘ │ │ │ │  with status indicators,     │ │
+│ │ │                                   [Send]  │ │ │ │  icons, progress bars,       │ │
+│ │ └─────────────────────────────────────────────┘ │ │ │  and dropdown logs]          │ │
+│ │                                               │ │ │ └──────────────────────────────┘ │
+│ │ [Chat history panel - scrollable]            │ │ │                                  │ │
+│ │ [Progress indicators for active workflows]   │ │ │ [Real-time status updates]       │ │
+│ │ [PDF download when reports available]        │ │ │ [Agent orchestration flow]       │ │
+│ └───────────────────────────────────────────────┘ │ └──────────────────────────────────┘ │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│                    📊 Full-Width Visualization Dashboard                                │
+│ ┌─────────────────────────────────────────────────────────────────────────────────────┐ │
+│ │  [Interactive D3.js Charts] [Export Controls] [Fullscreen] [Settings]              │ │
+│ │  • Real-time updates from Chart Agent                                              │ │
+│ │  • Responsive chart containers with glassmorphic borders                          │ │
+│ │  • Chart type indicators and legends                                              │ │
+│ │  • Export to PNG/SVG/PDF functionality                                            │ │
+│ │  • Empty state: "Upload data to see visualizations"                               │ │
+│ └─────────────────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Layout Components Description
+
+### Left Column (Data + Conversation) - 40% Width
+
+**File Upload Card (Top Section):**
+- **Visual Design**: Large, prominent upload area with dashed border styling
+- **Drag-and-drop zone**: 
+  - Clear visual boundaries with hover states
+  - Centered helper text: "Drag and drop a file here, or click to browse"
+  - File type icons and accepted formats display
+- **Validation & Feedback**:
+  - Real-time file type validation (CSV, Excel, JSON, TXT)
+  - Progress bar with percentage indicator during upload
+  - Error states with actionable error messages
+  - Success states with file metadata display
+- **Data Preview Section**:
+  - Collapsible table showing first 5 rows of uploaded data
+  - Column headers with data type indicators
+  - Sortable columns with filter options
+  - Data quality indicators (nulls, outliers, type mismatches)
+
+**RAG Chat Copilot Card (Bottom Section):**
+- **Chat Interface Design**:
+  - Clean input field with placeholder: "Type your analytics query..."
+  - Prominent "Send" button with loading states
+  - Auto-suggestions panel below input
+  - Message bubbles with user/AI distinction
+- **Conversation Features**:
+  - Scrollable chat history with timestamps
+  - Message status indicators (sent, processing, completed)
+  - Copy/export conversation functionality
+  - Quick action buttons for common queries
+- **Report Integration**:
+  - PDF download button appears when reports are ready
+  - Progress indicators for active workflows
+  - Link to detailed workflow logs
+
+### Right Column (Agent Pipeline) - 60% Width
+
+**Agent Workflow Panel:**
+- **Visual Flow Design**:
+  - Vertical stepper with connecting lines between agents
+  - Each agent represented as collapsible card with:
+    - Distinctive icon (📊 Data, 🧹 Cleaner, 🎯 Planning, etc.)
+    - Agent name and brief description
+    - Status indicator (idle, processing, completed, error)
+    - Expandable section for detailed logs
+- **Agent Status System**:
+  - **Idle State**: Muted colors, awaiting previous agent
+  - **Processing State**: Animated spinner, progress bar, real-time updates
+  - **Completed State**: Green checkmark, execution time, result summary
+  - **Error State**: Red indicator, error message, retry option
+- **Interactive Features**:
+  - Click to expand/collapse detailed logs
+  - Hover tooltips showing agent rationale
+  - Download individual agent outputs
+  - Real-time status updates via WebSocket connection
+
+**Agent Sequence:**
+1. **📊 Data Agent** (File Upload): File ingestion and validation
+2. **🧹 Cleaner Agent** (Data Profile): Data cleaning and quality assessment
+3. **🎯 Planning Agent**: Query parsing and routing logic
+4. **❓ Query Agent**: Natural language query processing
+5. **🗄️ SQL Agent**: Database query generation and execution
+6. **💡 Insight Agent**: Textual analysis and insights generation
+7. **📈 Chart Agent** (Viz): Visualization configuration and rendering
+8. **⚖️ Critique Agent**: Quality assessment and improvement suggestions
+9. **🤝 Debate Agent**: Multi-perspective analysis and consensus
+10. **📄 Narrative Agent**: Story generation and explanation
+11. **📋 Report Agent**: Comprehensive report compilation
+
+### Bottom: Full-Width Visualization Dashboard
+
+**Advanced Visualization Panel:**
+- **Layout Features**:
+  - Spans full width below both columns
+  - Glassmorphic container with subtle borders
+  - Responsive grid system for multiple charts
+  - Tabbed interface for different visualization types
+- **Chart Management**:
+  - Real-time updates from Chart Agent output
+  - Export controls (PNG, SVG, PDF)
+  - Fullscreen mode for detailed analysis
+  - Chart type selector and customization options
+- **Empty States**:
+  - Meaningful placeholder: "Upload data to see visualizations"
+  - Visual indicators for chart loading states
+  - Error handling with retry mechanisms
+- **Interactive Features**:
+  - Zoom and pan functionality
+  - Tooltip displays with data details
+  - Cross-filtering between multiple charts
+  - Annotation and markup tools
+
+## User Workflow
+
+1. **Upload file:** Triggers pipeline, profiles data
+2. **Ask query:** Chat to Copilot, triggers Planning Agent, routed to either Insight (text) or Viz (chart)
+3. **Critique/Debate/Report:** All responses critiqued, debated, final shown in chat, downloadable PDF report after each workflow
+4. **Everything visible/transparent:** Collapsible agent cards show all steps/logs for interviews/demo
+
+## Responsive Behavior
+
+### Desktop (lg+)
+- Two-column layout with fixed agent pipeline sidebar
+- Full feature visibility and interaction
+- Large chart area for detailed visualization
+
+### Tablet (md-lg)
+- Collapsible agent pipeline with slide-over panel
+- Stacked content sections with smooth transitions
+- Touch-optimized interaction targets
+
+### Mobile (sm-md)
+- Single column layout with bottom navigation
+- Agent pipeline as modal overlay
+- Simplified quick actions in vertical stack
+- Chat as fullscreen overlay
+
+## Color-Coded Agent System
+- **Data Processing**: Blue tones (📊🧹)
+- **Planning & Query**: Purple tones (🎯❓🗄️)
+- **Analysis**: Green tones (💡📈)
+- **Review & Output**: Orange/Red tones (⚖️🤝📄📋)
+
+---
+
+> **Implementation Note**: This layout diagram serves as the definitive reference for frontend development. All layout components should follow the specifications outlined in this document.

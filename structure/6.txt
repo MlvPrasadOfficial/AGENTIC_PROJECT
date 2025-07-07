@@ -1,0 +1,151 @@
+# PROJECT INCEPTION – Agentic Copilot
+
+# Starting from Scratch: MAANG-Ready Planning Doc
+
+---
+
+## 🎯 PROJECT VISION & GOALS
+
+**Primary Objective:**
+Build a cutting-edge AI-powered data analysis copilot showcasing:
+
+* Full-stack and ML engineering skills
+* Modern agentic AI (LangChain, RAG, LLM)
+* Resume/portfolio-quality software, cloud deployed
+* Production-ready and extensible codebase
+
+**Target Audience:**
+
+* Portfolio, technical interviews
+* Demo for recruiters/employers
+* AI/data engineering POC
+* Foundation for real productization
+
+**Success Criteria:**
+
+1. Technical: Clean, modular, testable code
+2. AI/ML: Advanced agentic pipeline with RAG
+3. UX: Glassmorphism, responsive, accessible UI
+4. Ops: Deployed, monitored, easy to debug
+5. Value: Shows real-world, MAANG-level capability
+
+---
+
+## 🏗️ HIGH-LEVEL ARCHITECTURE DECISIONS
+
+**Stack:**
+
+* **Backend:** FastAPI (Python, async, OpenAPI, Pydantic)
+* **Frontend:** Next.js 14 (TypeScript, App Router, Vercel)
+* **AI/ML:** LangChain, Ollama, Pinecone
+* **Database:** Pinecone (vectors), Local file store (uploads)
+* **Deploy:** Vercel (FE), Render (BE)
+
+**Design Principles:**
+
+* Desktop-first, API-first, type-safe, component-driven
+* TDD/test-first, observable, secure (rate limit, validation)
+* Modular UI (Storybook), documented API (OpenAPI)
+
+---
+
+## 📋 FEATURE REQUIREMENTS
+
+**MVP Features:**
+
+1. File upload (drag/drop, CSV/XLSX/JSON, preview, error handling)
+2. Agentic AI pipeline (planning, profile, insight, viz, critique, debate, report)
+3. RAG (vector chunking, semantic/hybrid search, Pinecone-powered)
+4. Chat + conversation interface (real-time, history, smart suggestions)
+5. D3.js interactive viz (charts, export, responsive)
+
+**Phase 2+ Features:**
+
+* Glassmorphism UI/UX polish (Framer Motion, a11y, theming)
+* Agent/analytics dashboard (status, config, debugging)
+* Advanced analytics: trends, anomaly, metrics
+
+**Future Enhancements:**
+
+* Collab, user roles, SSO, integration with BI tools, enterprise extensions
+
+---
+
+## 🎨 UI/UX PHILOSOPHY
+
+* Glassmorphism Pro: frosted, dark theme, accent gradients
+* Card-based, floating elements, consistent spacing
+* Modern typography, smooth interactions, accessible layouts
+* Discoverability, performance, WCAG, minimal click-to-feature
+
+**Info Architecture:**
+
+* Home → Upload Center → Data Explorer → Chat/AI Conversation → Analytics → Settings
+
+---
+
+## 🔧 DEVELOPMENT WORKFLOW
+
+**Week 1:**
+
+* Backend + frontend project bootstrap, env config, GitHub Actions, health checks
+* FastAPI/Next.js base, lint/test/setup, component/endpoint scaffold
+
+**Week 2:**
+
+* File upload, profile, error, agent skeletons (LangChain)
+* Basic chat and data preview working end-to-end
+
+**Week 3:**
+
+* Pinecone RAG, embeddings, hybrid search
+* Conversation/agent workflow orchestration
+
+**Week 4:**
+
+* UI polish (glass, framer motion), a11y, testing, deployment (Vercel/Render)
+
+**Ongoing:** Monitoring, bugfix, feedback, enhancements
+
+---
+
+---
+
+## 🚀 DEPLOYMENT STRATEGY
+
+* **Local:** Docker Compose for FE/BE, hot reload, mock APIs
+* **Staging:** CI deploy, integration tests, load/perf check
+* **Production:** Blue-green deploy, health/monitor, rollback, CDN
+* **Infra:** Vercel (FE, CDN, SSL), Render (BE, scaling, env)
+
+---
+
+## 📈 SUCCESS METRICS
+
+* Perf: <2s page, <500ms API
+* Uptime: 99.9%, error <0.1%
+* Security: 0 critical issues, Snyk/Bandit clean
+* UX: >95% task complete, all a11y
+* Portfolio: Ready to show for MAANG/FAANG jobs
+
+---
+
+## 🎯 PROJECT TIMELINE
+
+* **W1:** Setup, APIs, UI base
+* **W2:** Upload, agents, basic chat
+* **W3:** RAG, workflows, Pinecone
+* **W4:** Polish, test, deploy
+* **Ongoing:** Maintenance, feedback, metrics
+
+---
+
+## 💡 KEY INSIGHTS
+
+* Start with clear arch, type safety, and tests
+* Modular agent/chain design > monoliths
+* Performance + a11y from day 1
+* Local LLM/embeddings = faster dev
+* Automate (CI, deploy, monitor, docs)
+
+**This planning doc is ready for kickoff: All requirements, stack, workflow, and delivery steps are MAANG-resume-grade and VS Code/Copilot friendly.**

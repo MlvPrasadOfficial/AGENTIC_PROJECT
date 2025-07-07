@@ -1,0 +1,130 @@
+# FRONTEND SPECIFICATION – Agentic Copilot
+
+# UI/UX, Architecture, and Components
+
+---
+
+## 🎨 DESIGN PHILOSOPHY
+
+* **Modern glassmorphism** (frosted glass, subtle blur, gradients)
+* **Dark-first** but support for both dark/light themes
+* **Responsive**: Desktop-optimized, functional on tablets
+* **Accessible**: WCAG 2.1 AA, keyboard nav, high contrast
+* **Animation**: Smooth transitions with Framer Motion
+
+---
+
+## 🏗️ FRONTEND ARCHITECTURE
+
+### **Framework:** Next.js 14 (App Router, TypeScript)
+
+### **Styling:** Tailwind CSS + Custom glassmorphism utilities
+
+### **State Management:** Redux Toolkit or Context API (minimal)
+
+### **API Integration:** REST (axios/fetch), React Query for data sync
+
+### **Testing:** Jest
+
+### **Build/Deploy:** Vercel, CI/CD (GitHub Actions)
+
+---
+
+## 🔑 CORE UI MODULES & PAGES
+
+1. **Home / Dashboard**
+
+   * Welcome, app description, call-to-action
+   * Quick links to upload and analytics
+   * Recent activity/status widgets
+
+2. **File Upload Center**
+
+   * Drag & drop + click-to-upload
+   * Progress bar, error messages, file list
+   * File preview and delete option
+   * Responsive glassmorphism panel
+
+3. **Data Explorer**
+
+   * Table/grid data preview with sorting, filtering
+   * Column info, data summary, data quality score
+   * Chart preview from sample data
+
+4. **Chat / AI Conversation Page**
+
+   * Real-time chat box (user ↔️ agent)
+   * Show agent status and thinking indicator
+   * Workflow/step visualizer for agent progress
+   * Conversation history sidebar
+
+5. **Analytics & Visualization**
+
+   * Chart and dashboard views
+   * Chart types: bar, line, scatter, pie
+   * Interactive chart features: zoom, pan, hover details
+   * Chart export/download (PNG, SVG, PDF)
+
+6. **Settings & Preferences**
+
+   * Theme (dark/light/auto)
+   * Agent options, app settings
+   * About, help, feedback
+
+7. **Error / 404 / System Pages**
+
+   * Friendly error pages
+   * System status/maintenance page
+
+---
+
+## 🧩 REUSABLE COMPONENTS
+
+* GlassCard, GlassButton, GlassModal, GlassInput
+* LoadingSpinner, SkeletonScreen
+* FilePreview, FileList
+* DataTable, DataSummary
+* Chart (Bar, Line, Pie, etc.)
+* AgentStatusIndicator, Stepper/Progress
+* Toast/Alert (for notifications)
+
+---
+
+## ⚙️ FRONTEND TECHNICAL REQUIREMENTS
+
+* Next.js 14+, TypeScript strict mode
+* Tailwind + custom CSS for glassmorphism
+* API client (axios/fetch), .env config for API base URL
+* Error boundaries and suspense
+* Accessibility: ARIA labels, focus traps, color contrast
+* Animations: Framer Motion for entrance, transitions
+* Mobile support: at least touch/scroll basics
+
+---
+
+## 📝 WIREFRAME SKETCHES (describe for Figma or Miro)
+
+1. **Home/Dashboard**: Large welcome card, status widgets, main CTAs
+2. **Upload**: Glass panel w/ drag-drop, upload list below
+3. **Data Explorer**: Table in glass box, summary/stat cards on side
+4. **Chat**: Left = history, Center = chat, Right = agent workflow
+5. **Analytics**: Main chart in center, chart type selector, export button
+6. **Settings**: Tabs for General, Agents, Appearance, About
+
+---
+
+## 📋 FRONTEND TODO (MVP)
+
+* [ ] App shell, glass layout, responsive design
+* [ ] File upload with preview and error handling
+* [ ] Data preview and summary page
+* [ ] AI chat interface (WebSocket-ready)
+* [ ] Analytics page with charts
+* [ ] Settings page
+* [ ] Error boundaries and loading states
+* [ ] Theme toggle (dark/light)
+* [ ] Minimal test coverage and CI
+
+---
+
+*This doc defines the UI/UX and technical plan for the Agentic Copilot frontend, ensuring a MAANG-ready modern web application.*

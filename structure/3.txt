@@ -1,0 +1,99 @@
+# 🧪 TESTING STRATEGY – Agentic Copilot
+
+## Comprehensive Testing Plan & Quality Assurance
+
+---
+
+## 🎯 TESTING PHILOSOPHY
+
+### Quality Objectives
+
+1. **Reliability:** Consistent, deterministic behavior across environments and deployments.
+2. **Performance:** Fast, snappy, and resource-efficient UI/agent response.
+3. **Security:** Defends against all common web/AI vulnerabilities.
+4. **Accessibility:** Inclusive for all users, full a11y test coverage.
+5. **Usability:** Glass UI and agent workflows are intuitive and error-tolerant.
+6. **Maintainability:** Easy to extend and refactor, with fast feedback via tests.
+
+### Principles
+
+* **Test-First:** Tests written with or before implementation.
+* **Pyramid Model:** Many unit tests
+* **Continuous:** All tests run in GitHub Actions or any CI.
+* **Realistic Data:** Use prod-like CSV/XLS/dataset samples.
+
+---
+
+## 🏗️ TESTING ARCHITECTURE
+
+| Layer           | Tooling                                       | Target Coverage |
+| --------------- | --------------------------------------------- | --------------- |
+| **Unit**        | Jest + Testing Library (UI), Pytest (backend) | 80%+            |
+
+
+#### Test Environments (example)
+
+* **Unit:** Node + mock DB/LLM
+
+
+---
+
+## 🧪 UNIT TESTING
+
+### Frontend (Jest + Testing Library)
+
+* **Component:**
+
+  * Test rendering, props, variants, events, accessibility.
+  * Ex:
+
+    ```tsx
+    import { render, screen, fireEvent } from '@testing-library/react';
+    import { GlassModal } from '@/components/GlassModal';
+
+    test('modal renders with title and closes', () => {
+      const handleClose = jest.fn();
+      render(<GlassModal open title="Test" onClose={handleClose}>Hello</GlassModal>);
+      expect(screen.getByText('Test')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button'));
+      expect(handleClose).toBeCalled();
+    });
+    ```
+
+* **Hooks:**
+
+  * Test state logic, side effects (e.g. file upload, useToast, theme).
+  * Ex:
+
+    ```tsx
+    import { renderHook, act } from '@testing-library/react';
+    import { useToast } from '@/hooks/useToast';
+
+    test('shows and hides toast', () => {
+      const { result } = renderHook(() => useToast());
+      act(() => result.current.showToast('Hi!'));
+      expect(result.current.Toast()).not.toBeNull();
+    });
+    ```
+
+### Backend (Pytest)
+
+* **API Endpoint:**
+
+  ```python
+  def test_health_check(client):
+      resp = client.get('/api/health')
+      assert resp.status_code == 200
+  ```
+* **Agent Service:**
+
+  ```python
+  def test_planning_agent_decides_correctly():
+      from app.agents.planning import get_planning_agent
+      plan = get_planning_agent()
+      assert plan('show revenue chart') == 'viz'
+  ```
+
+---
+
+

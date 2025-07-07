@@ -1,0 +1,810 @@
+# DEPLOYMENT UNDERSTANDING
+# File: 07-deployment.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Complete understanding of deployment strategy and infrastructure
+
+## DEPLOYMENT ARCHITECTURE OVERVIEW
+
+### Multi-Platform Strategy
+The Agentic Copilot uses a distributed deployment approach across multiple cloud platforms:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Production Environment                    │
+├─────────────────────────────────────────────────────────────┤
+│  Frontend (Vercel)          Backend (Render)               │
+│  ┌─────────────────┐       ┌─────────────────┐            │
+│  │   Next.js App   │◄─────►│   FastAPI App   │            │
+│  │   - Static Gen  │       │   - API Server  │            │
+│  │   - SSR/SSG     │       │   - File Upload │            │
+│  │   - Global CDN  │       │   - AI Agents   │            │
+│  └─────────────────┘       └─────────────────┘            │
+│           │                          │                     │
+│  ┌─────────────────┐       ┌─────────────────┐            │
+│  │   Vercel Edge   │       │   External      │            │
+│  │   Functions     │       │   Services      │            │
+│  └─────────────────┘       │   - Pinecone    │            │
+│                            │   - Ollama      │            │
+│                            └─────────────────┘            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Platform Selection Rationale
+
+| Platform | Service | Benefits | Use Case |
+|----------|---------|----------|----------|
+| **Vercel** | Frontend | Global CDN, automatic deployments, Next.js optimization | Static assets, SSR, edge functions |
+| **Render** | Backend | Simple Python deployment, persistent storage, auto-scaling | API server, file processing, AI agents |
+| **Pinecone** | Vector DB | Managed vector database, high performance, free tier | RAG embeddings, semantic search |
+| **GitHub** | CI/CD | Integrated workflows, free for open source | Version control, automated testing |
+
+## FRONTEND DEPLOYMENT (VERCEL)
+
+### Vercel Configuration
+```json
+// vercel.json
+{
+  "version": 2,
+  "framework": "nextjs",
+  "regions": ["iad1", "sfo1", "lhr1"],
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://api.enterpriseinsights.app/api/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options", 
+          "value": "DENY"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.enterpriseinsights.app/api/:path*"
+    }
+  ]
+}
+```
+
+### Next.js Optimization
+```typescript
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  // Build optimization
+  experimental: {
+    optimizeCss: true,
+    optimizeServerReact: true,
+  },
+  
+  // Performance optimization
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Bundle optimization
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      };
+    }
+    return config;
+  },
+  
+  // Image optimization
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    domains: ['api.enterpriseinsights.app'],
+  },
+  
+  // Compression
+  compress: true,
+  
+  // Static generation
+  output: 'standalone',
+  
+  // Environment variables
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version,
+  },
+};
+
+export default nextConfig;
+```
+
+### Environment Variables
+```bash
+# Frontend Environment Variables
+NEXT_PUBLIC_API_URL=https://api.enterpriseinsights.app
+NEXT_PUBLIC_APP_URL=https://enterpriseinsights.app
+NEXT_PUBLIC_ENVIRONMENT=production
+NEXT_PUBLIC_VERSION=1.0.0
+NEXT_PUBLIC_SENTRY_DSN=https://...
+NEXT_PUBLIC_ANALYTICS_ID=G-XXXXXXXXXX
+
+# Build configuration
+ANALYZE=false
+NEXT_TELEMETRY_DISABLED=1
+```
+
+### Deployment Scripts
+```json
+{
+  "scripts": {
+    "build": "next build",
+    "build:analyze": "ANALYZE=true npm run build",
+    "deploy:preview": "vercel",
+    "deploy:production": "vercel --prod",
+    "postbuild": "next-sitemap"
+  }
+}
+```
+
+## BACKEND DEPLOYMENT (RENDER)
+
+### Render Configuration
+```yaml
+# render.yaml
+version: "1"
+
+services:
+  - type: web
+    name: agentic-copilot-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 2"
+    plan: starter
+    region: oregon
+    branch: main
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_ENVIRONMENT
+        sync: false
+      - key: OLLAMA_BASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: "https://enterpriseinsights.app,https://www.enterpriseinsights.app"
+
+databases:
+  - name: agentic-copilot-db
+    databaseName: agentic_copilot
+    user: postgres
+    plan: starter
+    region: oregon
+    postgresMajorVersion: "15"
+```
+
+### Production Dockerfile
+```dockerfile
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p uploads logs
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Create non-root user
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8000/api/v1/health || exit 1
+
+# Start command
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+```
+
+### Requirements Management
+```text
+# requirements.txt
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-multipart==0.0.6
+langchain==0.0.350
+langchain-community==0.0.5
+langgraph==0.0.20
+pinecone-client==2.2.4
+pandas==2.1.4
+numpy==1.25.2
+sqlalchemy==2.0.23
+alembic==1.13.1
+redis==5.0.1
+celery==5.3.4
+structlog==23.2.0
+sentry-sdk[fastapi]==1.38.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+httpx==0.25.2
+aiofiles==23.2.1
+Pillow==10.1.0
+openpyxl==3.1.2
+```
+
+### Environment Configuration
+```python
+# app/config/settings.py
+from pydantic_settings import BaseSettings
+from typing import List, Optional
+
+class Settings(BaseSettings):
+    # Application
+    app_name: str = "Agentic Copilot API"
+    version: str = "1.0.0"
+    environment: str = "production"
+    debug: bool = False
+    
+    # Server
+    host: str = "0.0.0.0"
+    port: int = 8000
+    workers: int = 2
+    
+    # Database
+    database_url: Optional[str] = None
+    
+    # AI/ML Services
+    pinecone_api_key: str
+    pinecone_environment: str
+    pinecone_index_name: str = "agentic-copilot"
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.1:8b"
+    
+    # File Storage
+    upload_dir: str = "./uploads"
+    max_file_size: int = 50 * 1024 * 1024  # 50MB
+    allowed_extensions: List[str] = ["csv", "xlsx", "json", "txt"]
+    
+    # Security
+    secret_key: str
+    allowed_origins: List[str] = [
+        "https://enterpriseinsights.app",
+        "https://www.enterpriseinsights.app"
+    ]
+    
+    # Monitoring
+    sentry_dsn: Optional[str] = None
+    log_level: str = "INFO"
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
+
+settings = Settings()
+```
+
+## CI/CD PIPELINE
+
+### GitHub Actions Workflow
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+          
+      # Frontend Tests
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Run frontend linting
+        working-directory: ./frontend
+        run: npm run lint
+        
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm run test:ci
+        
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        
+      # Backend Tests
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          
+      - name: Run backend linting
+        working-directory: ./backend
+        run: |
+          black --check .
+          flake8 .
+          mypy .
+          
+      - name: Run backend tests
+        working-directory: ./backend
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          PINECONE_API_KEY: test_key
+          PINECONE_ENVIRONMENT: test
+          SECRET_KEY: test_secret
+        run: |
+          pytest tests/ -v --cov=app --cov-report=xml
+          
+      # Security Scanning
+      - name: Run security scan
+        working-directory: ./backend
+        run: |
+          bandit -r app/
+          safety check
+          
+      # Upload coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./backend/coverage.xml,./frontend/coverage/lcov.info
+
+  deploy-frontend:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+          vercel-args: '--prod'
+
+  deploy-backend:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          wait-for-success: true
+
+  health-check:
+    needs: [deploy-frontend, deploy-backend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Wait for deployment
+        run: sleep 60
+        
+      - name: Check frontend health
+        run: |
+          curl -f https://enterpriseinsights.app || exit 1
+          
+      - name: Check backend health
+        run: |
+          curl -f https://api.enterpriseinsights.app/api/v1/health || exit 1
+          
+      - name: Run smoke tests
+        run: |
+          # Basic API smoke tests
+          curl -f https://api.enterpriseinsights.app/api/v1/readiness || exit 1
+
+  notify:
+    needs: [deploy-frontend, deploy-backend, health-check]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Notify deployment status
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          message: |
+            Deployment ${{ job.status }} for commit ${{ github.sha }}
+            Frontend: https://enterpriseinsights.app
+            Backend: https://api.enterpriseinsights.app
+```
+
+## MONITORING AND OBSERVABILITY
+
+### Application Monitoring
+```python
+# app/monitoring/sentry.py
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
+
+def configure_sentry(dsn: str, environment: str):
+    sentry_sdk.init(
+        dsn=dsn,
+        environment=environment,
+        integrations=[
+            FastApiIntegration(auto_enabling_integrations=False),
+            SqlalchemyIntegration(),
+        ],
+        traces_sample_rate=0.1,
+        profiles_sample_rate=0.1,
+        send_default_pii=False,
+        attach_stacktrace=True,
+    )
+```
+
+### Structured Logging
+```python
+# app/monitoring/logging.py
+import structlog
+import logging.config
+
+def configure_logging(log_level: str = "INFO"):
+    logging.config.dictConfig({
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "json": {
+                "()": structlog.stdlib.ProcessorFormatter,
+                "processor": structlog.dev.ConsoleRenderer(colors=False),
+            },
+        },
+        "handlers": {
+            "default": {
+                "level": log_level,
+                "class": "logging.StreamHandler",
+                "formatter": "json",
+            },
+        },
+        "loggers": {
+            "": {
+                "handlers": ["default"],
+                "level": log_level,
+                "propagate": True,
+            },
+        }
+    })
+
+    structlog.configure(
+        processors=[
+            structlog.stdlib.filter_by_level,
+            structlog.stdlib.add_logger_name,
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.PositionalArgumentsFormatter(),
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeDecoder(),
+            structlog.processors.JSONRenderer()
+        ],
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,
+        cache_logger_on_first_use=True,
+    )
+```
+
+### Health Check Endpoints
+```python
+# app/api/v1/endpoints/health.py
+from fastapi import APIRouter, HTTPException
+from datetime import datetime
+import psutil
+import asyncio
+
+router = APIRouter()
+
+@router.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow(),
+        "version": "1.0.0",
+        "environment": settings.environment
+    }
+
+@router.get("/readiness")
+async def readiness_check():
+    checks = await asyncio.gather(
+        check_database(),
+        check_pinecone(),
+        check_ollama(),
+        return_exceptions=True
+    )
+    
+    dependencies = {
+        "database": "healthy" if not isinstance(checks[0], Exception) else "unhealthy",
+        "pinecone": "healthy" if not isinstance(checks[1], Exception) else "unhealthy", 
+        "ollama": "healthy" if not isinstance(checks[2], Exception) else "unhealthy",
+    }
+    
+    overall_status = "ready" if all(
+        status == "healthy" for status in dependencies.values()
+    ) else "not_ready"
+    
+    return {
+        "status": overall_status,
+        "timestamp": datetime.utcnow(),
+        "dependencies": dependencies
+    }
+
+@router.get("/liveness")
+async def liveness_check():
+    return {
+        "status": "alive",
+        "timestamp": datetime.utcnow(),
+        "uptime": time.time() - start_time,
+        "memory_usage": f"{psutil.virtual_memory().percent}%",
+        "cpu_usage": f"{psutil.cpu_percent()}%"
+    }
+```
+
+## ENVIRONMENT MANAGEMENT
+
+### Development Environment
+```yaml
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - ENVIRONMENT=development
+      - DATABASE_URL=postgresql://postgres:password@db:5432/agentic_copilot
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=agentic_copilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+```
+
+### Staging Environment
+```bash
+# staging environment variables
+ENVIRONMENT=staging
+DATABASE_URL=postgresql://user:pass@staging-db:5432/agentic_copilot_staging
+PINECONE_INDEX_NAME=agentic-copilot-staging
+ALLOWED_ORIGINS=["https://staging.enterpriseinsights.app"]
+LOG_LEVEL=DEBUG
+```
+
+### Production Secrets Management
+```bash
+# Use Render's secret management for production
+# Set these in Render dashboard:
+PINECONE_API_KEY=pc-...
+SECRET_KEY=super-secret-key-change-in-production
+DATABASE_URL=postgresql://...
+SENTRY_DSN=https://...
+```
+
+## DEPLOYMENT SCRIPTS
+
+### Automated Deployment
+```bash
+#!/bin/bash
+# scripts/deploy.sh
+
+set -e
+
+echo "🚀 Starting deployment process..."
+
+# Validate environment
+if [ -z "$VERCEL_TOKEN" ]; then
+    echo "Error: VERCEL_TOKEN not set"
+    exit 1
+fi
+
+if [ -z "$RENDER_API_KEY" ]; then
+    echo "Error: RENDER_API_KEY not set"
+    exit 1
+fi
+
+# Frontend deployment
+echo "📦 Deploying frontend to Vercel..."
+cd frontend
+npm ci
+npm run build
+npm run deploy:production
+cd ..
+
+# Backend deployment
+echo "🔧 Deploying backend to Render..."
+cd backend
+git push render main
+cd ..
+
+# Health checks
+echo "🏥 Running health checks..."
+sleep 60  # Wait for deployment
+
+curl -f https://enterpriseinsights.app || {
+    echo "Frontend health check failed"
+    exit 1
+}
+
+curl -f https://api.enterpriseinsights.app/api/v1/health || {
+    echo "Backend health check failed"
+    exit 1
+}
+
+echo "✅ Deployment completed successfully!"
+```
+
+### Rollback Script
+```bash
+#!/bin/bash
+# scripts/rollback.sh
+
+set -e
+
+echo "🔄 Starting rollback process..."
+
+# Get previous deployment
+PREVIOUS_DEPLOYMENT=$(vercel ls --limit 2 | tail -n 1 | awk '{print $1}')
+
+if [ -z "$PREVIOUS_DEPLOYMENT" ]; then
+    echo "Error: No previous deployment found"
+    exit 1
+fi
+
+# Promote previous deployment
+echo "📦 Rolling back frontend..."
+vercel promote $PREVIOUS_DEPLOYMENT
+
+# Backend rollback would be done through Render dashboard
+echo "🔧 Please rollback backend through Render dashboard"
+
+echo "✅ Frontend rollback completed!"
+```
+
+This deployment strategy ensures reliable, scalable, and maintainable infrastructure for the Agentic Copilot application across development, staging, and production environments.

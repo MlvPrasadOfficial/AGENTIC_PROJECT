@@ -1,0 +1,224 @@
+# 🏗️ TECHNICAL ARCHITECTURE – Agentic Copilot
+
+## Modern AI Data Copilot: System Design & Implementation Plan
+
+---
+
+## 🚦 SYSTEM OVERVIEW
+
+### **Architecture Pattern:**
+
+“API-centric Microservices-inspired Monolith”
+
+```
+┌─────────────┐    ┌──────────────┐    ┌────────────────────┐
+│ Frontend    │    │ Backend      │    │  External Services │
+│ (Next.js)   │◄──►│ (FastAPI)    │◄──►│  (Ollama, Pinecone)│
+└─────────────┘    └──────────────┘    └────────────────────┘
+       │                 │                   │
+       │        ┌───────────────┐            │
+       │        │ File Storage  │◄───────────┘
+       └────────► (uploads/tmp) │
+                └───────────────┘
+```
+
+* **Next.js:** All UI/UX, SSR, routes, glassmorphic interface (Vercel-hosted).
+* **FastAPI:** All data/AI APIs, RAG workflow, agent pipeline (Render-hosted).
+* **Pinecone:** Vector DB for all document/data embeddings.
+* **Ollama:** Local/remote LLM for agentic reasoning.
+* **LangChain/LangGraph:** Orchestrate all agent logic and workflow chaining.
+
+---
+
+## 🔧 BACKEND ARCHITECTURE
+
+### **Directory Structure**
+
+```
+backend/
+  app/
+    main.py              # FastAPI app init
+    config/              # env, settings, pinecone config
+    api/
+      v1/
+        endpoints/       # upload, data, agents, chat
+        api.py           # API router
+    models/              # Pydantic & ORM models
+    schemas/             # Data schemas (request/response)
+    services/            # File, data, agent, vector, report
+    agents/              # All LangChain/LangGraph agents
+    utils/               # Logging, validators, helpers
+    tests/               # pytest-based test suite
+  requirements.txt
+  pyproject.toml
+  Dockerfile
+  render.yaml
+```
+
+### **Key Components**
+
+* **main.py:** FastAPI, CORS, error handling, `/api/v1` mount.
+* **Agent Orchestration:**
+
+  * `agents/` = planning, data-profile, insight, viz, critique, debate, report (all as LangChain chains or LangGraph nodes).
+  * Each agent modular, testable, and exposes a `.run()` method.
+* **Vector Store:**
+
+  * Pinecone client in `services/vector_service.py`
+  * All document/data chunks indexed, top-k search for RAG.
+* **File/Data Profiling:**
+
+  * Upon upload, file saved, profiled, sample rows and stats generated.
+  * Chunking logic for tabular/text data.
+* **RAG Workflow:**
+
+  * Pipeline controlled by LangGraph (see below for code pattern).
+* **Logging/Observability:**
+
+  * All endpoints log user, request, agent path, timing.
+
+---
+
+## 🎨 FRONTEND ARCHITECTURE
+
+### **Directory Structure**
+
+```
+frontend/
+  src/
+    app/               # Next.js 14 App Router
+      layout.tsx
+      page.tsx
+      upload/page.tsx
+      chat/page.tsx
+      analytics/page.tsx
+    components/
+      ui/              # Glassmorphic Button, Card, Modal, Table, etc
+      agent/           # AgentCard, AgentStepper, AgentDropdown
+      upload/          # DropZone, Progress, FilePreview
+      chat/            # MessageList, MessageInput, AgentStatus
+      data/            # DataTable, Chart (D3.js, code-only)
+    lib/               # api.ts, types.ts, utils.ts
+    hooks/             # useApi, useUpload, useChat, useTheme
+    store/             # Redux/Context for state slices
+    styles/            # Tailwind + glassmorphism.css
+  next.config.ts
+  tailwind.config.ts
+  package.json
+  tsconfig.json
+  vercel.json
+```
+
+### **Component Guidance**
+
+* **API Layer (`lib/api.ts`):**
+
+  * `uploadFile(file)`, `profileData(fileId)`, `runAgent(query)`, `getChart()`
+* **Upload Flow:**
+
+  * Drag & drop, file type check, async upload, on-complete triggers data profile.
+* **Chat/Agent Flow:**
+
+  * User query → chat component → API → agentic backend → all agent cards shown as glass dropdowns.
+* **D3.js Visualization:**
+
+  * Rendered in `.chart-container` glass, full responsive, no external images/assets.
+* **Accessibility:**
+
+  * ARIA, keyboard, focus visible everywhere.
+
+---
+
+## 🤖 AGENTIC AI/ML PIPELINE
+
+### **Agent Structure (LangChain, LangGraph, Modular)**
+
+```python
+# agents/base.py
+class BaseAgent:
+    def __init__(self, name): self.name = name
+    def run(self, input, context): raise NotImplementedError
+```
+
+```python
+# agents/planning.py
+class PlanningAgent(BaseAgent):
+    def run(self, query, context):
+        # LangChain logic or LLM call to route to 'insight' or 'viz'
+        return {'route': 'viz'} if 'chart' in query else {'route': 'insight'}
+```
+
+```python
+# agents/langgraph_flow.py
+from langgraph import StateGraph, START, END
+def build_workflow():
+    graph = StateGraph()
+    graph.add_node("planning", PlanningAgent().run)
+    graph.add_conditional_edges("planning", lambda res: res['route'])
+    graph.add_node("insight", InsightAgent().run)
+    graph.add_node("viz", VizAgent().run)
+    graph.add_node("critique", CritiqueAgent().run)
+    graph.add_node("debate", DebateAgent().run)
+    graph.add_node("report", ReportAgent().run)
+    # Edges: planning → (insight|viz) → critique → debate → report → END
+    return graph
+```
+
+* **File Upload triggers:** DataProfileAgent (returns stats/sample), below upload glass.
+* **User Query triggers:** PlanningAgent → routes to either InsightAgent (for analysis) or VizAgent (for chart).
+* **All agent outputs:** In glassmorphic dropdowns; only DebateAgent output is shown in chat by default.
+* **ReportAgent:** Generates downloadable PDF after flow.
+
+---
+
+## 🔗 DATA FLOW SUMMARY
+
+**Upload:**
+User uploads → backend stores, profiles, chunks, indexes (Pinecone).
+
+**Query:**
+User asks → PlanningAgent → Insight/Viz → Critique → Debate → Report
+
+**Frontend:**
+All agent responses are streamed to UI as cards/dropdowns; D3 chart is rendered below main two-column layout.
+
+---
+
+## 🔒 SECURITY & OBSERVABILITY
+
+* **Transport:** HTTPS only, secure CORS, headers.
+* **Validation:** Filetype/size (upload), schema validation (all API).
+* **Rate limiting:** Per-user/IP on API.
+* **Logging:** All API/agent events with structlog/Python logger.
+* **Health:** `/health` endpoint checks DB, Pinecone, Ollama, disk.
+
+---
+
+## 🚀 DEPLOYMENT & ENV
+
+* **Frontend:** Vercel (CDN, edge SSR, glass UI).
+* **Backend:** Render (FastAPI, Pinecone, Ollama access).
+* **.env:** All API keys, Pinecone details, etc (see your ENV sample).
+
+---
+
+## 🛠️ REPO STRUCTURE (ROOT)
+
+```
+/agentic-copilot/
+  /backend/
+    ...         # as above
+  /frontend/
+    ...         # as above
+  .env.example  # environment template
+  README.md
+  .gitignore
+```
+
+* Each agent, service, and UI module self-contained, code-only, ready for Copilot VS Code dev.
+
+---
+
+**This architecture is designed for Copilot-driven, MAANG-ready, agentic LLM and RAG-powered analytics and insight UI.
+No external images, no branding, all code and flows are implementable directly in VS Code.
+If you want detailed file examples, TypeScript interfaces, or a “first endpoint/page” template, just ask!**

@@ -1,0 +1,1362 @@
+# FRONTEND ARCHITECTURE UNDERSTANDING
+# File: 09-frontend-architecture.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Comprehensive frontend architecture and implementation guide for Next.js application
+
+## FRONTEND ARCHITECTURE OVERVIEW
+
+### Technology Stack
+The Agentic Copilot frontend is built using modern web technologies optimized for performance, maintainability, and user experience:
+
+- **Framework**: Next.js 14+ with App Router for server-side rendering and static generation
+- **Language**: TypeScript for type safety and enhanced developer experience
+- **Styling**: Tailwind CSS with custom glassmorphism utilities
+- **UI Components**: Shadcn/ui for accessible, customizable components
+- **State Management**: React built-in hooks with Context API for global state
+- **Icons**: Lucide React for consistent, scalable icon system
+- **Animations**: Framer Motion for smooth transitions and micro-interactions
+- **Data Visualization**: D3.js and Recharts for interactive charts
+- **Testing**: Jest and React Testing Library for comprehensive unit testing
+
+### Project Structure
+```
+frontend/
+├── public/                     # Static assets
+│   ├── icons/                 # Custom SVG icons
+│   ├── images/                # Image assets (minimal)
+│   └── favicon.ico           # Site favicon
+├── src/
+│   ├── app/                   # Next.js 14 App Router
+│   │   ├── globals.css       # Global styles and CSS variables
+│   │   ├── layout.tsx        # Root layout component
+│   │   ├── page.tsx          # Home page component
+│   │   ├── loading.tsx       # Global loading UI
+│   │   ├── error.tsx         # Global error UI
+│   │   ├── not-found.tsx     # 404 page
+│   │   └── upload/           # Upload page route
+│   ├── components/            # Reusable components
+│   │   ├── ui/               # Base UI components
+│   │   ├── features/         # Feature-specific components
+│   │   ├── layout/           # Layout components
+│   │   └── shared/           # Shared utility components
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utility libraries and configurations
+│   ├── styles/              # Styling files
+│   ├── types/               # TypeScript type definitions
+│   └── __tests__/           # Test files
+├── package.json
+├── next.config.js
+├── tailwind.config.js
+├── tsconfig.json
+├── jest.config.js
+└── README.md
+```
+
+---
+
+## GLASSMORPHISM DESIGN SYSTEM
+
+### Core Design Principles
+1. **Transparency and Depth**: Layered glass effects with backdrop blur
+2. **Subtle Borders**: Light, semi-transparent borders for definition
+3. **Soft Shadows**: Elegant drop shadows for floating effect
+4. **Smooth Transitions**: Animated state changes and hover effects
+5. **Dark-First**: Optimized for dark backgrounds with light accents
+
+### CSS Variables and Color System
+```css
+/* globals.css - Design Tokens */
+:root {
+  /* Primary Colors */
+  --primary-blue: 59 130 246;           /* #3B82F6 */
+  --primary-blue-light: 96 165 250;     /* #60A5FA */
+  --primary-blue-dark: 29 78 216;       /* #1D4ED8 */
+  
+  /* Accent Colors */
+  --accent-purple: 139 92 246;          /* #8B5CF6 */
+  --accent-emerald: 16 185 129;         /* #10B981 */
+  --accent-amber: 245 158 11;           /* #F59E0B */
+  --accent-red: 239 68 68;              /* #EF4444 */
+  
+  /* Grayscale Palette */
+  --gray-50: 249 250 251;
+  --gray-100: 243 244 246;
+  --gray-800: 31 41 55;
+  --gray-900: 17 24 39;
+  --gray-950: 3 7 18;
+  
+  /* Glass Effects */
+  --glass-white: rgba(255, 255, 255, 0.1);
+  --glass-white-hover: rgba(255, 255, 255, 0.15);
+  --glass-dark: rgba(31, 41, 55, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+```
+
+### Glassmorphism Utility Classes
+```css
+/* styles/glassmorphism.css */
+.glass-card {
+  @apply backdrop-blur-[10px] bg-white/10 border border-white/20;
+  @apply shadow-[0_8px_32px_rgba(31,38,135,0.37)] rounded-2xl;
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.glass-card:hover {
+  @apply bg-white/15 shadow-[0_12px_40px_rgba(31,38,135,0.5)];
+  @apply border-white/30 transform translate-y-[-2px];
+}
+
+.glass-button {
+  @apply glass-card px-6 py-3 cursor-pointer;
+  @apply text-white font-medium tracking-wide;
+  @apply hover:scale-105 active:scale-95;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50;
+}
+
+.glass-input {
+  @apply glass-card px-4 py-3;
+  @apply text-white placeholder:text-gray-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50;
+  @apply focus:border-blue-500/50;
+}
+
+.glass-modal {
+  @apply glass-card p-8;
+  @apply backdrop-blur-[20px] bg-gray-900/90;
+  @apply border-2 border-white/20;
+}
+```
+
+---
+
+## COMPONENT ARCHITECTURE
+
+### Base UI Components
+
+#### GlassCard Component
+```typescript
+// components/ui/glass-card.tsx
+import { ReactNode, HTMLAttributes, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { ChevronDownIcon } from 'lucide-react';
+
+interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
+  title?: string;
+  subtitle?: string;
+  children: ReactNode;
+  variant?: 'default' | 'elevated' | 'minimal';
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
+  icon?: ReactNode;
+  action?: ReactNode;
+}
+
+export function GlassCard({
+  title,
+  subtitle,
+  children,
+  variant = 'default',
+  collapsible = false,
+  defaultCollapsed = false,
+  icon,
+  action,
+  className,
+  ...props
+}: GlassCardProps) {
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  
+  return (
+    <div
+      className={cn(
+        'glass-card',
+        variant === 'elevated' && 'shadow-[0_16px_48px_rgba(31,38,135,0.5)]',
+        variant === 'minimal' && 'bg-white/5 shadow-[0_4px_16px_rgba(31,38,135,0.2)]',
+        className
+      )}
+      {...props}
+    >
+      {title && (
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            {icon && (
+              <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
+                {icon}
+              </div>
+            )}
+            <div>
+              <h3 className="text-lg font-semibold text-white">{title}</h3>
+              {subtitle && (
+                <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {action}
+            {collapsible && (
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="p-2 rounded-lg glass-button-sm"
+                aria-label={isCollapsed ? 'Expand' : 'Collapse'}
+              >
+                <ChevronDownIcon 
+                  className={cn(
+                    'w-4 h-4 transition-transform duration-200',
+                    isCollapsed && 'rotate-180'
+                  )}
+                />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      
+      <div
+        className={cn(
+          'transition-all duration-300 ease-in-out',
+          isCollapsed && 'h-0 overflow-hidden opacity-0'
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+```
+
+#### GlassButton Component
+```typescript
+// components/ui/glass-button.tsx
+import { ButtonHTMLAttributes, ReactNode, forwardRef } from 'react';
+import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
+
+interface GlassButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'primary' | 'secondary' | 'accent' | 'destructive';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  loading?: boolean;
+  icon?: ReactNode;
+  iconPosition?: 'left' | 'right';
+  children: ReactNode;
+}
+
+export const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
+  ({
+    variant = 'default',
+    size = 'md',
+    loading = false,
+    icon,
+    iconPosition = 'left',
+    children,
+    className,
+    disabled,
+    ...props
+  }, ref) => {
+    const isDisabled = disabled || loading;
+    
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          'glass-button inline-flex items-center justify-center gap-2',
+          'font-medium transition-all duration-200',
+          'focus:outline-none focus:ring-2 focus:ring-offset-2',
+          
+          // Variants
+          variant === 'primary' && [
+            'bg-gradient-to-r from-blue-600/30 to-blue-500/30',
+            'hover:from-blue-600/40 hover:to-blue-500/40',
+            'focus:ring-blue-500/50',
+            'text-white',
+          ],
+          variant === 'secondary' && [
+            'bg-gray-600/20 hover:bg-gray-600/30',
+            'focus:ring-gray-500/50',
+            'text-gray-200',
+          ],
+          variant === 'accent' && [
+            'bg-gradient-to-r from-purple-600/30 to-purple-500/30',
+            'hover:from-purple-600/40 hover:to-purple-500/40',
+            'focus:ring-purple-500/50',
+            'text-white',
+          ],
+          variant === 'destructive' && [
+            'bg-gradient-to-r from-red-600/30 to-red-500/30',
+            'hover:from-red-600/40 hover:to-red-500/40',
+            'focus:ring-red-500/50',
+            'text-white',
+          ],
+          
+          // Sizes
+          size === 'sm' && 'px-3 py-1.5 text-sm rounded-lg',
+          size === 'md' && 'px-6 py-3 text-base rounded-xl',
+          size === 'lg' && 'px-8 py-4 text-lg rounded-xl',
+          size === 'xl' && 'px-10 py-5 text-xl rounded-2xl',
+          
+          // States
+          isDisabled && [
+            'opacity-50 cursor-not-allowed',
+            'hover:transform-none hover:shadow-none',
+          ],
+          
+          className
+        )}
+        disabled={isDisabled}
+        {...props}
+      >
+        {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+        
+        {!loading && icon && iconPosition === 'left' && icon}
+        
+        <span>{children}</span>
+        
+        {!loading && icon && iconPosition === 'right' && icon}
+      </button>
+    );
+  }
+);
+
+GlassButton.displayName = 'GlassButton';
+```
+
+### Feature Components
+
+#### FileUpload Component
+```typescript
+// components/features/file-upload/file-upload.tsx
+import { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { UploadIcon, FileIcon, XIcon } from 'lucide-react';
+import { GlassCard, GlassButton } from '@/components/ui';
+import { useFileUpload } from '@/hooks/use-file-upload';
+import { cn } from '@/lib/utils';
+
+const ACCEPTED_TYPES = {
+  'text/csv': ['.csv'],
+  'application/vnd.ms-excel': ['.xls'],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+  'application/json': ['.json'],
+  'text/plain': ['.txt'],
+};
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+export function FileUpload() {
+  const { uploadFile, uploading, progress, error, uploadedFiles, removeFile } = useFileUpload();
+  const [dragActive, setDragActive] = useState(false);
+  
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    acceptedFiles.forEach(file => {
+      uploadFile(file);
+    });
+    setDragActive(false);
+  }, [uploadFile]);
+  
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: ACCEPTED_TYPES,
+    maxFiles: 5,
+    maxSize: MAX_FILE_SIZE,
+    onDragEnter: () => setDragActive(true),
+    onDragLeave: () => setDragActive(false),
+    onDropRejected: (rejectedFiles) => {
+      console.error('Rejected files:', rejectedFiles);
+    },
+  });
+  
+  return (
+    <GlassCard 
+      title="Upload Your Data" 
+      subtitle="Supports CSV, Excel, JSON, and TXT files up to 10MB"
+      icon={<UploadIcon className="w-5 h-5" />}
+    >
+      <div className="space-y-6">
+        {/* Drop Zone */}
+        <div
+          {...getRootProps()}
+          className={cn(
+            'border-2 border-dashed rounded-xl p-8 text-center cursor-pointer',
+            'transition-all duration-300 ease-in-out',
+            isDragActive || dragActive
+              ? 'border-blue-400 bg-blue-500/10 scale-[1.02]'
+              : 'border-gray-600 hover:border-gray-500 hover:bg-white/5'
+          )}
+        >
+          <input {...getInputProps()} />
+          
+          <div className="flex flex-col items-center gap-4">
+            <div className={cn(
+              'p-4 rounded-full transition-colors duration-200',
+              isDragActive ? 'bg-blue-500/30' : 'bg-blue-500/20'
+            )}>
+              <UploadIcon className="w-8 h-8 text-blue-400" />
+            </div>
+            
+            <div>
+              <p className="text-lg font-medium text-white mb-2">
+                {isDragActive ? 'Drop your files here' : 'Drag and drop your files here'}
+              </p>
+              <p className="text-gray-400 mb-4">
+                or click to browse files
+              </p>
+              <p className="text-sm text-gray-500">
+                Supports CSV, Excel, JSON, TXT (max 10MB each)
+              </p>
+            </div>
+            
+            <GlassButton variant="primary" size="md">
+              Browse Files
+            </GlassButton>
+          </div>
+        </div>
+        
+        {/* Upload Progress */}
+        {uploading && (
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Uploading...</span>
+              <span className="text-blue-400">{progress}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        )}
+        
+        {/* Error Display */}
+        {error && (
+          <div className="p-4 rounded-lg bg-red-500/20 border border-red-500/30">
+            <p className="text-red-200">{error}</p>
+          </div>
+        )}
+        
+        {/* Uploaded Files List */}
+        {uploadedFiles.length > 0 && (
+          <div className="space-y-3">
+            <h4 className="text-sm font-medium text-gray-300">Uploaded Files</h4>
+            {uploadedFiles.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-green-500/20">
+                    <FileIcon className="w-4 h-4 text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">{file.name}</p>
+                    <p className="text-xs text-gray-400">
+                      {(file.size / 1024).toFixed(1)} KB • Uploaded successfully
+                    </p>
+                  </div>
+                </div>
+                
+                <GlassButton
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => removeFile(index)}
+                  icon={<XIcon className="w-4 h-4" />}
+                  aria-label="Remove file"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </GlassCard>
+  );
+}
+```
+
+#### AgentPipeline Component
+```typescript
+// components/features/agents/agent-pipeline.tsx
+import { useAgentPipeline } from '@/hooks/use-agent-pipeline';
+import { GlassCard } from '@/components/ui';
+import { AgentCard } from './agent-card';
+import { 
+  UploadIcon, 
+  BarChart3Icon,
+  GitBranchIcon,
+  LightbulbIcon,
+  PieChartIcon,
+  MessageSquareIcon,
+  UsersIcon,
+  FileTextIcon
+} from 'lucide-react';
+
+const AGENT_CONFIG = [
+  {
+    id: 'file-upload',
+    name: 'File Upload Agent',
+    description: 'Handles file ingestion, validation, and initial processing',
+    icon: UploadIcon,
+    color: 'blue',
+  },
+  {
+    id: 'data-profile',
+    name: 'Data Profile Agent',
+    description: 'Analyzes data schema, statistics, and quality metrics',
+    icon: BarChart3Icon,
+    color: 'emerald',
+  },
+  {
+    id: 'planning',
+    name: 'Planning Agent',
+    description: 'Routes queries to appropriate specialized agents',
+    icon: GitBranchIcon,
+    color: 'purple',
+  },
+  {
+    id: 'insight',
+    name: 'Insight Agent',
+    description: 'Generates textual insights and analytical summaries',
+    icon: LightbulbIcon,
+    color: 'amber',
+  },
+  {
+    id: 'visualization',
+    name: 'Visualization Agent',
+    description: 'Creates chart configurations and data visualizations',
+    icon: PieChartIcon,
+    color: 'blue',
+  },
+  {
+    id: 'critique',
+    name: 'Critique Agent',
+    description: 'Reviews and improves agent responses for quality',
+    icon: MessageSquareIcon,
+    color: 'red',
+  },
+  {
+    id: 'debate',
+    name: 'Debate Agent',
+    description: 'Multi-perspective analysis and final answer synthesis',
+    icon: UsersIcon,
+    color: 'purple',
+  },
+  {
+    id: 'report',
+    name: 'Report Agent',
+    description: 'Generates comprehensive downloadable workflow reports',
+    icon: FileTextIcon,
+    color: 'emerald',
+  },
+];
+
+export function AgentPipeline() {
+  const { agents, currentAgent, isProcessing, pipelineProgress } = useAgentPipeline();
+  
+  return (
+    <GlassCard 
+      title="Agent Pipeline" 
+      subtitle={`${agents.length} agents • ${isProcessing ? 'Processing' : 'Ready'}`}
+    >
+      <div className="space-y-4">
+        {/* Progress Bar */}
+        {isProcessing && (
+          <div className="mb-6">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-gray-400">Pipeline Progress</span>
+              <span className="text-blue-400">{Math.round(pipelineProgress)}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+                style={{ width: `${pipelineProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+        
+        {/* Agent Cards */}
+        {AGENT_CONFIG.map((config, index) => {
+          const agentData = agents.find(a => a.id === config.id);
+          const isActive = currentAgent === config.id;
+          const isCompleted = agentData?.status === 'completed';
+          const isError = agentData?.status === 'error';
+          const isPending = !agentData && !isActive;
+          
+          return (
+            <AgentCard
+              key={config.id}
+              config={config}
+              data={agentData}
+              isActive={isActive}
+              isCompleted={isCompleted}
+              isError={isError}
+              isPending={isPending}
+              index={index}
+            />
+          );
+        })}
+        
+        {/* Processing Indicator */}
+        {isProcessing && (
+          <div className="flex items-center justify-center py-6">
+            <div className="flex items-center gap-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
+              <span className="text-gray-400">
+                {currentAgent ? `Running ${currentAgent} agent...` : 'Initializing pipeline...'}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    </GlassCard>
+  );
+}
+```
+
+---
+
+## CUSTOM HOOKS
+
+### useFileUpload Hook
+```typescript
+// hooks/use-file-upload.ts
+import { useState, useCallback } from 'react';
+import { uploadFileAPI } from '@/lib/api';
+
+interface UploadedFile {
+  name: string;
+  size: number;
+  type: string;
+  id: string;
+  uploadedAt: Date;
+}
+
+interface FileUploadState {
+  uploading: boolean;
+  progress: number;
+  error: string | null;
+  uploadedFiles: UploadedFile[];
+}
+
+export function useFileUpload() {
+  const [state, setState] = useState<FileUploadState>({
+    uploading: false,
+    progress: 0,
+    error: null,
+    uploadedFiles: [],
+  });
+  
+  const uploadFile = useCallback(async (file: File) => {
+    setState(prev => ({
+      ...prev,
+      uploading: true,
+      progress: 0,
+      error: null,
+    }));
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await uploadFileAPI(formData, {
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const progress = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setState(prev => ({ ...prev, progress }));
+          }
+        },
+      });
+      
+      const uploadedFile: UploadedFile = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        id: response.file_id,
+        uploadedAt: new Date(),
+      };
+      
+      setState(prev => ({
+        ...prev,
+        uploading: false,
+        uploadedFiles: [...prev.uploadedFiles, uploadedFile],
+        progress: 100,
+      }));
+      
+      // Reset progress after success
+      setTimeout(() => {
+        setState(prev => ({ ...prev, progress: 0 }));
+      }, 2000);
+      
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        uploading: false,
+        error: error instanceof Error ? error.message : 'Upload failed',
+        progress: 0,
+      }));
+    }
+  }, []);
+  
+  const removeFile = useCallback((index: number) => {
+    setState(prev => ({
+      ...prev,
+      uploadedFiles: prev.uploadedFiles.filter((_, i) => i !== index),
+    }));
+  }, []);
+  
+  const clearAll = useCallback(() => {
+    setState({
+      uploading: false,
+      progress: 0,
+      error: null,
+      uploadedFiles: [],
+    });
+  }, []);
+  
+  return {
+    ...state,
+    uploadFile,
+    removeFile,
+    clearAll,
+  };
+}
+```
+
+### useAgentPipeline Hook
+```typescript
+// hooks/use-agent-pipeline.ts
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useWebSocket } from './use-websocket';
+
+interface Agent {
+  id: string;
+  status: 'idle' | 'processing' | 'completed' | 'error';
+  result?: any;
+  error?: string;
+  startTime?: Date;
+  endTime?: Date;
+  logs?: string[];
+  metadata?: Record<string, any>;
+}
+
+interface AgentPipelineState {
+  agents: Agent[];
+  currentAgent: string | null;
+  isProcessing: boolean;
+  pipelineId: string | null;
+  pipelineProgress: number;
+  completedSteps: number;
+  totalSteps: number;
+}
+
+export function useAgentPipeline() {
+  const [state, setState] = useState<AgentPipelineState>({
+    agents: [],
+    currentAgent: null,
+    isProcessing: false,
+    pipelineId: null,
+    pipelineProgress: 0,
+    completedSteps: 0,
+    totalSteps: 8, // Total number of agents
+  });
+  
+  const { sendMessage, lastMessage, connectionStatus } = useWebSocket('/ws/agents');
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  
+  // Handle WebSocket messages
+  useEffect(() => {
+    if (lastMessage) {
+      try {
+        const data = JSON.parse(lastMessage.data);
+        
+        switch (data.type) {
+          case 'pipeline_started':
+            setState(prev => ({
+              ...prev,
+              isProcessing: true,
+              pipelineId: data.pipeline_id,
+              agents: [],
+              currentAgent: null,
+              completedSteps: 0,
+              pipelineProgress: 0,
+            }));
+            break;
+            
+          case 'agent_started':
+            updateAgentStatus(data.agent_id, 'processing', null, data.timestamp);
+            setState(prev => ({ 
+              ...prev, 
+              currentAgent: data.agent_id 
+            }));
+            break;
+            
+          case 'agent_progress':
+            updateAgentProgress(data.agent_id, data.progress, data.message);
+            break;
+            
+          case 'agent_completed':
+            updateAgentStatus(data.agent_id, 'completed', data.result, data.timestamp);
+            setState(prev => {
+              const newCompletedSteps = prev.completedSteps + 1;
+              return {
+                ...prev,
+                completedSteps: newCompletedSteps,
+                pipelineProgress: (newCompletedSteps / prev.totalSteps) * 100,
+              };
+            });
+            break;
+            
+          case 'agent_error':
+            updateAgentStatus(data.agent_id, 'error', null, data.timestamp, data.error);
+            break;
+            
+          case 'pipeline_completed':
+            setState(prev => ({ 
+              ...prev, 
+              isProcessing: false,
+              currentAgent: null,
+              pipelineProgress: 100,
+            }));
+            break;
+            
+          case 'pipeline_error':
+            setState(prev => ({ 
+              ...prev, 
+              isProcessing: false,
+              currentAgent: null,
+            }));
+            break;
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    }
+  }, [lastMessage]);
+  
+  // Handle connection status changes
+  useEffect(() => {
+    if (connectionStatus === 'disconnected' && state.isProcessing) {
+      // Attempt to reconnect after a delay
+      reconnectTimeoutRef.current = setTimeout(() => {
+        // Trigger reconnection logic if needed
+      }, 3000);
+    }
+    
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+    };
+  }, [connectionStatus, state.isProcessing]);
+  
+  const startPipeline = useCallback((type: string, context: any) => {
+    if (connectionStatus !== 'connected') {
+      throw new Error('WebSocket not connected');
+    }
+    
+    const pipelineId = `pipeline_${Date.now()}`;
+    
+    setState(prev => ({ 
+      ...prev, 
+      isProcessing: true,
+      agents: [],
+      pipelineId,
+      currentAgent: null,
+      completedSteps: 0,
+      pipelineProgress: 0,
+    }));
+    
+    sendMessage({
+      type: 'start_pipeline',
+      pipeline_id: pipelineId,
+      pipeline_type: type,
+      context,
+    });
+  }, [sendMessage, connectionStatus]);
+  
+  const stopPipeline = useCallback(() => {
+    if (state.pipelineId) {
+      sendMessage({
+        type: 'stop_pipeline',
+        pipeline_id: state.pipelineId,
+      });
+    }
+    
+    setState(prev => ({
+      ...prev,
+      isProcessing: false,
+      currentAgent: null,
+    }));
+  }, [sendMessage, state.pipelineId]);
+  
+  const updateAgentStatus = useCallback((
+    agentId: string, 
+    status: Agent['status'], 
+    result?: any, 
+    timestamp?: string,
+    error?: string
+  ) => {
+    setState(prev => ({
+      ...prev,
+      agents: prev.agents.map(agent => 
+        agent.id === agentId 
+          ? {
+              ...agent,
+              status,
+              result,
+              error,
+              endTime: status === 'completed' || status === 'error' ? new Date() : agent.endTime,
+            }
+          : agent
+      ).concat(
+        // Add new agent if not exists
+        prev.agents.find(a => a.id === agentId) ? [] : [{
+          id: agentId,
+          status,
+          result,
+          error,
+          startTime: new Date(),
+          endTime: status === 'completed' || status === 'error' ? new Date() : undefined,
+          logs: [],
+          metadata: {},
+        }]
+      ),
+    }));
+  }, []);
+  
+  const updateAgentProgress = useCallback((
+    agentId: string,
+    progress: number,
+    message?: string
+  ) => {
+    setState(prev => ({
+      ...prev,
+      agents: prev.agents.map(agent =>
+        agent.id === agentId
+          ? {
+              ...agent,
+              metadata: {
+                ...agent.metadata,
+                progress,
+                progressMessage: message,
+              },
+            }
+          : agent
+      ),
+    }));
+  }, []);
+  
+  const getAgentById = useCallback((agentId: string) => {
+    return state.agents.find(agent => agent.id === agentId);
+  }, [state.agents]);
+  
+  const getCompletedAgents = useCallback(() => {
+    return state.agents.filter(agent => agent.status === 'completed');
+  }, [state.agents]);
+  
+  const getFailedAgents = useCallback(() => {
+    return state.agents.filter(agent => agent.status === 'error');
+  }, [state.agents]);
+  
+  return {
+    ...state,
+    connectionStatus,
+    startPipeline,
+    stopPipeline,
+    updateAgentStatus,
+    updateAgentProgress,
+    getAgentById,
+    getCompletedAgents,
+    getFailedAgents,
+  };
+}
+```
+
+---
+
+## RESPONSIVE DESIGN AND ACCESSIBILITY
+
+### Responsive Design Strategy
+```typescript
+// tailwind.config.js - Responsive Breakpoints
+module.exports = {
+  theme: {
+    screens: {
+      'xs': '475px',   // Small mobile
+      'sm': '640px',   // Mobile landscape
+      'md': '768px',   // Tablet
+      'lg': '1024px',  // Desktop
+      'xl': '1280px',  // Large desktop
+      '2xl': '1536px', // Ultra-wide
+    },
+  },
+}
+```
+
+### Layout Adaptations
+- **Desktop (lg+)**: 2-column layout with agent pipeline sidebar and main content area
+- **Tablet (md-lg)**: Stacked layout with collapsible sections and swipe gestures
+- **Mobile (sm-md)**: Single column with slide-over panels and bottom navigation
+
+### Accessibility Features
+```typescript
+// components/ui/accessible-button.tsx
+export function AccessibleButton({ 
+  children, 
+  ariaLabel, 
+  ariaDescribedBy,
+  ...props 
+}: AccessibleButtonProps) {
+  return (
+    <button
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
+      className="focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+### Keyboard Navigation
+- **Tab Navigation**: All interactive elements accessible via Tab/Shift+Tab
+- **Arrow Keys**: Agent cards navigable with arrow keys
+- **Enter/Space**: Activate buttons and toggles
+- **Escape**: Close modals and dropdowns
+
+---
+
+## PERFORMANCE OPTIMIZATION
+
+### Code Splitting and Lazy Loading
+```typescript
+// Dynamic imports for route-based code splitting
+const UploadPage = dynamic(() => import('@/components/pages/upload-page'), {
+  loading: () => <LoadingSkeleton />,
+});
+
+const ChartPanel = dynamic(() => import('@/components/features/visualization/chart-panel'), {
+  loading: () => <ChartSkeleton />,
+  ssr: false, // Disable SSR for heavy chart components
+});
+```
+
+### Image Optimization
+```typescript
+// next.config.js
+module.exports = {
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+};
+```
+
+### Bundle Analysis
+```bash
+# Analyze bundle size
+npm run build:analyze
+
+# Monitor bundle size in CI
+npm run bundle-size-check
+```
+
+## HOME UI LAYOUT DESIGN
+-----------------------
+
+> **📋 Layout Reference**: For the complete detailed UI layout diagram specification, see: [`frontend-layout-diagram.txt`](./frontend-layout-diagram.txt)
+
+### Layout Overview
+
+The home page follows a professional enterprise-grade 2-column layout with full-width visualization panel:
+
+- **Left Column (40%)**: Data upload and chat interface
+- **Right Column (60%)**: Agent workflow pipeline with real-time status
+- **Bottom Panel**: Full-width visualization dashboard with interactive charts
+
+### Key Layout Features
+
+- **Glassmorphic Design**: Modern UI with backdrop blur and transparency
+- **Responsive Grid**: Adapts from desktop (2-column) to mobile (stacked)
+- **Agent Pipeline**: Visual workflow with 11 specialized agents
+- **Real-time Updates**: Live status indicators and progress bars
+- **Interactive Charts**: D3.js visualizations with export capabilities
+
+### Best Practices Observed from Reference Design
+
+#### 1. **Visual Hierarchy & Information Architecture**
+- **Clear section headers** with descriptive titles ("Upload your Data", "Ask Copilot", "Agent Workflow")
+- **Consistent iconography** for each agent type with meaningful visual representations
+- **Progressive disclosure** with collapsible agent cards showing status at a glance
+- **Logical flow** from data input → query → agent processing → visualization
+
+#### 2. **Interaction Design Patterns**
+- **Drag-and-drop upload area** with clear visual boundaries and helper text
+- **Status indicators** showing agent states (idle, processing, completed, error)
+- **Expandable sections** for detailed logs and outputs without cluttering the interface
+- **Input validation feedback** with file type restrictions clearly communicated
+
+#### 3. **Content Organization**
+- **Left-to-right workflow** following natural reading patterns
+- **Vertical agent stack** showing clear progression through the pipeline
+- **Contextual messaging** ("CSV and XLSX files are supported")
+- **Action-oriented CTAs** with clear next steps
+
+#### 4. **Responsive & Accessibility Considerations**
+- **Generous white space** for touch-friendly interactions
+- **High contrast elements** for better readability
+- **Consistent spacing** using systematic padding and margins
+- **Keyboard navigation** support for all interactive elements
+
+### Layout Components Description (Enhanced with Best Practices)
+
+#### Left Column (Data + Conversation) - 40% Width
+
+**File Upload Card (Top Section):**
+- **Visual Design**: Large, prominent upload area with dashed border styling
+- **Drag-and-drop zone**: 
+  - Clear visual boundaries with hover states
+  - Centered helper text: "Drag and drop a file here, or click to browse"
+  - File type icons and accepted formats display
+- **Validation & Feedback**:
+  - Real-time file type validation (CSV, Excel, JSON, TXT)
+  - Progress bar with percentage indicator during upload
+  - Error states with actionable error messages
+  - Success states with file metadata display
+- **Data Preview Section**:
+  - Collapsible table showing first 5 rows of uploaded data
+  - Column headers with data type indicators
+  - Sortable columns with filter options
+  - Data quality indicators (nulls, outliers, type mismatches)
+
+**RAG Chat Copilot Card (Bottom Section):**
+- **Chat Interface Design**:
+  - Clean input field with placeholder: "Type your analytics query..."
+  - Prominent "Send" button with loading states
+  - Auto-suggestions panel below input
+  - Message bubbles with user/AI distinction
+- **Conversation Features**:
+  - Scrollable chat history with timestamps
+  - Message status indicators (sent, processing, completed)
+  - Copy/export conversation functionality
+  - Quick action buttons for common queries
+- **Report Integration**:
+  - PDF download button appears when reports are ready
+  - Progress indicators for active workflows
+  - Link to detailed workflow logs
+
+#### Right Column (Agent Pipeline) - 60% Width
+
+**Agent Workflow Panel:**
+- **Visual Flow Design**:
+  - Vertical stepper with connecting lines between agents
+  - Each agent represented as collapsible card with:
+    - Distinctive icon (📊 Data, 🧹 Cleaner, 🎯 Planning, etc.)
+    - Agent name and brief description
+    - Status indicator (idle, processing, completed, error)
+    - Expandable section for detailed logs
+- **Agent Status System**:
+  - **Idle State**: Muted colors, awaiting previous agent
+  - **Processing State**: Animated spinner, progress bar, real-time updates
+  - **Completed State**: Green checkmark, execution time, result summary
+  - **Error State**: Red indicator, error message, retry option
+- **Interactive Features**:
+  - Click to expand/collapse detailed logs
+  - Hover tooltips showing agent rationale
+  - Download individual agent outputs
+  - Real-time status updates via WebSocket connection
+
+**Agent Sequence (Updated based on reference):**
+1. **📊 Data Agent** (File Upload): File ingestion and validation
+2. **🧹 Cleaner Agent** (Data Profile): Data cleaning and quality assessment
+3. **🎯 Planning Agent**: Query parsing and routing logic
+4. **❓ Query Agent**: Natural language query processing
+5. **🗄️ SQL Agent**: Database query generation and execution
+6. **💡 Insight Agent**: Textual analysis and insights generation
+7. **📈 Chart Agent** (Viz): Visualization configuration and rendering
+8. **⚖️ Critique Agent**: Quality assessment and improvement suggestions
+9. **🤝 Debate Agent**: Multi-perspective analysis and consensus
+10. **📄 Narrative Agent**: Story generation and explanation
+11. **📋 Report Agent**: Comprehensive report compilation
+
+#### Bottom: Full-Width Visualization Dashboard
+
+**Advanced Visualization Panel:**
+- **Layout Features**:
+  - Spans full width below both columns
+  - Glassmorphic container with subtle borders
+  - Responsive grid system for multiple charts
+  - Tabbed interface for different visualization types
+- **Chart Management**:
+  - Real-time updates from Chart Agent output
+  - Export controls (PNG, SVG, PDF)
+  - Fullscreen mode for detailed analysis
+  - Chart type selector and customization options
+- **Empty States**:
+  - Meaningful placeholder: "Upload data to see visualizations"
+  - Visual indicators for chart loading states
+  - Error handling with retry mechanisms
+- **Interactive Features**:
+  - Zoom and pan functionality
+  - Tooltip displays with data details
+  - Cross-filtering between multiple charts
+  - Annotation and markup tools
+
+### Enhanced UI/UX Patterns
+
+#### **Color-Coded Agent System**
+- **Data Processing**: Blue tones (📊🧹)
+- **Planning & Query**: Purple tones (🎯❓🗄️)
+- **Analysis**: Green tones (💡📈)
+- **Review & Output**: Orange/Red tones (⚖️🤝📄📋)
+
+#### **Micro-interactions**
+- **Hover States**: Subtle elevation and glow effects
+- **Loading Animations**: Skeleton screens and progress indicators
+- **State Transitions**: Smooth animations between agent states
+- **Feedback Systems**: Toast notifications and status badges
+
+#### **Information Density Management**
+- **Progressive Disclosure**: Show essential info first, details on demand
+- **Contextual Help**: Tooltips and help text for complex features
+- **Visual Scanability**: Clear typography hierarchy and spacing
+- **Cognitive Load Reduction**: Consistent patterns and familiar iconography
+
+### UI/UX & Advanced Enhancements (Based on Best Practices)
+
+#### **Visual Design System**
+- **Glassmorphism Implementation**:
+  - Backdrop blur effects with 10-20px blur radius
+  - Semi-transparent backgrounds (rgba with 10-15% opacity)
+  - Subtle border highlights (1px solid white/20%)
+  - Layered drop shadows for depth perception
+  - Smooth transitions on all interactive elements (300ms ease-in-out)
+
+#### **Animation & Micro-interactions**
+- **Loading States**:
+  - Skeleton screens during initial data load
+  - Progress bars with smooth animations
+  - Spinner animations for active agents
+  - Pulse effects for real-time updates
+- **State Transitions**:
+  - Card expansion/collapse with smooth height animations
+  - Agent status changes with color transitions
+  - File upload progress with visual feedback
+  - Chart rendering with fade-in effects
+- **Interactive Feedback**:
+  - Hover effects with subtle elevation (2-4px)
+  - Click feedback with scale transformations
+  - Focus rings for keyboard navigation
+  - Success/error state animations
+
+#### **Typography & Content Hierarchy**
+- **Header System**:
+  - H1: Enterprise Insights Copilot (24px, bold)
+  - H2: Section headers (20px, semi-bold)
+  - H3: Agent names (16px, medium)
+  - Body: Regular content (14px, normal)
+- **Content Strategy**:
+  - Clear, action-oriented language
+  - Progressive disclosure of complexity
+  - Contextual help and explanations
+  - Consistent tone and terminology
+
+#### **Accessibility Excellence**
+- **Keyboard Navigation**:
+  - Logical tab order through all interactive elements
+  - Arrow key navigation within agent cards
+  - Enter/Space activation for buttons and controls
+  - Escape key for closing modals and dropdowns
+- **Screen Reader Support**:
+  - Semantic HTML structure with proper landmarks
+  - ARIA labels for all interactive elements
+  - Live regions for dynamic content updates
+  - Alternative text for visual indicators
+- **Visual Accessibility**:
+  - WCAG AA compliant color contrast ratios
+  - Focus indicators with 2px blue outline
+  - High contrast mode support
+  - Scalable typography (supports 200% zoom)
+  - Reduced motion preferences honored
+
+#### **Performance Optimizations**
+- **Rendering Strategy**:
+  - Virtual scrolling for large agent lists
+  - Lazy loading of chart components
+  - Debounced input handling
+  - Optimized re-renders with React.memo
+- **Data Management**:
+  - Efficient state updates with minimal re-renders
+  - Memoized calculations for chart data
+  - Progressive data loading
+  - Intelligent caching strategies
+
+#### **Error Handling & Edge Cases**
+- **Upload Errors**:
+  - File size limit warnings
+  - Invalid format notifications
+  - Network timeout recovery
+  - Corrupt file detection
+- **Agent Failures**:
+  - Graceful degradation when agents fail
+  - Retry mechanisms with exponential backoff
+  - Alternative workflow suggestions
+  - Clear error messages with next steps
+- **Network Issues**:
+  - Offline state detection
+  - Connection recovery notifications
+  - Cached data fallbacks
+  - Real-time connection status
+
+### User Workflow
+
+1. **Upload file:** Triggers pipeline, profiles data
+2. **Ask query:** Chat to Copilot, triggers Planning Agent, routed to either Insight (text) or Viz (chart)
+3. **Critique/Debate/Report:** All responses critiqued, debated, final shown in chat, downloadable PDF report after each workflow
+4. **Everything visible/transparent:** Collapsible agent cards show all steps/logs for interviews/demo
+```
+
+### Responsive Behavior
+
+#### Desktop (lg+)
+- Two-column layout with fixed agent pipeline sidebar
+- Full feature visibility and interaction
+- Large chart area for detailed visualization
+
+#### Tablet (md-lg)
+- Collapsible agent pipeline with slide-over panel
+- Stacked content sections with smooth transitions
+- Touch-optimized interaction targets
+
+#### Mobile (sm-md)
+- Single column layout with bottom navigation
+- Agent pipeline as modal overlay
+- Simplified quick actions in vertical stack
+- Chat as fullscreen overlay
+
+### Accessibility Features
+
+#### Keyboard Navigation
+- Tab order: Header navigation → Quick actions → Agent pipeline → Chat
+- Arrow keys for navigating within component groups
+- Enter/Space for activation, Escape for closing overlays
+
+#### Screen Reader Support
+- Semantic HTML structure with proper landmarks
+- ARIA labels for all interactive elements
+- Live regions for dynamic content updates
+- Alt text for all visual elements
+
+#### Visual Accessibility
+- High contrast glass effects with sufficient color ratios
+- Focus indicators with 2px blue outline
+- Reduced motion support with prefers-reduced-motion
+- Scalable typography that responds to user font size preferences
+
+This comprehensive frontend architecture provides a solid foundation for building a modern, accessible, performant, and visually stunning data analytics platform with glassmorphism design and smooth user interactions.

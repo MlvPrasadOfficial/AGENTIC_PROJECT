@@ -1,0 +1,207 @@
+# ARCHITECTURE UNDERSTANDING
+# File: 02-architecture.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Complete understanding of system architecture and design patterns
+
+## ARCHITECTURE PATTERN
+**"API-centric Microservices-inspired Monolith"**
+
+### SYSTEM TOPOLOGY
+```
+Frontend (Next.js/Vercel) ←→ Backend (FastAPI/Render) ←→ External Services
+        ↓                           ↓                         ↓
+   Browser/CDN                 File Storage              Pinecone/Ollama
+```
+
+## FRONTEND ARCHITECTURE (Next.js 14)
+
+### Directory Structure
+```
+frontend/
+├── src/
+│   ├── app/                    # Next.js 14 App Router
+│   │   ├── layout.tsx         # Root layout with providers
+│   │   ├── page.tsx           # Home dashboard
+│   │   ├── upload/page.tsx    # File upload page
+│   │   └── chat/page.tsx      # Chat interface
+│   ├── components/            # Reusable UI components
+│   │   ├── ui/               # Base glassmorphic components
+│   │   ├── agent/            # Agent-specific components
+│   │   ├── upload/           # File upload components
+│   │   ├── chat/             # Chat components
+│   │   └── data/             # Data visualization components
+│   ├── lib/                  # Utilities and API client
+│   ├── hooks/                # Custom React hooks
+│   ├── store/                # State management
+│   └── styles/               # Tailwind + custom CSS
+├── next.config.ts            # Next.js configuration
+├── tailwind.config.ts        # Tailwind configuration
+└── package.json              # Dependencies
+```
+
+### Key Frontend Components
+- **API Layer**: REST client with error handling
+- **State Management**: Redux Toolkit or Context API
+- **Styling**: Tailwind CSS + custom glassmorphism utilities
+- **Routing**: Next.js App Router with layouts
+- **Data Fetching**: React Query for server state
+- **Animations**: Framer Motion for smooth transitions
+
+## BACKEND ARCHITECTURE (FastAPI)
+
+### Directory Structure
+```
+backend/
+├── app/
+│   ├── main.py               # FastAPI application entry
+│   ├── config/               # Configuration and settings
+│   ├── api/v1/               # API endpoints
+│   ├── models/               # Pydantic models
+│   ├── schemas/              # Request/response schemas
+│   ├── services/             # Business logic
+│   ├── agents/               # AI agent implementations
+│   ├── utils/                # Utility functions
+│   └── tests/                # Test suite
+├── requirements.txt          # Python dependencies
+├── Dockerfile               # Container configuration
+└── render.yaml              # Deployment configuration
+```
+
+### Key Backend Components
+- **FastAPI Framework**: Modern, fast API with automatic docs
+- **Agent Orchestration**: LangChain/LangGraph workflow engine
+- **Vector Store**: Pinecone client for RAG
+- **File Processing**: Upload, validation, and profiling
+- **Error Handling**: Comprehensive exception management
+- **Logging**: Structured logging with tracing
+
+## AGENT ARCHITECTURE (LangChain + LangGraph)
+
+### Agent Pipeline Flow
+```
+File Upload → Data Profile → Planning → [Insight|Viz] → Critique → Debate → Report
+```
+
+### Agent Implementations
+1. **File Upload Agent**: Handles file ingestion and validation
+2. **Data Profile Agent**: Analyzes data schema and statistics
+3. **Planning Agent**: Routes queries to appropriate agents
+4. **Insight Agent**: Generates textual insights and analysis
+5. **Viz Agent**: Creates chart configurations for D3.js
+6. **Critique Agent**: Reviews and improves agent responses
+7. **Debate Agent**: Multi-perspective analysis for final answer
+8. **Report Agent**: Generates comprehensive PDF reports
+
+### Agent Base Class
+```python
+class BaseAgent:
+    def __init__(self, name: str, llm: LLM):
+        self.name = name
+        self.llm = llm
+        self.metrics = AgentMetrics()
+    
+    def run(self, input_data: Dict, context: Dict) -> Dict:
+        raise NotImplementedError
+```
+
+## DATA FLOW ARCHITECTURE
+
+### Upload Flow
+1. User uploads file → Frontend validation
+2. File sent to backend → Server validation
+3. File stored → Metadata extraction
+4. Data profiling → Schema analysis
+5. Chunking and embedding → Vector storage
+6. Preview generation → UI update
+
+### Query Flow
+1. User query → Planning Agent
+2. Route determination → Insight or Viz Agent
+3. RAG retrieval → Context assembly
+4. Agent processing → Result generation
+5. Critique evaluation → Quality assessment
+6. Debate resolution → Final answer
+7. Report generation → PDF creation
+
+## SECURITY ARCHITECTURE
+
+### Transport Security
+- HTTPS only in production
+- CORS configuration for allowed origins
+- Security headers (CSP, HSTS, etc.)
+- Input validation and sanitization
+
+### Data Security
+- File type and size validation
+- Virus scanning for uploads
+- Rate limiting per user/IP
+- No sensitive data in logs
+
+### API Security
+- Request/response validation
+- Error message sanitization
+- SQL injection prevention
+- XSS protection
+
+## DEPLOYMENT ARCHITECTURE
+
+### Frontend Deployment (Vercel)
+- Global CDN distribution
+- Edge functions for API proxying
+- Automatic SSL/TLS
+- Preview deployments for PRs
+
+### Backend Deployment (Render)
+- Container-based deployment
+- Auto-scaling capabilities
+- Health check endpoints
+- Persistent file storage
+
+### External Dependencies
+- **Pinecone**: Managed vector database
+- **Ollama**: LLM inference engine
+- **GitHub**: Version control and CI/CD
+
+## SCALABILITY CONSIDERATIONS
+
+### Horizontal Scaling
+- Stateless backend design
+- Database connection pooling
+- Caching strategy implementation
+- Load balancing ready
+
+### Vertical Scaling
+- Efficient memory usage
+- Optimized database queries
+- Lazy loading for large datasets
+- Background job processing
+
+## MONITORING AND OBSERVABILITY
+
+### Application Metrics
+- Response times and throughput
+- Error rates and types
+- Agent performance metrics
+- User interaction patterns
+
+### Infrastructure Metrics
+- CPU and memory usage
+- Database performance
+- Network latency
+- Storage utilization
+
+### Logging Strategy
+- Structured logging with correlation IDs
+- Agent execution tracing
+- Error tracking and alerting
+- Performance monitoring
+
+## ARCHITECTURE BENEFITS
+
+1. **Maintainability**: Clear separation of concerns
+2. **Testability**: Isolated components and mocked dependencies
+3. **Scalability**: Horizontal and vertical scaling options
+4. **Reliability**: Error handling and graceful degradation
+5. **Performance**: Optimized for speed and efficiency
+6. **Security**: Defense in depth approach

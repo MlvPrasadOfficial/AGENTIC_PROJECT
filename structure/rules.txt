@@ -1,0 +1,64 @@
+# PROJECT RULES - ENTERPRISE INSIGHTS COPILOT
+# File: rules.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Concise project development and execution standards
+
+## CORE DEVELOPMENT RULES
+
+### Rule 1: Changelog Management
+- **Requirement**: Log ALL changes in `changelogs/YYYY-MM-DD_description.md`
+- **Format**: Timestamped entries with features, bugs, breaking changes
+
+### Rule 2: File Headers (Mandatory)
+- **All files must start with**: `# [FILENAME] | # File: [filename.ext] | # Author: [Name] | # Date: YYYY-MM-DD | # Purpose: [description]`
+- **Use appropriate comment syntax**: `//` for JS/TS, `#` for Python/Markdown
+
+### Rule 3: Code Organization
+- **Frontend Structure**: `src/components/, src/hooks/, src/lib/, src/types/, src/styles/, src/__tests__/`
+- **Naming**: PascalCase for components, camelCase for functions/variables
+
+### Rule 4: Command Execution
+- **Chain commands**: Use semicolon (`;`) for sequential execution like `cd frontend; npm install; npm run dev`
+- **Always specify full paths** when changing directories
+
+### Rule 5: Project Structure
+- **Frontend-first approach**: UI components drive backend requirements
+- **Keep package.json clean**, document why each dependency exists
+
+
+## QUICK EXECUTION COMMANDS
+
+### Frontend Development
+- **Start dev**: `cd C:\JUL7PROJECT\frontend; npm install; npm run dev`
+- **Full setup**: `cd C:\JUL7PROJECT\frontend; npm install; npm run lint; npm run type-check; npm run dev`
+
+### Git Workflow
+- **Quick commit**: `git add .; git commit -m "feat: description"; git push`
+- **New feature**: `git checkout -b feature/name; git push -u origin feature/name`
+
+### Project Maintenance
+- **Update deps**: `cd C:\JUL7PROJECT\frontend; npm update; npm audit fix`
+- **Clean install**: `cd C:\JUL7PROJECT\frontend; rm -rf node_modules package-lock.json; npm install`
+
+## DOCUMENTATION & DEPLOYMENT
+
+### Rule 11: Code Documentation
+- **JSDoc for all public functions**, README for components
+- **Explain complex logic**, provide usage examples
+
+### Rule 12: API Documentation
+- **Document endpoints with examples**, define schemas and error codes
+- **Maintain Postman/OpenAPI collections**
+
+### Rule 13: Build Standards
+- **Separate configs for dev/staging/prod**, minimize bundle sizes
+- **Optimize assets and implement caching strategies**
+
+### Rule 14: Monitoring & Logging
+- **Error tracking (Sentry)**, performance monitoring (Core Web Vitals)
+- **Structured logging with appropriate levels**
+
+### Rule 15: Backup & Recovery
+- **Automated daily backups**, Git with multiple remotes
+- **Infrastructure as code, documented disaster recovery**

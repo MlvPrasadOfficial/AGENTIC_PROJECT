@@ -1,0 +1,1314 @@
+# TESTING STRATEGY UNDERSTANDING
+# File: 08-testing-strategy.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Complete understanding of testing approach and quality assurance
+
+## TESTING PHILOSOPHY OVERVIEW
+
+### Quality Objectives
+The Agentic Copilot testing strategy ensures:
+
+1. **Reliability**: Consistent behavior through comprehensive unit testing
+2. **Maintainability**: Easy to extend and refactor with fast feedback
+3. **Component Isolation**: Individual component and function verification
+4. **Business Logic**: Core algorithm and data processing validation
+5. **User Interface**: UI component behavior and interaction testing
+6. **Code Quality**: Clean, testable, and well-documented code
+
+### Testing Focus: Unit Testing Only
+```
+       ┌─────────────────────────────┐
+       │           Unit              │ ← Primary Focus: Fast, Isolated, Comprehensive
+       │  (Components + Functions)   │
+       │  - Frontend Components      │
+       │  - Backend Services         │
+       │  - Business Logic           │
+       │  - API Endpoints (Isolated) │
+       │  - Utility Functions        │
+       └─────────────────────────────┘
+```
+
+### Coverage Targets
+- **Unit Tests**: 90%+ code coverage for critical components
+- **Frontend Components**: All React components with props, state, and events
+- **Backend Services**: All agent functions, API handlers, and utilities  
+- **Business Logic**: Data processing, validation, and transformation
+- **Mock Dependencies**: External services mocked for isolation
+
+## FRONTEND TESTING (NEXT.JS)
+
+### Unit Testing with Jest and Testing Library
+```typescript
+// __tests__/components/GlassCard.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { GlassCard } from '@/components/ui/GlassCard';
+
+describe('GlassCard Component', () => {
+  it('renders with title and children', () => {
+    render(
+      <GlassCard title="Test Card">
+        <p>Card content</p>
+      </GlassCard>
+    );
+    
+    expect(screen.getByText('Test Card')).toBeInTheDocument();
+    expect(screen.getByText('Card content')).toBeInTheDocument();
+  });
+
+  it('handles click events', () => {
+    const handleClick = jest.fn();
+    render(
+      <GlassCard title="Clickable Card" onClick={handleClick}>
+        Content
+      </GlassCard>
+    );
+    
+    fireEvent.click(screen.getByText('Clickable Card'));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('applies correct CSS classes for glassmorphism', () => {
+    const { container } = render(
+      <GlassCard title="Styled Card">Content</GlassCard>
+    );
+    
+    const card = container.firstChild;
+    expect(card).toHaveClass('glass-card');
+    expect(card).toHaveStyle({
+      backdropFilter: 'blur(10px)',
+      background: 'rgba(255,255,255,0.1)'
+    });
+  });
+
+  it('is accessible with proper ARIA attributes', () => {
+    render(
+      <GlassCard title="Accessible Card" role="article">
+        Content
+      </GlassCard>
+    );
+    
+    const card = screen.getByRole('article');
+    expect(card).toBeInTheDocument();
+    expect(card).toHaveAttribute('aria-label', 'Accessible Card');
+  });
+});
+```
+
+### Hook Testing
+```typescript
+// __tests__/hooks/useFileUpload.test.ts
+import { renderHook, act } from '@testing-library/react';
+import { useFileUpload } from '@/hooks/useFileUpload';
+
+describe('useFileUpload Hook', () => {
+  it('initializes with default state', () => {
+    const { result } = renderHook(() => useFileUpload());
+    
+    expect(result.current.files).toEqual([]);
+    expect(result.current.uploading).toBe(false);
+    expect(result.current.progress).toBe(0);
+  });
+
+  it('handles file upload process', async () => {
+    const mockUploadFunction = jest.fn().mockResolvedValue({
+      file_id: 'test-id',
+      status: 'completed'
+    });
+    
+    const { result } = renderHook(() => 
+      useFileUpload({ uploadFunction: mockUploadFunction })
+    );
+    
+    const testFile = new File(['test content'], 'test.csv', {
+      type: 'text/csv'
+    });
+    
+    await act(async () => {
+      await result.current.uploadFile(testFile);
+    });
+    
+    expect(mockUploadFunction).toHaveBeenCalledWith(testFile);
+    expect(result.current.files).toHaveLength(1);
+    expect(result.current.uploading).toBe(false);
+  });
+
+  it('handles upload errors gracefully', async () => {
+    const mockUploadFunction = jest.fn().mockRejectedValue(
+      new Error('Upload failed')
+    );
+    
+    const { result } = renderHook(() => 
+      useFileUpload({ uploadFunction: mockUploadFunction })
+    );
+    
+    const testFile = new File(['test'], 'test.csv', { type: 'text/csv' });
+    
+    await act(async () => {
+      await result.current.uploadFile(testFile);
+    });
+    
+    expect(result.current.error).toBe('Upload failed');
+    expect(result.current.uploading).toBe(false);
+  });
+});
+```
+
+### Page Component Unit Tests
+```typescript
+// __tests__/pages/upload.test.tsx
+import { render, screen } from '@testing-library/react';
+import { jest } from '@jest/globals';
+
+// Mock components for isolated testing
+jest.mock('@/components/FileUpload', () => ({
+  FileUpload: ({ onUpload }: { onUpload: Function }) => (
+    <div data-testid="file-upload-mock">File Upload Component</div>
+  ),
+}));
+
+jest.mock('@/components/DataPreview', () => ({
+  DataPreview: ({ file }: { file: File }) => (
+    <div data-testid="data-preview-mock">Data Preview for {file.name}</div>
+  ),
+}));
+
+describe('Upload Page Unit Tests', () => {
+  it('renders upload page components', () => {
+    const UploadPage = require('@/app/upload/page').default;
+    
+    render(<UploadPage />);
+    
+    expect(screen.getByText('Upload your Data')).toBeInTheDocument();
+    expect(screen.getByTestId('file-upload-mock')).toBeInTheDocument();
+  });
+
+  it('has correct page structure and layout', () => {
+    const UploadPage = require('@/app/upload/page').default;
+    const { container } = render(<UploadPage />);
+    
+    // Test DOM structure
+    expect(container.querySelector('.upload-container')).toBeInTheDocument();
+    expect(container.querySelector('.glass-card')).toBeInTheDocument();
+  });
+    });
+    
+    await waitFor(() => {
+      expect(screen.getByText('test.csv')).toBeInTheDocument();
+    });
+  });
+});
+```
+
+### Accessibility Testing
+```typescript
+// __tests__/accessibility/a11y.test.tsx
+import { render } from '@testing-library/react';
+import { axe, toHaveNoViolations } from 'jest-axe';
+import HomePage from '@/app/page';
+
+expect.extend(toHaveNoViolations);
+
+describe('Accessibility Tests', () => {
+  it('should not have accessibility violations on home page', async () => {
+    const { container } = render(<HomePage />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  it('should support keyboard navigation', () => {
+    render(<HomePage />);
+    
+    // Test tab navigation
+    const firstFocusable = screen.getByRole('button', { name: /upload/i });
+    firstFocusable.focus();
+    expect(firstFocusable).toHaveFocus();
+    
+    // Test arrow key navigation for agent cards
+    fireEvent.keyDown(firstFocusable, { key: 'ArrowDown' });
+    const nextElement = screen.getByRole('button', { name: /analyze/i });
+    expect(nextElement).toHaveFocus();
+  });
+
+  it('should have proper color contrast', () => {
+    const { container } = render(<HomePage />);
+    
+    // Check contrast ratios for text elements
+    const textElements = container.querySelectorAll('[data-testid*="text"]');
+    textElements.forEach(element => {
+      const styles = window.getComputedStyle(element);
+      const contrast = calculateContrast(
+        styles.color, 
+        styles.backgroundColor
+      );
+      expect(contrast).toBeGreaterThan(4.5); // WCAG AA standard
+    });
+  });
+});
+```
+
+## BACKEND TESTING (FASTAPI + PYTEST)
+
+### Unit Testing
+```python
+# tests/test_agents/test_planning_agent.py
+import pytest
+from unittest.mock import Mock, AsyncMock
+from app.agents.planning import PlanningAgent
+
+class TestPlanningAgent:
+    @pytest.fixture
+    def mock_llm(self):
+        return Mock()
+    
+    @pytest.fixture
+    def planning_agent(self, mock_llm):
+        return PlanningAgent("planning", mock_llm)
+    
+    def test_routes_to_insight_for_analysis_query(self, planning_agent):
+        """Test that analysis queries route to insight agent"""
+        query = "What are the trends in this data?"
+        context = {"file_type": "csv", "columns": ["date", "revenue"]}
+        
+        result = planning_agent.run(query, context)
+        
+        assert result["route"] == "insight"
+        assert result["reasoning"] is not None
+    
+    def test_routes_to_viz_for_chart_query(self, planning_agent):
+        """Test that visualization queries route to viz agent"""
+        query = "Show me a chart of sales over time"
+        context = {"file_type": "csv", "columns": ["date", "sales"]}
+        
+        result = planning_agent.run(query, context)
+        
+        assert result["route"] == "visualization"
+        assert result["chart_suggestion"] is not None
+    
+    def test_handles_ambiguous_queries(self, planning_agent):
+        """Test handling of ambiguous queries"""
+        query = "Tell me about the data"
+        context = {"file_type": "csv", "columns": ["col1", "col2"]}
+        
+        result = planning_agent.run(query, context)
+        
+        assert result["route"] in ["insight", "visualization"]
+        assert result["confidence"] is not None
+    
+    @pytest.mark.asyncio
+    async def test_async_execution(self, planning_agent):
+        """Test asynchronous agent execution"""
+        query = "Analyze this data async"
+        context = {"file_type": "json"}
+        
+        result = await planning_agent.arun(query, context)
+        
+        assert result is not None
+        assert "route" in result
+```
+
+### API Endpoint Testing
+```python
+# tests/test_api/test_upload.py
+import pytest
+from fastapi.testclient import TestClient
+from unittest.mock import patch, Mock
+import tempfile
+import os
+
+from app.main import app
+
+client = TestClient(app)
+
+class TestUploadEndpoints:
+    def test_health_check(self):
+        """Test basic health check endpoint"""
+        response = client.get("/api/v1/health")
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "healthy"
+        assert "timestamp" in data
+    
+    def test_file_upload_success(self):
+        """Test successful file upload"""
+        # Create a test CSV file
+        test_data = "name,age,city\nJohn,25,NYC\nJane,30,LA"
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+            f.write(test_data)
+            temp_file_path = f.name
+        
+        try:
+            with open(temp_file_path, 'rb') as f:
+                response = client.post(
+                    "/api/v1/upload/files/upload",
+                    files={"file": ("test.csv", f, "text/csv")},
+                    data={"metadata": '{"description": "test data"}'}
+                )
+            
+            assert response.status_code == 201
+            data = response.json()
+            assert "file_id" in data
+            assert data["filename"] == "test.csv"
+            assert data["upload_status"] == "processing"
+        finally:
+            os.unlink(temp_file_path)
+    
+    def test_file_upload_invalid_type(self):
+        """Test upload with invalid file type"""
+        test_data = b"invalid file content"
+        
+        response = client.post(
+            "/api/v1/upload/files/upload",
+            files={"file": ("test.exe", test_data, "application/exe")}
+        )
+        
+        assert response.status_code == 400
+        data = response.json()
+        assert data["error"]["code"] == "INVALID_FILE_TYPE"
+    
+    def test_file_upload_too_large(self):
+        """Test upload with file too large"""
+        # Create a large file (mock)
+        with patch('app.services.upload.MAX_FILE_SIZE', 1024):  # 1KB limit
+            large_data = b"x" * 2048  # 2KB file
+            
+            response = client.post(
+                "/api/v1/upload/files/upload",
+                files={"file": ("large.csv", large_data, "text/csv")}
+            )
+            
+            assert response.status_code == 400
+            data = response.json()
+            assert "size" in data["error"]["message"].lower()
+    
+    @patch('app.services.file_processor.process_file')
+    def test_file_status_tracking(self, mock_process):
+        """Test file processing status tracking"""
+        mock_process.return_value = Mock(
+            status="processing",
+            progress=50,
+            file_id="test-id"
+        )
+        
+        response = client.get("/api/v1/upload/files/status/test-id")
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "processing"
+        assert data["progress"] == 50
+```
+
+### Additional Service Unit Tests
+```python
+# tests/test_services/test_file_service.py
+import pytest
+from unittest.mock import patch, Mock, MagicMock
+from app.services.file_service import FileService
+
+class TestFileService:
+    @pytest.fixture
+    def file_service(self):
+        return FileService()
+    
+    def test_validate_file_type_success(self, file_service):
+        """Test successful file type validation"""
+        mock_file = Mock()
+        mock_file.content_type = "text/csv"
+        mock_file.filename = "test.csv"
+        
+        result = file_service.validate_file_type(mock_file)
+        
+        assert result is True
+    
+    def test_validate_file_type_invalid(self, file_service):
+        """Test invalid file type validation"""
+        mock_file = Mock()
+        mock_file.content_type = "application/pdf"
+        mock_file.filename = "test.pdf"
+        
+        with pytest.raises(ValueError, match="Unsupported file type"):
+            file_service.validate_file_type(mock_file)
+    
+    def test_validate_file_size_success(self, file_service):
+        """Test successful file size validation"""
+        mock_file = Mock()
+        mock_file.size = 1024 * 1024  # 1MB
+        
+        result = file_service.validate_file_size(mock_file)
+        
+        assert result is True
+    
+    def test_validate_file_size_too_large(self, file_service):
+        """Test file size too large validation"""
+        mock_file = Mock()
+        mock_file.size = 100 * 1024 * 1024  # 100MB
+        
+        with pytest.raises(ValueError, match="File size exceeds limit"):
+            file_service.validate_file_size(mock_file)
+
+# tests/test_services/test_data_service.py
+import pytest
+import pandas as pd
+from unittest.mock import Mock
+from app.services.data_service import DataService
+
+class TestDataService:
+    @pytest.fixture
+    def data_service(self):
+        return DataService()
+    
+    def test_analyze_csv_data(self, data_service):
+        """Test CSV data analysis"""
+        csv_content = "name,age,city\nJohn,25,NYC\nJane,30,LA"
+        
+        result = data_service.analyze_csv(csv_content)
+        
+        assert result["rows"] == 2
+        assert result["columns"] == 3
+        assert "name" in result["column_info"]
+        assert result["column_info"]["age"]["type"] == "numeric"
+    
+    def test_detect_data_types(self, data_service):
+        """Test data type detection"""
+        df = pd.DataFrame({
+            "name": ["John", "Jane"],
+            "age": [25, 30],
+            "date": ["2023-01-01", "2023-01-02"],
+            "score": [95.5, 87.2]
+        })
+        
+        result = data_service.detect_data_types(df)
+        
+        assert result["name"] == "text"
+        assert result["age"] == "integer"
+        assert result["score"] == "float"
+    
+    def test_calculate_statistics(self, data_service):
+        """Test statistical calculations"""
+        df = pd.DataFrame({
+            "revenue": [100, 200, 300, 150, 250],
+            "cost": [50, 80, 120, 75, 100]
+        })
+        
+        result = data_service.calculate_statistics(df)
+        
+        assert "revenue" in result
+        assert result["revenue"]["mean"] == 200.0
+        assert result["revenue"]["median"] == 200.0
+        assert len(result["revenue"]) >= 5  # mean, median, std, min, max
+    
+    SessionLocal = sessionmaker(bind=engine)
+    session = SessionLocal()
+    
+    yield session
+    
+    session.close()
+
+class TestFileRecord:
+    def test_create_file_record(self, db_session):
+        """Test creating a file record"""
+        file_record = FileRecord(
+            filename="test.csv",
+            file_path="/uploads/test.csv",
+            file_size=1024,
+            mime_type="text/csv",
+            status="uploaded"
+        )
+        
+        db_session.add(file_record)
+        db_session.commit()
+        
+        # Verify record was created
+        retrieved = db_session.query(FileRecord).filter_by(
+            filename="test.csv"
+        ).first()
+        
+        assert retrieved is not None
+        assert retrieved.filename == "test.csv"
+        assert retrieved.file_size == 1024
+    
+    def test_file_record_relationships(self, db_session):
+        """Test relationships between models"""
+        file_record = FileRecord(filename="test.csv")
+        db_session.add(file_record)
+        db_session.flush()  # Get the ID
+        
+        analysis = AnalysisRecord(
+            file_id=file_record.file_id,
+            analysis_type="statistical",
+            status="completed",
+            results={"mean": 100}
+        )
+        
+        db_session.add(analysis)
+        db_session.commit()
+        
+        # Test relationship
+        assert len(file_record.analyses) == 1
+        assert file_record.analyses[0].analysis_type == "statistical"
+```
+
+## AGENT UNIT TESTING
+
+### Individual Agent Unit Tests
+```python
+# tests/test_agents/test_planning_agent.py
+import pytest
+from unittest.mock import Mock, patch
+from app.agents.planning_agent import PlanningAgent
+
+class TestPlanningAgent:
+    @pytest.fixture
+    def planning_agent(self):
+        return PlanningAgent()
+    
+    def test_route_to_insight_for_analysis_query(self, planning_agent):
+        """Test that analysis queries route to insight agent"""
+        query = "What are the trends in this data?"
+        context = {"file_type": "csv", "columns": ["date", "revenue"]}
+        
+        with patch.object(planning_agent, '_analyze_query') as mock_analyze:
+            mock_analyze.return_value = {"intent": "analysis", "confidence": 0.9}
+            
+            result = planning_agent.process(query, context)
+            
+            assert result["next_agent"] == "insight_agent"
+            assert result["reasoning"] is not None
+            mock_analyze.assert_called_once_with(query, context)
+    
+    def test_route_to_viz_for_chart_query(self, planning_agent):
+        """Test that visualization queries route to viz agent"""
+        query = "Show me a chart of sales over time"
+        context = {"file_type": "csv", "columns": ["date", "sales"]}
+        
+        with patch.object(planning_agent, '_analyze_query') as mock_analyze:
+            mock_analyze.return_value = {"intent": "visualization", "confidence": 0.8}
+            
+            result = planning_agent.process(query, context)
+            
+            assert result["next_agent"] == "viz_agent"
+            assert result["chart_suggestion"] is not None
+    
+    def test_handles_ambiguous_queries(self, planning_agent):
+        """Test handling of ambiguous queries"""
+        query = "Tell me about the data"
+        context = {"file_type": "csv", "columns": ["col1", "col2"]}
+        
+        with patch.object(planning_agent, '_analyze_query') as mock_analyze:
+            mock_analyze.return_value = {"intent": "unclear", "confidence": 0.3}
+            
+            result = planning_agent.process(query, context)
+            
+            assert result["next_agent"] in ["insight_agent", "viz_agent"]
+            assert result["confidence"] < 0.5
+
+# tests/test_agents/test_insight_agent.py
+import pytest
+from unittest.mock import Mock, patch
+from app.agents.insight_agent import InsightAgent
+
+class TestInsightAgent:
+    @pytest.fixture
+    def insight_agent(self):
+        return InsightAgent()
+    
+    def test_generate_insights_from_data(self, insight_agent):
+        """Test insight generation from data analysis"""
+        data_context = {
+            "file_id": "test-123",
+            "summary_stats": {
+                "revenue": {"mean": 1500, "median": 1200, "std": 500},
+                "sales_count": {"total": 1000, "avg_monthly": 83}
+            }
+        }
+        query = "What patterns do you see in the sales data?"
+        
+        with patch.object(insight_agent, '_analyze_patterns') as mock_analyze:
+            mock_analyze.return_value = [
+                {"pattern": "seasonal_trend", "confidence": 0.85},
+                {"pattern": "growth_trajectory", "confidence": 0.92}
+            ]
+            
+            result = insight_agent.process(query, data_context)
+            
+            assert "insights" in result
+            assert len(result["insights"]) >= 2
+            assert result["confidence"] > 0.8
+    
+    def test_handles_insufficient_data(self, insight_agent):
+        """Test handling of insufficient data scenarios"""
+        data_context = {
+            "file_id": "test-small",
+            "summary_stats": {"revenue": {"count": 2}}
+        }
+        query = "Analyze the trends"
+        
+        result = insight_agent.process(query, data_context)
+        
+        assert result["status"] == "insufficient_data"
+        assert "recommendation" in result
+
+# tests/test_agents/test_critique_agent.py
+import pytest
+from unittest.mock import Mock
+from app.agents.critique_agent import CritiqueAgent
+
+class TestCritiqueAgent:
+    @pytest.fixture
+    def critique_agent(self):
+        return CritiqueAgent()
+    
+    def test_improve_basic_response(self, critique_agent):
+        """Test improvement of basic responses"""
+        original_response = {
+            "insights": ["Sales are good"],
+            "confidence": 0.6,
+            "reasoning": "Basic analysis"
+        }
+        
+        result = critique_agent.process(original_response)
+        
+        assert result["improved_response"]["confidence"] > original_response["confidence"]
+        assert len(result["improvements"]) > 0
+        assert "specificity" in str(result["improvements"])
+    
+    def test_validate_high_quality_response(self, critique_agent):
+        """Test validation of already high-quality responses"""
+        high_quality_response = {
+            "insights": [
+                "Revenue shows 15% quarter-over-quarter growth",
+                "Peak sales occur in Q4 with 35% increase",
+                "Customer acquisition cost decreased by 12%"
+            ],
+            "confidence": 0.95,
+            "supporting_data": {"metrics": ["growth_rate", "seasonality"]}
+        }
+        
+        result = critique_agent.process(high_quality_response)
+        
+        assert result["status"] == "approved"
+        assert len(result["improvements"]) == 0
+    cy.get('[data-testid="file-upload-zone"]').should('be.visible');
+  });
+});
+```
+
+### Performance Testing
+```typescript
+// cypress/e2e/performance.cy.ts
+describe('Performance Tests', () => {
+  it('loads home page within performance budget', () => {
+    cy.visit('/', {
+      onBeforeLoad: (win) => {
+        win.performance.mark('start');
+      },
+      onLoad: (win) => {
+        win.performance.mark('end');
+        win.performance.measure('pageLoad', 'start', 'end');
+      }
+    });
+    
+    cy.window().then((win) => {
+      const measure = win.performance.getEntriesByName('pageLoad')[0];
+      expect(measure.duration).to.be.lessThan(2000); // 2 seconds
+    });
+  });
+
+  it('handles large file uploads efficiently', () => {
+    const startTime = Date.now();
+    
+    // Upload large file (simulated)
+    cy.fixture('large_dataset.csv').then(content => {
+      cy.get('[data-testid="file-input"]').selectFile({
+        contents: content,
+        fileName: 'large_dataset.csv',
+        mimeType: 'text/csv',
+      });
+    });
+    
+    cy.get('[data-testid="upload-progress"]').should('be.visible');
+    
+    cy.get('[data-testid="upload-success"]', { timeout: 60000 })
+      .should('be.visible')
+      .then(() => {
+        const uploadTime = Date.now() - startTime;
+        expect(uploadTime).to.be.lessThan(30000); // 30 seconds max
+      });
+  });
+});
+```
+
+## UTILITY FUNCTION TESTING
+
+### File Processing Utilities
+```python
+# tests/test_utils/test_file_utils.py
+import pytest
+import tempfile
+import os
+from app.utils.file_utils import FileProcessor, FileValidator
+
+class TestFileProcessor:
+    @pytest.fixture
+    def file_processor(self):
+        return FileProcessor()
+    
+    def test_process_csv_file(self, file_processor):
+        """Test CSV file processing"""
+        csv_content = "name,age,city\nJohn,25,NYC\nJane,30,LA\nBob,35,SF"
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+            f.write(csv_content)
+            temp_path = f.name
+        
+        try:
+            result = file_processor.process_csv(temp_path)
+            
+            assert result["rows"] == 3
+            assert result["columns"] == 3
+            assert "name" in result["column_names"]
+            assert result["sample_data"] is not None
+        finally:
+            os.unlink(temp_path)
+    
+    def test_detect_delimiter(self, file_processor):
+        """Test CSV delimiter detection"""
+        csv_semicolon = "name;age;city\nJohn;25;NYC"
+        csv_comma = "name,age,city\nJohn,25,NYC"
+        
+        assert file_processor.detect_delimiter(csv_semicolon) == ";"
+        assert file_processor.detect_delimiter(csv_comma) == ","
+    
+    def test_extract_file_metadata(self, file_processor):
+        """Test file metadata extraction"""
+        with tempfile.NamedTemporaryFile(suffix='.csv') as f:
+            f.write(b"test,data\n1,2")
+            f.flush()
+            
+            metadata = file_processor.extract_metadata(f.name)
+            
+            assert metadata["size"] > 0
+            assert metadata["extension"] == ".csv"
+            assert metadata["mime_type"] == "text/csv"
+
+class TestFileValidator:
+    @pytest.fixture
+    def validator(self):
+        return FileValidator()
+    
+    def test_validate_csv_structure(self, validator):
+        """Test CSV structure validation"""
+        valid_csv = "name,age\nJohn,25\nJane,30"
+        invalid_csv = "name,age\nJohn\nJane,30,extra"
+        
+        assert validator.validate_csv_structure(valid_csv) is True
+        assert validator.validate_csv_structure(invalid_csv) is False
+    
+    def test_check_file_encoding(self, validator):
+        """Test file encoding detection"""
+        utf8_content = "name,age\nJøhn,25"
+        
+        encoding = validator.detect_encoding(utf8_content.encode('utf-8'))
+        assert encoding in ['utf-8', 'ascii']
+
+# tests/test_utils/test_data_utils.py
+import pytest
+import pandas as pd
+import numpy as np
+from app.utils.data_utils import DataAnalyzer, DataCleaner
+
+class TestDataAnalyzer:
+    @pytest.fixture
+    def analyzer(self):
+        return DataAnalyzer()
+    
+    def test_calculate_basic_statistics(self, analyzer):
+        """Test basic statistical calculations"""
+        data = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        
+        stats = analyzer.calculate_statistics(data)
+        
+        assert stats["mean"] == 5.5
+        assert stats["median"] == 5.5
+        assert stats["std"] == pytest.approx(3.02, rel=1e-2)
+        assert stats["min"] == 1
+        assert stats["max"] == 10
+    
+    def test_detect_outliers(self, analyzer):
+        """Test outlier detection"""
+        # Normal data with outliers
+        data = pd.Series([1, 2, 3, 4, 5, 100, 6, 7, 8, 9])
+        
+        outliers = analyzer.detect_outliers(data)
+        
+        assert 100 in outliers
+        assert len(outliers) >= 1
+    
+    def test_analyze_correlation(self, analyzer):
+        """Test correlation analysis"""
+        df = pd.DataFrame({
+            'x': [1, 2, 3, 4, 5],
+            'y': [2, 4, 6, 8, 10],  # Perfect correlation
+            'z': [1, 3, 2, 5, 4]   # Random
+        })
+        
+        correlations = analyzer.analyze_correlations(df)
+        
+        assert correlations.loc['x', 'y'] == pytest.approx(1.0, rel=1e-2)
+        assert abs(correlations.loc['x', 'z']) < 1.0
+
+class TestDataCleaner:
+    @pytest.fixture
+    def cleaner(self):
+        return DataCleaner()
+    
+    def test_remove_duplicates(self, cleaner):
+        """Test duplicate removal"""
+        df = pd.DataFrame({
+            'name': ['John', 'Jane', 'John', 'Bob'],
+            'age': [25, 30, 25, 35]
+        })
+        
+        cleaned = cleaner.remove_duplicates(df)
+        
+        assert len(cleaned) == 3  # One duplicate removed
+        assert list(cleaned['name']) == ['John', 'Jane', 'Bob']
+    
+    def test_handle_missing_values(self, cleaner):
+        """Test missing value handling"""
+        df = pd.DataFrame({
+            'numeric': [1, 2, np.nan, 4, 5],
+            'text': ['a', 'b', None, 'd', 'e']
+        })
+        
+        filled = cleaner.handle_missing_values(df, strategy='mean')
+        
+        assert not filled['numeric'].isna().any()
+        assert filled['numeric'].iloc[2] == pytest.approx(3.0, rel=1e-2)  # Mean of 1,2,4,5
+import time
+import statistics
+from concurrent.futures import ThreadPoolExecutor
+
+from app.agents.insight import InsightAgent
+
+class TestAgentPerformance:
+    @pytest.fixture
+    def insight_agent(self):
+        return InsightAgent("insight", mock_llm)
+    
+    def test_single_execution_time(self, insight_agent):
+        """Test single agent execution time"""
+        query = "What are the trends in this data?"
+        context = {"data": sample_data}
+        
+        start_time = time.time()
+        result = insight_agent.run(query, context)
+        execution_time = time.time() - start_time
+        
+        assert execution_time < 30.0  # 30 seconds max
+        assert result is not None
+    
+    def test_concurrent_execution_performance(self, insight_agent):
+        """Test performance under concurrent load"""
+        queries = [
+            "Analyze the trends",
+            "Find patterns in data", 
+            "Identify outliers",
+            "Summarize key insights"
+        ]
+        
+        execution_times = []
+        
+        def execute_query(query):
+            start = time.time()
+            insight_agent.run(query, {"data": sample_data})
+            return time.time() - start
+        
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = [executor.submit(execute_query, q) for q in queries]
+            execution_times = [f.result() for f in futures]
+        
+        avg_time = statistics.mean(execution_times)
+        max_time = max(execution_times)
+        
+        assert avg_time < 45.0  # Average under 45 seconds
+        assert max_time < 60.0  # Max under 60 seconds
+    
+    def test_memory_usage(self, insight_agent):
+        """Test memory usage during execution"""
+        import psutil
+        import os
+        
+        process = psutil.Process(os.getpid())
+        initial_memory = process.memory_info().rss
+        
+        # Execute multiple operations
+        for i in range(10):
+            insight_agent.run(f"Query {i}", {"data": sample_data})
+        
+        final_memory = process.memory_info().rss
+        memory_increase = final_memory - initial_memory
+        
+        # Memory increase should be reasonable (less than 100MB)
+        assert memory_increase < 100 * 1024 * 1024
+```
+
+## TEST CONFIGURATION AND EXECUTION
+
+### Jest Configuration for Frontend
+```javascript
+// jest.config.js
+const nextJest = require('next/jest');
+
+const createJestConfig = nextJest({
+  dir: './',
+});
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/pages/_app.tsx',
+    '!src/pages/_document.tsx',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',
+  ],
+};
+
+module.exports = createJestConfig(customJestConfig);
+```
+
+### Pytest Configuration for Backend
+```ini
+# pytest.ini
+[tool:pytest]
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+addopts = 
+    --strict-markers
+    --strict-config
+    --verbose
+    --cov=app
+    --cov-report=term-missing
+    --cov-report=xml
+    --cov-fail-under=80
+markers =
+    unit: Unit tests
+    slow: Slow running tests
+    mock: Tests requiring mocking
+asyncio_mode = auto
+```
+
+### Test Execution Commands
+
+#### Frontend Testing
+```bash
+# Run all unit tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test file
+npm test -- GlassCard.test.tsx
+
+# Run tests matching pattern
+npm test -- --testNamePattern="upload"
+
+# Debug tests
+npm test -- --verbose --no-cache
+```
+
+#### Backend Testing
+```bash
+# Run all unit tests
+pytest
+
+# Run with coverage
+pytest --cov=app --cov-report=html
+
+# Run specific test file
+pytest tests/test_agents/test_planning_agent.py
+
+# Run tests matching pattern
+pytest -k "upload" -v
+
+# Run tests with markers
+pytest -m "unit" -v
+
+# Parallel execution
+pytest -n auto
+```
+
+### Mock Strategies
+
+#### Frontend Mocking
+```typescript
+// jest.setup.js
+import '@testing-library/jest-dom';
+
+// Mock Next.js router
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      route: '/',
+      pathname: '/',
+      query: {},
+      asPath: '/',
+      push: jest.fn(),
+      replace: jest.fn(),
+    };
+  },
+}));
+
+// Mock API calls
+global.fetch = jest.fn();
+
+// Mock file upload
+Object.defineProperty(window, 'FileReader', {
+  writable: true,
+  value: jest.fn().mockImplementation(() => ({
+    readAsDataURL: jest.fn(),
+    readAsText: jest.fn(),
+    result: 'mock-file-content',
+    onload: jest.fn(),
+    onerror: jest.fn(),
+  })),
+});
+```
+
+#### Backend Mocking
+```python
+# conftest.py
+import pytest
+from unittest.mock import Mock, AsyncMock
+from app.main import app
+from fastapi.testclient import TestClient
+
+@pytest.fixture
+def client():
+    """Create test client"""
+    return TestClient(app)
+
+@pytest.fixture
+def mock_llm():
+    """Mock LLM for agent testing"""
+    mock = Mock()
+    mock.generate = AsyncMock(return_value="Mock LLM response")
+    return mock
+
+@pytest.fixture
+def mock_vector_db():
+    """Mock vector database"""
+    mock = Mock()
+    mock.search = AsyncMock(return_value=[
+        {"content": "test content", "metadata": {"source": "test"}}
+    ])
+    return mock
+
+@pytest.fixture
+def sample_csv_data():
+    """Sample CSV data for testing"""
+    return "name,age,city\nJohn,25,NYC\nJane,30,LA\nBob,35,SF"
+```
+            response = client.post(
+                "/api/v1/agents/execute",
+                json={
+                    "agent_type": "test",
+                    "file_id": "test",
+                    "query": f"test query {i}"
+                }
+            )
+            responses.append(response.status_code)
+        
+        # Some requests should be rate limited
+        assert 429 in responses
+```
+
+## TEST AUTOMATION AND CI
+
+### Jest Configuration
+```javascript
+// jest.config.js
+module.exports = {
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',
+  ],
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+  },
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx'],
+};
+```
+
+### Pytest Configuration
+```ini
+# pytest.ini
+[tool:pytest]
+testpaths = tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+addopts = 
+    --strict-markers
+    --strict-config
+    --verbose
+    --cov=app
+    --cov-report=term-missing
+    --cov-report=xml
+    --cov-fail-under=80
+markers =
+    unit: Unit tests
+    integration: Integration tests
+    slow: Slow running tests
+    security: Security tests
+```
+
+### GitHub Actions Test Workflow
+```yaml
+# .github/workflows/test.yml
+name: Test Suite
+
+on: [push, pull_request]
+
+jobs:
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+      
+      - name: Run unit tests
+        working-directory: ./frontend
+        run: npm run test:ci
+      
+      - name: Run E2E tests
+        working-directory: ./frontend
+        run: npm run test:e2e:ci
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./frontend/coverage/lcov.info
+
+  backend-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+## CONTINUOUS TESTING STRATEGY
+
+### Test-Driven Development (TDD) Workflow
+1. **Write Test First**: Create failing unit test for new feature
+2. **Implement Minimum**: Write just enough code to pass the test
+3. **Refactor**: Improve code while keeping tests green
+4. **Repeat**: Continue cycle for each new requirement
+
+### Coverage Requirements
+- **Minimum Coverage**: 80% overall code coverage
+- **Critical Components**: 90%+ coverage for core business logic
+- **UI Components**: 85%+ coverage with user interaction testing
+- **API Endpoints**: 80%+ coverage with error scenario testing
+- **Utility Functions**: 90%+ coverage with edge case testing
+
+### Test Documentation Standards
+- **Descriptive Names**: Test names should explain expected behavior
+- **Arrange-Act-Assert**: Clear structure for test organization
+- **Single Responsibility**: Each test should verify one specific behavior
+- **Mock External Dependencies**: Isolate units under test
+- **Edge Cases**: Include boundary conditions and error scenarios
+
+### Quality Gates
+- All unit tests must pass before code merge
+- Coverage thresholds must be maintained
+- No critical lint errors allowed
+- Test execution time should remain under 30 seconds
+- New features require corresponding unit tests
+
+---
+
+## SUMMARY
+
+This comprehensive unit testing strategy ensures:
+
+### ✅ **High Code Quality**
+- 80%+ test coverage across all components
+- Isolated, fast-running tests
+- Comprehensive error handling validation
+- Business logic verification
+
+### ✅ **Developer Productivity**
+- Fast feedback cycles (sub-30 second test runs)
+- Clear test documentation and examples
+- Automated test execution in development
+- Easy-to-understand test failure messages
+
+### ✅ **Maintainable Codebase**
+- Well-structured test organization
+- Proper mocking strategies
+- Consistent testing patterns
+- Comprehensive edge case coverage
+
+### ✅ **Frontend Excellence**
+- React component behavior testing
+- User interaction simulation
+- Accessibility validation
+- Hook logic verification
+
+### ✅ **Backend Reliability**
+- API endpoint testing with mocked dependencies
+- Business logic validation
+- Data processing verification
+- Agent workflow testing
+
+This unit testing approach provides the foundation for building a reliable, maintainable, and high-quality Agentic Copilot application while supporting rapid development cycles and confident deployments.

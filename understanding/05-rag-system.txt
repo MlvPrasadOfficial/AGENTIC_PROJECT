@@ -1,0 +1,658 @@
+# RAG SYSTEM UNDERSTANDING
+# File: 05-rag-system.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Complete understanding of Retrieval-Augmented Generation implementation
+
+## RAG ARCHITECTURE OVERVIEW
+
+### What is RAG?
+Retrieval-Augmented Generation (RAG) is a technique that enhances language model responses by retrieving relevant information from a knowledge base before generating answers. In our system, RAG provides context-aware responses based on uploaded data.
+
+### System Components
+1. **Document Processing**: Chunking and preprocessing
+2. **Embedding Generation**: Converting text to vectors
+3. **Vector Storage**: Pinecone database for fast retrieval
+4. **Retrieval Engine**: Semantic and hybrid search
+5. **Context Assembly**: Preparing retrieved content for LLM
+6. **Response Generation**: LLM with enriched context
+
+## DOCUMENT PROCESSING PIPELINE
+
+### File Ingestion
+```python
+class DocumentProcessor:
+    def __init__(self):
+        self.supported_formats = ['csv', 'xlsx', 'json', 'txt', 'pdf']
+        self.chunk_size = 1000
+        self.chunk_overlap = 200
+    
+    def process_file(self, file_path: str, file_type: str) -> List[Document]:
+        if file_type == 'csv':
+            return self.process_csv(file_path)
+        elif file_type == 'xlsx':
+            return self.process_excel(file_path)
+        elif file_type == 'json':
+            return self.process_json(file_path)
+        elif file_type == 'txt':
+            return self.process_text(file_path)
+        elif file_type == 'pdf':
+            return self.process_pdf(file_path)
+```
+
+### CSV Processing Strategy
+```python
+def process_csv(self, file_path: str) -> List[Document]:
+    df = pd.read_csv(file_path)
+    documents = []
+    
+    # Create metadata document
+    metadata_doc = Document(
+        page_content=f"Dataset overview: {len(df)} rows, {len(df.columns)} columns",
+        metadata={
+            "type": "metadata",
+            "columns": list(df.columns),
+            "shape": df.shape,
+            "dtypes": df.dtypes.to_dict()
+        }
+    )
+    documents.append(metadata_doc)
+    
+    # Column-wise documents
+    for column in df.columns:
+        col_stats = {
+            "name": column,
+            "type": str(df[column].dtype),
+            "null_count": df[column].isnull().sum(),
+            "unique_count": df[column].nunique()
+        }
+        
+        if df[column].dtype in ['int64', 'float64']:
+            col_stats.update({
+                "mean": df[column].mean(),
+                "median": df[column].median(),
+                "std": df[column].std(),
+                "min": df[column].min(),
+                "max": df[column].max()
+            })
+        
+        col_doc = Document(
+            page_content=f"Column {column}: {col_stats}",
+            metadata={"type": "column", "column_name": column}
+        )
+        documents.append(col_doc)
+    
+    # Row-wise chunks for large datasets
+    if len(df) > 100:
+        chunk_size = 50
+        for i in range(0, len(df), chunk_size):
+            chunk_df = df.iloc[i:i+chunk_size]
+            chunk_doc = Document(
+                page_content=chunk_df.to_string(),
+                metadata={
+                    "type": "data_chunk",
+                    "start_row": i,
+                    "end_row": min(i+chunk_size, len(df))
+                }
+            )
+            documents.append(chunk_doc)
+    
+    return documents
+```
+
+### Text Chunking Strategy
+```python
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+class SmartTextSplitter:
+    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200):
+        self.splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separators=["\n\n", "\n", ".", "!", "?", ",", " ", ""]
+        )
+    
+    def split_text(self, text: str, metadata: dict) -> List[Document]:
+        chunks = self.splitter.split_text(text)
+        documents = []
+        
+        for i, chunk in enumerate(chunks):
+            doc = Document(
+                page_content=chunk,
+                metadata={
+                    **metadata,
+                    "chunk_index": i,
+                    "chunk_count": len(chunks)
+                }
+            )
+            documents.append(doc)
+        
+        return documents
+```
+
+## EMBEDDING GENERATION
+
+### Embedding Strategy
+```python
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
+
+class EmbeddingService:
+    def __init__(self, embedding_type: str = "openai"):
+        if embedding_type == "openai":
+            self.embeddings = OpenAIEmbeddings(
+                model="text-embedding-ada-002"
+            )
+        elif embedding_type == "huggingface":
+            self.embeddings = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-MiniLM-L6-v2"
+            )
+        elif embedding_type == "local":
+            self.embeddings = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-mpnet-base-v2"
+            )
+    
+    def embed_documents(self, documents: List[Document]) -> List[List[float]]:
+        texts = [doc.page_content for doc in documents]
+        return self.embeddings.embed_documents(texts)
+    
+    def embed_query(self, query: str) -> List[float]:
+        return self.embeddings.embed_query(query)
+```
+
+### Metadata Enhancement
+```python
+def enhance_metadata(self, document: Document, file_id: str) -> Document:
+    enhanced_metadata = {
+        **document.metadata,
+        "file_id": file_id,
+        "timestamp": datetime.now().isoformat(),
+        "content_length": len(document.page_content),
+        "language": self.detect_language(document.page_content),
+        "content_hash": hashlib.md5(
+            document.page_content.encode()
+        ).hexdigest()
+    }
+    
+    return Document(
+        page_content=document.page_content,
+        metadata=enhanced_metadata
+    )
+```
+
+## PINECONE VECTOR STORE
+
+### Pinecone Configuration
+```python
+import pinecone
+from langchain.vectorstores import Pinecone
+
+class PineconeService:
+    def __init__(self, api_key: str, environment: str, index_name: str):
+        pinecone.init(
+            api_key=api_key,
+            environment=environment
+        )
+        self.index_name = index_name
+        self.index = pinecone.Index(index_name)
+        
+    def create_index_if_not_exists(self, dimension: int = 1536):
+        if self.index_name not in pinecone.list_indexes():
+            pinecone.create_index(
+                name=self.index_name,
+                dimension=dimension,
+                metric="cosine",
+                pods=1,
+                replicas=1,
+                pod_type="p1.x1"
+            )
+```
+
+### Vector Operations
+```python
+class VectorStore:
+    def __init__(self, pinecone_service: PineconeService, embeddings):
+        self.pinecone = pinecone_service
+        self.embeddings = embeddings
+        self.vectorstore = Pinecone(
+            index=pinecone_service.index,
+            embedding_function=embeddings.embed_query,
+            text_key="text"
+        )
+    
+    def add_documents(self, documents: List[Document], file_id: str):
+        # Enhance documents with file_id
+        enhanced_docs = [
+            Document(
+                page_content=doc.page_content,
+                metadata={**doc.metadata, "file_id": file_id}
+            )
+            for doc in documents
+        ]
+        
+        # Add to vector store
+        self.vectorstore.add_documents(enhanced_docs)
+    
+    def delete_documents(self, file_id: str):
+        # Delete all documents for a specific file
+        self.pinecone.index.delete(
+            filter={"file_id": {"$eq": file_id}}
+        )
+    
+    def similarity_search(
+        self, 
+        query: str, 
+        file_id: str = None, 
+        k: int = 5
+    ) -> List[Document]:
+        filter_dict = {"file_id": {"$eq": file_id}} if file_id else None
+        
+        return self.vectorstore.similarity_search(
+            query=query,
+            k=k,
+            filter=filter_dict
+        )
+```
+
+## RETRIEVAL STRATEGIES
+
+### Semantic Search
+```python
+class SemanticRetriever:
+    def __init__(self, vectorstore: VectorStore):
+        self.vectorstore = vectorstore
+    
+    def retrieve(self, query: str, file_id: str, k: int = 5) -> List[Document]:
+        return self.vectorstore.similarity_search(
+            query=query,
+            file_id=file_id,
+            k=k
+        )
+```
+
+### Hybrid Search (Semantic + Keyword)
+```python
+from rank_bm25 import BM25Okapi
+import numpy as np
+
+class HybridRetriever:
+    def __init__(self, vectorstore: VectorStore, documents: List[Document]):
+        self.vectorstore = vectorstore
+        self.documents = documents
+        self.bm25 = self._build_bm25_index()
+    
+    def _build_bm25_index(self):
+        tokenized_docs = [
+            doc.page_content.lower().split() 
+            for doc in self.documents
+        ]
+        return BM25Okapi(tokenized_docs)
+    
+    def retrieve(
+        self, 
+        query: str, 
+        file_id: str, 
+        k: int = 10,
+        alpha: float = 0.7  # Weight for semantic vs keyword
+    ) -> List[Document]:
+        # Semantic search
+        semantic_docs = self.vectorstore.similarity_search(
+            query=query,
+            file_id=file_id,
+            k=k*2  # Get more for reranking
+        )
+        
+        # Keyword search
+        query_tokens = query.lower().split()
+        keyword_scores = self.bm25.get_scores(query_tokens)
+        
+        # Combine scores
+        combined_results = []
+        for i, doc in enumerate(semantic_docs):
+            semantic_score = 1.0 / (i + 1)  # Position-based scoring
+            keyword_score = keyword_scores[i] if i < len(keyword_scores) else 0
+            
+            combined_score = alpha * semantic_score + (1 - alpha) * keyword_score
+            combined_results.append((doc, combined_score))
+        
+        # Sort by combined score and return top k
+        combined_results.sort(key=lambda x: x[1], reverse=True)
+        return [doc for doc, score in combined_results[:k]]
+```
+
+### Context-Aware Retrieval
+```python
+class ContextAwareRetriever:
+    def __init__(self, vectorstore: VectorStore):
+        self.vectorstore = vectorstore
+    
+    def retrieve(
+        self, 
+        query: str, 
+        file_id: str, 
+        context_type: str = "general",
+        k: int = 5
+    ) -> List[Document]:
+        # Adjust retrieval based on context type
+        if context_type == "statistical":
+            # Prioritize metadata and statistical content
+            filter_dict = {
+                "file_id": {"$eq": file_id},
+                "type": {"$in": ["metadata", "column"]}
+            }
+        elif context_type == "data_sample":
+            # Prioritize actual data chunks
+            filter_dict = {
+                "file_id": {"$eq": file_id},
+                "type": {"$eq": "data_chunk"}
+            }
+        else:
+            # General retrieval
+            filter_dict = {"file_id": {"$eq": file_id}}
+        
+        return self.vectorstore.vectorstore.similarity_search(
+            query=query,
+            k=k,
+            filter=filter_dict
+        )
+```
+
+## CONTEXT ASSEMBLY
+
+### Context Preparation
+```python
+class ContextAssembler:
+    def __init__(self, max_context_length: int = 4000):
+        self.max_context_length = max_context_length
+    
+    def assemble_context(
+        self, 
+        query: str,
+        retrieved_docs: List[Document],
+        data_profile: dict = None
+    ) -> str:
+        context_parts = []
+        current_length = 0
+        
+        # Add data profile if available
+        if data_profile:
+            profile_text = self._format_data_profile(data_profile)
+            if len(profile_text) < self.max_context_length // 2:
+                context_parts.append(profile_text)
+                current_length += len(profile_text)
+        
+        # Add retrieved documents
+        for doc in retrieved_docs:
+            doc_text = f"[{doc.metadata.get('type', 'content')}] {doc.page_content}"
+            if current_length + len(doc_text) < self.max_context_length:
+                context_parts.append(doc_text)
+                current_length += len(doc_text)
+            else:
+                # Truncate last document to fit
+                remaining_space = self.max_context_length - current_length
+                if remaining_space > 100:  # Only add if meaningful space left
+                    context_parts.append(doc_text[:remaining_space] + "...")
+                break
+        
+        return "\n\n".join(context_parts)
+    
+    def _format_data_profile(self, profile: dict) -> str:
+        return f"""
+Data Profile:
+- Rows: {profile.get('total_rows', 'Unknown')}
+- Columns: {profile.get('total_columns', 'Unknown')}
+- Data Quality Score: {profile.get('quality_score', 'Unknown')}
+- Column Types: {profile.get('column_types', {})}
+"""
+```
+
+### Context Ranking and Filtering
+```python
+from sentence_transformers import CrossEncoder
+
+class ContextRanker:
+    def __init__(self):
+        self.cross_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-2-v2')
+    
+    def rerank_documents(
+        self, 
+        query: str, 
+        documents: List[Document], 
+        top_k: int = 5
+    ) -> List[Document]:
+        # Create query-document pairs
+        pairs = [(query, doc.page_content) for doc in documents]
+        
+        # Get cross-encoder scores
+        scores = self.cross_encoder.predict(pairs)
+        
+        # Sort by score and return top k
+        scored_docs = list(zip(documents, scores))
+        scored_docs.sort(key=lambda x: x[1], reverse=True)
+        
+        return [doc for doc, score in scored_docs[:top_k]]
+```
+
+## QUERY ENHANCEMENT
+
+### Query Expansion
+```python
+class QueryExpander:
+    def __init__(self, llm):
+        self.llm = llm
+    
+    def expand_query(self, original_query: str, data_context: str) -> str:
+        expansion_prompt = f"""
+Given the original query: "{original_query}"
+And this data context: {data_context}
+
+Generate 3 related queries that might help find relevant information:
+1. A more specific version of the query
+2. A broader version of the query  
+3. A technical/statistical version of the query
+
+Return only the queries, one per line.
+"""
+        
+        expanded_queries = self.llm.predict(expansion_prompt)
+        return [q.strip() for q in expanded_queries.split('\n') if q.strip()]
+```
+
+### Query Classification
+```python
+class QueryClassifier:
+    def __init__(self, llm):
+        self.llm = llm
+    
+    def classify_query(self, query: str) -> dict:
+        classification_prompt = f"""
+Classify this query: "{query}"
+
+Determine:
+1. Intent (insight, visualization, summary, comparison, trend_analysis)
+2. Data focus (columns, relationships, patterns, statistics)
+3. Complexity (simple, medium, complex)
+4. Output type (text, chart, table, summary)
+
+Return as JSON format.
+"""
+        
+        result = self.llm.predict(classification_prompt)
+        try:
+            return json.loads(result)
+        except:
+            return {"intent": "general", "complexity": "medium"}
+```
+
+## RAG PIPELINE INTEGRATION
+
+### Complete RAG Workflow
+```python
+class RAGPipeline:
+    def __init__(
+        self, 
+        vectorstore: VectorStore,
+        embeddings,
+        llm,
+        retriever_type: str = "hybrid"
+    ):
+        self.vectorstore = vectorstore
+        self.embeddings = embeddings
+        self.llm = llm
+        
+        # Initialize retrievers
+        if retriever_type == "semantic":
+            self.retriever = SemanticRetriever(vectorstore)
+        elif retriever_type == "hybrid":
+            self.retriever = HybridRetriever(vectorstore, [])
+        else:
+            self.retriever = ContextAwareRetriever(vectorstore)
+        
+        self.context_assembler = ContextAssembler()
+        self.query_classifier = QueryClassifier(llm)
+        self.context_ranker = ContextRanker()
+    
+    def process_query(
+        self, 
+        query: str, 
+        file_id: str, 
+        data_profile: dict = None
+    ) -> dict:
+        # Classify query
+        query_info = self.query_classifier.classify_query(query)
+        
+        # Retrieve relevant documents
+        retrieved_docs = self.retriever.retrieve(
+            query=query,
+            file_id=file_id,
+            k=10
+        )
+        
+        # Rerank documents
+        reranked_docs = self.context_ranker.rerank_documents(
+            query=query,
+            documents=retrieved_docs,
+            top_k=5
+        )
+        
+        # Assemble context
+        context = self.context_assembler.assemble_context(
+            query=query,
+            retrieved_docs=reranked_docs,
+            data_profile=data_profile
+        )
+        
+        return {
+            "query": query,
+            "context": context,
+            "retrieved_documents": [
+                {
+                    "content": doc.page_content,
+                    "metadata": doc.metadata
+                } for doc in reranked_docs
+            ],
+            "query_classification": query_info
+        }
+```
+
+## PERFORMANCE OPTIMIZATION
+
+### Caching Strategy
+```python
+import redis
+import pickle
+
+class RAGCache:
+    def __init__(self, redis_url: str = "redis://localhost:6379"):
+        self.redis_client = redis.from_url(redis_url)
+        self.cache_ttl = 3600  # 1 hour
+    
+    def get_cached_result(self, query: str, file_id: str) -> dict:
+        cache_key = f"rag:{file_id}:{hashlib.md5(query.encode()).hexdigest()}"
+        cached_data = self.redis_client.get(cache_key)
+        
+        if cached_data:
+            return pickle.loads(cached_data)
+        return None
+    
+    def cache_result(self, query: str, file_id: str, result: dict):
+        cache_key = f"rag:{file_id}:{hashlib.md5(query.encode()).hexdigest()}"
+        self.redis_client.setex(
+            cache_key, 
+            self.cache_ttl, 
+            pickle.dumps(result)
+        )
+```
+
+### Batch Processing
+```python
+class BatchProcessor:
+    def __init__(self, vectorstore: VectorStore, batch_size: int = 100):
+        self.vectorstore = vectorstore
+        self.batch_size = batch_size
+    
+    def batch_add_documents(self, documents: List[Document], file_id: str):
+        for i in range(0, len(documents), self.batch_size):
+            batch = documents[i:i + self.batch_size]
+            self.vectorstore.add_documents(batch, file_id)
+            time.sleep(0.1)  # Rate limiting
+```
+
+## MONITORING AND METRICS
+
+### RAG Metrics
+```python
+@dataclass
+class RAGMetrics:
+    query: str
+    file_id: str
+    retrieval_time: float
+    context_length: int
+    documents_retrieved: int
+    documents_used: int
+    cache_hit: bool
+    timestamp: datetime
+```
+
+### Performance Tracking
+```python
+class RAGMonitor:
+    def __init__(self):
+        self.metrics = []
+    
+    def track_query(
+        self, 
+        query: str, 
+        file_id: str, 
+        retrieval_time: float,
+        context_length: int,
+        documents_count: int
+    ):
+        metric = RAGMetrics(
+            query=query,
+            file_id=file_id,
+            retrieval_time=retrieval_time,
+            context_length=context_length,
+            documents_retrieved=documents_count,
+            documents_used=min(documents_count, 5),
+            cache_hit=False,
+            timestamp=datetime.now()
+        )
+        self.metrics.append(metric)
+    
+    def get_performance_summary(self) -> dict:
+        if not self.metrics:
+            return {}
+        
+        avg_retrieval_time = sum(m.retrieval_time for m in self.metrics) / len(self.metrics)
+        avg_context_length = sum(m.context_length for m in self.metrics) / len(self.metrics)
+        
+        return {
+            "total_queries": len(self.metrics),
+            "average_retrieval_time": avg_retrieval_time,
+            "average_context_length": avg_context_length,
+            "cache_hit_rate": sum(m.cache_hit for m in self.metrics) / len(self.metrics)
+        }
+```
+
+This RAG system provides intelligent, context-aware information retrieval that enhances the capabilities of our AI agents by providing them with relevant, structured information from uploaded data files.

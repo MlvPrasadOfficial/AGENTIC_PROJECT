@@ -1,0 +1,219 @@
+# REQUIREMENTS SPECIFICATION – Agentic Copilot
+
+# Comprehensive Functional and Non-Functional Requirements
+
+---
+
+## 📋 PROJECT OVERVIEW
+
+### Project Name
+
+Agentic Copilot
+
+### Project Description
+
+A modern, AI-powered data copilot that leverages agentic LLM workflows, RAG, and glassmorphism UI to deliver intelligent insights from uploaded data. Built on Next.js, FastAPI, Pinecone, LangChain/LangGraph, and fully deployable to Vercel + Render.
+
+### Project Scope
+
+**In Scope:**
+
+* Desktop web application (responsive, desktop-first)
+* File upload and processing
+* Agentic AI (multi-agent system for planning, insight, viz, critique, debate, report)
+* RAG (Retrieval-Augmented Generation) pipeline
+* Interactive D3.js data visualization
+* Real-time chat interface
+* Glassmorphism UI system (code-native)
+* Cloud deployment (Vercel, Render)
+
+**Out of Scope:**
+
+* Mobile native apps
+* Enterprise SSO/RBAC
+* Multi-tenant features
+* External enterprise integrations
+* Real-time collaboration
+
+---
+
+## 🎯 FUNCTIONAL REQUIREMENTS
+
+### FR-001: File Management System
+
+* Support multiple file types (CSV, JSON, Excel, TXT)
+* Drag-and-drop upload (UI)
+* File type/size validation (backend & UI)
+* Progress indicator and error handling
+* Preview sample rows after upload
+* Batch uploads supported
+* Max file size: 50MB
+* File delete & management
+* Virus scanning before processing
+* **Backend:** FastAPI multipart upload; files stored locally, metadata in DB
+
+### FR-002: Data Processing & Analysis
+
+* Auto data type detection
+* Statistical summary (mean, median, outliers, nulls)
+* Data quality & profiling
+* Correlation and column analysis
+* Data cleaning suggestions
+* Missing value and outlier detection
+* Export processed data (CSV, JSON)
+* **Backend:** Pandas/NumPy/SciPy for analysis, JSON output
+
+### FR-003: Agentic AI System
+
+* Planning agent (query/task breakdown)
+* DataProfile agent (profiling file)
+* Insight agent (pattern/text insight)
+* Viz agent (generates chart specs)
+* Critique agent (reviews answer)
+* Debate agent (multi-perspective compare, chooses best)
+* Report agent (PDF summary)
+* Orchestration via LangGraph
+* All agent state/outputs persisted
+* Real-time agent status & errors
+* Performance metrics for all agents
+* **LLM:** Ollama (Llama 3.1 8B, local)
+
+### FR-004: RAG (Retrieval-Augmented Generation)
+
+* Text/data chunking & vector embedding
+* Store vectors in Pinecone
+* Hybrid semantic + keyword search
+* Context retrieval for agent queries
+* Cross-encoder reranking of results
+* Result diversity enforcement
+* Real-time vector DB sync
+* Search explanations on demand
+* **Embeddings:**  per env
+* **Vector DB:** Pinecone 
+
+### FR-005: Chat & Conversation
+
+* Real-time chat UI
+* Chat history and message persistence
+* Typing/agent status indicators
+* Rich text & file attachments
+* Multiple conversation sessions
+* Message export (txt, JSON)
+* Conversation search/filter
+* WebSocket or SSE fallback
+* **Frontend:** Next.js + React
+* **Backend:** FastAPI (async, session support)
+
+### FR-006: Visualization
+
+* D3.js-driven chart builder (bar, line, scatter, pie)
+* Dynamic chart type selection (agent or user)
+* Interactive charts (zoom, pan, tooltip)
+* Chart export (PNG, SVG, PDF)
+* Real-time updates (if new data)
+* Glassmorphism-styled chart container
+* **Frontend:** D3.js/React; all SVG/Canvas code-native
+
+### FR-007: UI & UX
+
+* Glassmorphism design (all UI)
+* Responsive (desktop-first, touch-friendly)
+* Dark/light theme switch
+* Smooth transitions/animations (Framer Motion)
+* Error boundaries and user-friendly errors
+* Keyboard accessibility and ARIA
+* Loading/skeleton screens
+* **No** external assets/images
+* **Only** Copilot/code-native icons/SVG
+
+---
+
+## 🔧 NON-FUNCTIONAL REQUIREMENTS
+
+### NFR-001: Performance
+
+* Page load < 2 sec
+* API response < 500ms
+* File upload: 10MB/sec
+* AI response < 3 sec
+* Memory < 512MB (browser)
+* JS bundle < 2MB
+
+### NFR-002: Scalability
+
+* 100 concurrent users
+* 10GB file storage, 1M Pinecone vectors
+* API: 1k requests/hour, 100 QPS DB
+* 100 concurrent WebSockets
+
+### NFR-003: Security
+
+* File type/size validation
+* HTTPS enforced, CORS set
+* Input sanitization, SQL injection/XSS prevention
+* CSP, error message sanitization
+* Rate limiting per user/IP
+* Secure file upload handling
+* OWASP Top 10
+
+### NFR-004: Reliability
+
+* Uptime 99.5%
+* API error rate < 1%
+* Recovery < 5 min
+* Zero data loss
+* Daily backups
+
+### NFR-005: Usability & Accessibility
+
+* WCAG 2.1 AA, color contrast 4.5:1
+* Intuitive, <3 clicks to feature
+* Clear errors & guidance
+* Full keyboard/screen reader support
+* Help docs and onboarding
+
+### NFR-006: Maintainability
+
+* TypeScript strict mode, PEP8/Black Python
+* 80%+ code/test coverage
+* Modular architecture
+* OpenAPI docs (backend)
+* Storybook (frontend)
+* ESLint/Prettier, clear naming
+* README/contributing guidelines
+
+---
+
+## 🌐 TECHNICAL CONSTRAINTS
+
+* **Frontend:** Next.js 14+, TypeScript, Tailwind CSS, D3.js
+* **Backend:** FastAPI (Python 3.11+)
+* **Database:** Pinecone (vectors), local disk (files)
+* **LLM/Agents:** LangChain, LangGraph, Ollama
+* **Deployment:** Vercel (frontend), Render (backend)
+* **Dev:** Node.js 18+, Python 3.11+, Git, VS Code
+* **Browser:** Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+
+---
+
+## 📊 ACCEPTANCE CRITERIA & QUALITY GATES
+
+* All functional requirements implemented
+* 80%+ test coverage, all tests pass
+* Performance, a11y, security targets met
+* Docs/code reviewed
+* No critical bugs
+* GitHub issues mapped to requirements, tested
+* User/QA acceptance, “Definition of Done” checklist
+
+---
+
+## 🔄 CHANGE MANAGEMENT
+
+* Requirements/issues tracked in GitHub
+* PRs mapped to requirements
+* All changes reviewed, tested, and documented in release notes
+
+---
+
+*This requirements spec is MAANG-ready and code-native, supporting full Copilot/VS Code-driven implementation and deployment.*

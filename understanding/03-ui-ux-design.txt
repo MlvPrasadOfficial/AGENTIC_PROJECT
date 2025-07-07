@@ -1,0 +1,339 @@
+# UI/UX DESIGN SYSTEM UNDERSTANDING
+# File: 03-ui-ux-design.txt
+# Author: GitHub Copilot
+# Date: 2025-07-07
+# Purpose: Complete understanding of glassmorphism design system and UI components
+
+## DESIGN PHILOSOPHY
+
+### Core Principles
+1. **Glassmorphism**: Modern glass-like aesthetic with depth and transparency
+2. **Desktop-First**: Optimized for desktop data workflows
+3. **Dark Theme Priority**: Dark base with luminous glass accents
+4. **Data-Centric**: Layouts enhance data comprehension
+5. **Accessibility**: WCAG 2.1 AA compliance
+6. **Performance**: Lightweight CSS, minimal JavaScript
+
+### Visual Language
+- **Transparency**: Layered glass effects with blur
+- **Depth**: Subtle shadows and elevation
+- **Motion**: Smooth transitions and microinteractions
+- **Hierarchy**: Clear information architecture
+- **Consistency**: Unified component system
+
+## COLOR SYSTEM
+
+### Primary Palette
+```css
+:root {
+  --primary-blue: #3B82F6;
+  --primary-blue-light: #60A5FA;
+  --primary-blue-dark: #1D4ED8;
+  --accent-purple: #8B5CF6;
+  --accent-emerald: #10B981;
+  --accent-amber: #F59E0B;
+  --accent-red: #EF4444;
+}
+```
+
+### Glassmorphism Colors
+```css
+:root {
+  --glass-white: rgba(255,255,255,0.1);
+  --glass-white-hover: rgba(255,255,255,0.15);
+  --glass-dark: rgba(31,41,55,0.8);
+  --glass-border: rgba(255,255,255,0.2);
+  --glass-shadow: rgba(0,0,0,0.25);
+}
+```
+
+### Semantic Color Usage
+- **Primary Blue**: CTAs, links, active states
+- **Accent Purple**: Secondary actions, highlights
+- **Emerald**: Success states, positive feedback
+- **Amber**: Warning states, pending actions
+- **Red**: Error states, destructive actions
+
+## TYPOGRAPHY SYSTEM
+
+### Font Stack
+```css
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+```
+
+### Type Scale
+- **text-4xl**: 2.25rem, 700 weight (Page titles)
+- **text-2xl**: 1.5rem, 600 weight (Section headers)
+- **text-lg**: 1.125rem, 500 weight (Card titles)
+- **text-base**: 1rem, 400 weight (Body text)
+- **text-sm**: 0.875rem, 400 weight (Labels)
+- **text-xs**: 0.75rem, 400 weight (Meta info)
+
+## GLASSMORPHISM SPECIFICATIONS
+
+### Base Glass Card
+```css
+.glass-card {
+  background: rgba(255,255,255,0.10);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.glass-card:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+```
+
+### Glass Variants
+- **Subtle**: 5% opacity, 8px blur (Backgrounds)
+- **Default**: 10% opacity, 10px blur (Cards)
+- **Strong**: 20% opacity, 16px blur (Modals)
+- **Intense**: 25% opacity, 20px blur (Overlays)
+
+## COMPONENT LIBRARY
+
+### Buttons
+- **Primary**: Gradient background with glass effect
+- **Secondary**: Glass background with border
+- **Ghost**: Transparent with hover effects
+- **Icon**: Square glass with centered icon
+
+### Inputs
+- **Text Input**: Glass background with focus states
+- **File Upload**: Drag-and-drop zone with animations
+- **Select**: Dropdown with glass overlay
+- **Checkbox/Radio**: Custom glass styling
+
+### Cards
+- **Data Card**: Content container with padding
+- **Agent Card**: Collapsible with status indicators
+- **Metric Card**: Compact with large numbers
+- **Upload Card**: File preview with actions
+
+### Navigation
+- **Sidebar**: Glass panel with blur effect
+- **Breadcrumb**: Transparent navigation path
+- **Pagination**: Glass buttons with spacing
+- **Tab Bar**: Segmented glass controls
+
+## LAYOUT SYSTEM
+
+### Grid Structure
+```
+┌─────────────────────────────────────────┐
+│              Header (Glass)              │
+├──────────────────┬──────────────────────┤
+│   Left Column    │    Right Column      │
+│  (Upload + Chat) │  (Agent Pipeline)    │
+│                  │                      │
+├──────────────────┴──────────────────────┤
+│         Visualization Panel             │
+│            (Full Width)                 │
+└─────────────────────────────────────────┘
+```
+
+### Responsive Breakpoints
+- **Desktop**: 1024px+ (2-column layout)
+- **Tablet**: 768px-1023px (Stacked layout)
+- **Mobile**: <768px (Single column)
+
+## ANIMATION SYSTEM
+
+### Transition Timing
+```css
+--transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+--transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+--transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+```
+
+### Animation Types
+- **Fade In**: Opacity 0 → 1 with scale
+- **Slide Up**: Transform Y with opacity
+- **Glass Shimmer**: Loading state animation
+- **Pulse**: Attention-grabbing effect
+- **Bounce**: Success state animation
+
+### Microinteractions
+- **Hover Effects**: Subtle elevation and glow
+- **Click Feedback**: Scale down then up
+- **Loading States**: Skeleton shimmer
+- **Status Changes**: Color transitions
+- **Focus States**: Outline with glow
+
+## ACCESSIBILITY FEATURES
+
+### WCAG 2.1 AA Compliance
+- **Color Contrast**: 4.5:1 minimum ratio
+- **Focus Indicators**: Visible focus rings
+- **Keyboard Navigation**: Tab order and shortcuts
+- **Screen Reader**: ARIA labels and roles
+- **Motion Sensitivity**: Reduced motion support
+
+### Accessibility Implementation
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+### Interactive Elements
+- All focusable elements have visible focus states
+- Keyboard shortcuts for common actions
+- High contrast mode support
+- Screen reader friendly structure
+
+## ICON SYSTEM
+
+### Icon Library: Lucide React
+- **Consistent Style**: Outline icons with 2px stroke
+- **Size Variants**: 16px, 20px, 24px, 32px
+- **Semantic Usage**: Contextual icon selection
+- **Custom Icons**: SVG components for agents
+
+### Agent Icons
+- **File Upload**: Upload cloud icon
+- **Data Profile**: Database icon
+- **Planning**: Map pin icon
+- **Insight**: Lightbulb icon
+- **Visualization**: Bar chart icon
+- **Critique**: Shield check icon
+- **Debate**: Users icon
+- **Report**: File text icon
+
+## DATA VISUALIZATION
+
+### Chart Container
+```css
+.chart-container {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 24px;
+}
+```
+
+### Chart Color Palette
+- Primary: #3B82F6 (Blue)
+- Secondary: #8B5CF6 (Purple)
+- Success: #10B981 (Emerald)
+- Warning: #F59E0B (Amber)
+- Danger: #EF4444 (Red)
+- Info: #06B6D4 (Cyan)
+
+### Chart Types
+- **Bar Chart**: Categorical data comparison
+- **Line Chart**: Time series and trends
+- **Scatter Plot**: Correlation analysis
+- **Pie Chart**: Composition breakdown
+- **Area Chart**: Cumulative values
+
+## DESIGN TOKENS
+
+### Spacing Scale
+```css
+--space-1: 0.25rem;  /* 4px */
+--space-2: 0.5rem;   /* 8px */
+--space-4: 1rem;     /* 16px */
+--space-6: 1.5rem;   /* 24px */
+--space-8: 2rem;     /* 32px */
+--space-12: 3rem;    /* 48px */
+--space-16: 4rem;    /* 64px */
+```
+
+### Border Radius
+```css
+--radius-sm: 8px;
+--radius-md: 12px;
+--radius-lg: 16px;
+--radius-xl: 20px;
+--radius-full: 9999px;
+```
+
+### Shadows
+```css
+--shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+--shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+--shadow-lg: 0 8px 32px rgba(0,0,0,0.25);
+--shadow-xl: 0 20px 50px rgba(0,0,0,0.35);
+```
+
+## THEME SYSTEM
+
+### Dark Theme (Default)
+- Background: #030712 (Gray 950)
+- Surface: #111827 (Gray 900)
+- Text Primary: #F9FAFB (Gray 50)
+- Text Secondary: #9CA3AF (Gray 400)
+
+### Light Theme (Optional)
+- Background: #FFFFFF
+- Surface: #F9FAFB (Gray 50)
+- Text Primary: #111827 (Gray 900)
+- Text Secondary: #6B7280 (Gray 500)
+
+### Theme Implementation
+```typescript
+interface Theme {
+  colors: {
+    background: string;
+    surface: string;
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  glassmorphism: {
+    background: string;
+    border: string;
+    shadow: string;
+  };
+}
+```
+
+## COMPONENT SPECIFICATIONS
+
+### Agent Card Component
+- **Structure**: Header with icon and title, collapsible body
+- **States**: Idle, processing, completed, error
+- **Interactions**: Click to expand, hover for details
+- **Animations**: Smooth expand/collapse, status transitions
+
+### File Upload Component
+- **Drag Area**: Visual feedback for drag states
+- **Progress**: Animated progress bar with percentage
+- **Preview**: Table with first 5 rows
+- **Validation**: Real-time error display
+
+### Chat Component
+- **Message List**: Scrollable with glass bubbles
+- **Input**: Glass input with send button
+- **Typing**: Animated indicator for agent responses
+- **History**: Expandable conversation list
+
+## IMPLEMENTATION GUIDELINES
+
+### CSS Architecture
+- **Utility-First**: Tailwind CSS as base
+- **Component Layer**: Reusable glass components
+- **Theme Layer**: CSS custom properties
+- **Animation Layer**: Framer Motion integration
+
+### Performance Optimization
+- **CSS Purging**: Remove unused styles
+- **Critical CSS**: Above-the-fold styles inline
+- **Lazy Loading**: Non-critical components
+- **Image Optimization**: WebP format with fallbacks
+
+### Browser Support
+- **Modern Browsers**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- **Fallbacks**: Graceful degradation for older browsers
+- **Progressive Enhancement**: Core functionality without glass effects

@@ -2,7 +2,7 @@
 
 this tasks to be done in order 
 
-task - 1: follow all the rules mentioned in the rules.txt file
+task-1 : use ';' instead of '&&' in commands as it powershell
 
 
 last task : acknowledge status of each status after you have done in chat 

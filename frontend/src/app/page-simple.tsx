@@ -3,6 +3,16 @@
  * Author: GitHub Copilot
  * Date: 2025-07-07
  * Purpose: Simple test page to verify UnifiedLayout without Suspense wrappers
+ * 
+ * This component provides a simplified version of the home page for testing
+ * the unified layout structure without complex state management or dynamic loading.
+ * Used for debugging layout issues and verifying glassmorphism effects.
+ * 
+ * Layout Structure:
+ * - Header: Navigation with glassmorphism
+ * - Left Column (40%): Simple upload and chat test components
+ * - Right Column (60%): Agent workflow test
+ * - Dashboard: Full-width visualization test area
  */
 
 'use client';
@@ -10,6 +20,17 @@
 import { UnifiedLayout } from '@/components/layout/unified-layout';
 import { Header } from '@/components/navigation/header';
 
+/**
+ * SimpleHomePage Component
+ * 
+ * A streamlined version of the main home page used for:
+ * - Layout testing and debugging
+ * - Glassmorphism effect verification
+ * - Component isolation testing
+ * - Performance baseline comparison
+ * 
+ * @returns {JSX.Element} The simple home page layout
+ */
 export default function SimpleHomePage() {
   return (
     <UnifiedLayout

@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
@@ -61,7 +61,7 @@ export function VisualizationDashboard({
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   
   // Sample chart data for demonstration
-  const sampleCharts: ChartData[] = [
+  const sampleCharts: ChartData[] = useMemo(() => [
     {
       id: 'revenue-trend',
       title: 'Revenue Trends',
@@ -114,7 +114,7 @@ export function VisualizationDashboard({
       ],
       lastUpdated: new Date(),
     },
-  ];
+  ], []);
   
   // Load sample data
   useEffect(() => {
@@ -125,7 +125,7 @@ export function VisualizationDashboard({
       setHasData(true);
       setIsLoading(false);
     }, 1500);
-  }, []);
+  }, [sampleCharts]);
   
   // Auto-refresh effect
   useEffect(() => {

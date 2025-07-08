@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
 
 // Application state interface
 interface AppState {
@@ -173,13 +173,13 @@ export function AppProvider({ children }: AppProviderProps) {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   // Convenience action creators
-  const setTheme = (theme: 'dark' | 'light') => {
+  const setTheme = useCallback((theme: 'dark' | 'light') => {
     dispatch({ type: 'SET_THEME', payload: theme });
     // Persist theme preference to localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('theme', theme);
     }
-  };
+  }, []);
 
   const setLoading = (loading: boolean) => {
     dispatch({ type: 'SET_LOADING', payload: loading });
@@ -217,7 +217,7 @@ export function AppProvider({ children }: AppProviderProps) {
         setTheme(savedTheme);
       }
     }
-  }, []);
+  }, [setTheme, state.theme]);
 
   // Apply theme to document
   React.useEffect(() => {

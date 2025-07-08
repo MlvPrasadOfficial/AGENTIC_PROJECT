@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
@@ -172,7 +172,7 @@ export function AgentWorkflow({
   ]);
 
   const [expandedAgents, setExpandedAgents] = useState<Set<string>>(new Set());
-  const [pipelineStatus, setPipelineStatus] = useState<'idle' | 'running' | 'completed' | 'error'>('idle');
+  const [pipelineStatus, setPipelineStatus] = useState<'idle' | 'processing' | 'completed' | 'error'>('idle');
   const [pipelineStartTime, setPipelineStartTime] = useState<Date | null>(null);
 
   // Get agent status color
@@ -223,17 +223,23 @@ export function AgentWorkflow({
 
   // Update agent status
   const updateAgentStatus = (agentId: string, status: Agent['status'], progress: number = 0) => {
-    setAgents(prev => prev.map(agent => 
-      agent.id === agentId 
-        ? { 
-            ...agent, 
-            status, 
-            progress,
-            startTime: status === 'processing' ? new Date() : agent.startTime,
-            endTime: status === 'completed' || status === 'error' ? new Date() : undefined,
-          }
-        : agent
-    ));
+    setAgents(prev => prev.map(agent => {
+      if (agent.id === agentId) {
+        const updates: Partial<Agent> = {
+          status,
+          progress,
+        };
+        
+        if (status === 'processing') {
+          updates.startTime = new Date();
+        } else if (status === 'completed' || status === 'error') {
+          updates.endTime = new Date();
+        }
+        
+        return { ...agent, ...updates };
+      }
+      return agent;
+    }));
     
     if (onAgentStatusChange) {
       onAgentStatusChange(agentId, status);
@@ -251,18 +257,19 @@ export function AgentWorkflow({
 
   // Start pipeline
   const startPipeline = () => {
-    setPipelineStatus('running');
+    setPipelineStatus('processing');
     setPipelineStartTime(new Date());
     
     // Reset all agents
-    setAgents(prev => prev.map(agent => ({
-      ...agent,
-      status: 'idle',
-      progress: 0,
-      logs: [],
-      startTime: undefined,
-      endTime: undefined,
-    })));
+    setAgents(prev => prev.map(agent => {
+      const { startTime, endTime, ...resetAgent } = agent;
+      return {
+        ...resetAgent,
+        status: 'idle' as const,
+        progress: 0,
+        logs: [],
+      };
+    }));
 
     // Start first agent
     updateAgentStatus('data-agent', 'processing');
@@ -288,24 +295,15 @@ export function AgentWorkflow({
     setPipelineStartTime(null);
     
     // Reset all agents
-    setAgents(prev => prev.map(agent => ({
-      ...agent,
-      status: 'idle',
-      progress: 0,
-      logs: [],
-      startTime: undefined,
-      endTime: undefined,
-    })));
-  };
-
-  // Check if agent can start (dependencies completed)
-  const canAgentStart = (agent: Agent) => {
-    if (agent.dependencies.length === 0) return true;
-    
-    return agent.dependencies.every(depId => {
-      const depAgent = agents.find(a => a.id === depId);
-      return depAgent?.status === 'completed';
-    });
+    setAgents(prev => prev.map(agent => {
+      const { startTime, endTime, ...resetAgent } = agent;
+      return {
+        ...resetAgent,
+        status: 'idle' as const,
+        progress: 0,
+        logs: [],
+      };
+    }));
   };
 
   // Calculate overall progress
@@ -350,10 +348,10 @@ export function AgentWorkflow({
         <div className="flex items-center gap-2">
           <button
             onClick={startPipeline}
-            disabled={pipelineStatus === 'running'}
+            disabled={pipelineStatus === 'processing'}
             className={cn(
               'glass-button px-3 py-1.5 text-sm',
-              pipelineStatus === 'running' 
+              pipelineStatus === 'processing' 
                 ? 'opacity-50 cursor-not-allowed' 
                 : 'glass-button-primary hover:scale-105'
             )}
@@ -363,10 +361,10 @@ export function AgentWorkflow({
           
           <button
             onClick={stopPipeline}
-            disabled={pipelineStatus !== 'running'}
+            disabled={pipelineStatus !== 'processing'}
             className={cn(
               'glass-button px-3 py-1.5 text-sm',
-              pipelineStatus !== 'running' 
+              pipelineStatus !== 'processing' 
                 ? 'opacity-50 cursor-not-allowed' 
                 : 'glass-button-secondary hover:scale-105'
             )}
@@ -543,7 +541,7 @@ export function AgentWorkflow({
                         {agent.logs.length > 0 ? (
                           <ul className="space-y-1">
                             {agent.logs.map((log, logIndex) => (
-                              <li key={logIndex} className="text-xs text-gray-400">
+                              <li key={`${agent.id}-log-${logIndex}`} className="text-xs text-gray-400">
                                 {log}
                               </li>
                             ))}

@@ -1,8 +1,26 @@
 /**
- * File: page.tsx
+ * File: page-fixed.tsx
  * Author: GitHub Copilot
  * Date: 2025-07-07
- * Purpose: Home page component implementing unified 3-section layout from 10-frontend-home-ui-layout.txt
+ * Purpose: Clean backup version of home page implementing unified 3-section layout
+ * 
+ * This component serves as a stable, well-tested backup implementation of the
+ * main home page with the complete unified layout structure. Used for:
+ * - Fallback during development iterations
+ * - Reference implementation for layout structure
+ * - Comparison baseline for new features
+ * 
+ * Layout Implementation:
+ * - Header: Navigation with glassmorphism design
+ * - Left Column (40%): Upload and Chat glass cards
+ * - Right Column (60%): Agent workflow pipeline
+ * - Dashboard: Full-width data visualization section
+ * 
+ * Features:
+ * - Complete glassmorphism effects
+ * - Responsive 2-column grid layout
+ * - 11-agent workflow visualization
+ * - Interactive upload and chat interfaces
  */
 
 'use client';
@@ -11,8 +29,18 @@ import { UnifiedLayout } from '@/components/layout/unified-layout';
 import { Header } from '@/components/navigation/header';
 
 /**
- * Home Page Component - Clean Implementation
- * Implements the unified 3-section layout with proper glassmorphism
+ * HomePage Component - Clean Implementation
+ * 
+ * Backup version of the main home page implementing the unified 3-section layout
+ * with proper glassmorphism effects and responsive design.
+ * 
+ * This component provides:
+ * - Stable reference implementation
+ * - Complete feature integration
+ * - Proper layout proportions (40%/60%)
+ * - Full glassmorphism design system
+ * 
+ * @returns {JSX.Element} The complete home page layout
  */
 export default function HomePage() {
   return (
@@ -71,9 +99,9 @@ export default function HomePage() {
             <div className="mt-4 space-y-2">
               <p className="text-sm text-gray-300">💡 Suggestions:</p>
               <ul className="text-sm text-gray-400 space-y-1">
-                <li>• "Show me sales trends by region"</li>
-                <li>• "What are the top performing products?"</li>
-                <li>• "Generate quarterly revenue report"</li>
+                <li>• {`"Show me sales trends by region"`}</li>
+                <li>• {`"What are the top performing products?"`}</li>
+                <li>• {`"Generate quarterly revenue report"`}</li>
               </ul>
               <div className="mt-4 pt-4 border-t border-gray-700">
                 <p className="text-sm text-gray-300">📜 Chat History: [3 conversations]</p>

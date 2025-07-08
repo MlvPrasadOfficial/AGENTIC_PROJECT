@@ -1,9 +1,8 @@
 # PROJECT RULES - ENTERPRISE INSIGHTS COPILOT
-**Rule 1**: Log ALL changes in `changelogs/YYYY-MM-DD_description.md` | 
-**Rule 2**: ALL files start with proper headers (`//` for JS/TS, `#` for Python/Markdown) |
-**Rule 3**: Use `src/components/`, PascalCase components, camelCase functions |
+**Rule 1**: Log ALL changes in `changelogs/YYYY-MM-DD-HHMMSS_description.md` 
 **Rule 4**: Chain commands with `;` like cd C:\JUL7PROJECT\frontend;  npm run dev
-rule 5 : run frontend as 'cd C:\JUL7PROJECT\frontend; npm run dev'
-rule 6 : always read the entire file before making changes
-rule 7 : always use structured way to solve queries in terms of tasks and acknowledge tasks done in the end.
-rule 8 : follow the tasks in the order number wise
+**Rule 5**: Run frontend as cd C:\JUL7PROJECT\frontend; npm run dev
+**Rule 6**: Always read the entire file before making changes
+**Rule 7**: Always use structured way to solve queries in terms of tasks and acknowledge tasks done in the end.
+**Rule 8**: Follow the tasks in the order number wise
+**Rule 9**: Always run commands in foreground mode by default..only run in background mode when server is running in background mode in current terminal

@@ -134,3 +134,40 @@ venv.bak/
 # Local configuration
 config.local.json
 settings.local.json
+
+# Additional Next.js and build artifacts
+.next/
+*.next
+out/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Editor directories and files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# TypeScript
+*.tsbuildinfo
+.tsbuild/
+
+# Testing
+coverage/
+.nyc_output
+test-results/
+playwright-report/
+
+# Vercel
+.vercel/
+
+# Turbo
+.turbo/
+
+# Sentry Config File
+.sentryclirc

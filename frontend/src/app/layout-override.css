@@ -1,0 +1,297 @@
+/**
+ * File: layout-override.css
+ * Author: GitHub Copilot
+ * Date: 2025-07-08
+ * Purpose: Enhanced glassmorphism effects and layout overrides for Enterprise Insights Copilot UI
+ */
+
+/* Force 2-column layout even on smaller screens */
+.main-container {
+  display: flex !important;
+  flex-direction: row !important;
+  min-width: 1000px !important;
+  width: 100% !important;
+}
+
+.left-column {
+  width: 40% !important;
+  min-width: 380px !important;
+  flex-shrink: 0 !important;
+}
+
+.right-column {
+  width: 60% !important;
+  min-width: 500px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure parent container has sufficient width */
+.container {
+  max-width: 1440px !important;
+  width: 100% !important;
+  min-width: 1000px !important;
+  padding: 0 16px !important;
+}
+
+/* Enhanced Glassmorphism Effects with Depth Hierarchy */
+.glass-card {
+  background: rgba(30, 41, 59, 0.55) !important;
+  border: 2.5px solid rgba(255,255,255,0.18) !important;
+  box-shadow: 0 16px 56px 0 rgba(31,38,135,0.22), 0 2px 12px 0 rgba(59,130,246,0.10) !important;
+  backdrop-filter: blur(36px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(1.5) !important;
+  border-radius: 2rem !important;
+  transition: box-shadow 0.3s, background 0.3s, border 0.3s, transform 0.3s !important;
+}
+
+.glass-card-primary {
+  background: linear-gradient(120deg, rgba(59,130,246,0.20) 0%, rgba(139,92,246,0.14) 100%), rgba(30,41,59,0.55) !important;
+  box-shadow: 0 16px 56px rgba(59,130,246,0.4) !important;
+}
+
+.glass-card-secondary {
+  background: linear-gradient(120deg, rgba(139,92,246,0.18) 0%, rgba(31,41,55,0.12) 100%), rgba(30,41,59,0.55) !important;
+  box-shadow: 0 14px 44px rgba(139,92,246,0.35) !important;
+}
+
+.glass-card-accent {
+  background: linear-gradient(120deg, rgba(16,185,129,0.16) 0%, rgba(245,158,11,0.12) 100%), rgba(30,41,59,0.55) !important;
+  box-shadow: 0 14px 44px rgba(16,185,129,0.35) !important;
+}
+
+.glass-card-dashboard {
+  background: linear-gradient(120deg, rgba(59,130,246,0.14) 0%, rgba(139,92,246,0.12) 100%), rgba(30,41,59,0.55) !important;
+  box-shadow: 0 20px 64px rgba(31,38,135,0.6) !important;
+}
+
+/* Material Design Inspired Card Styles */
+.glass-card-minimal {
+  background: rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 8px 32px rgba(31,38,135,0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+.glass-card-minimal:hover {
+  background: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  transform: translateY(-2px) !important;
+}
+
+.glass-card-elevated {
+  background: rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 12px 48px rgba(31,38,135,0.3) !important;
+}
+
+/* Enhanced Material Design Shadow glow effects */
+.shadow-glow-xs {
+  box-shadow: 0 2px 15px rgba(59,130,246,0.1) !important;
+}
+
+.shadow-glow-sm {
+  box-shadow: 0 4px 20px rgba(59,130,246,0.15) !important;
+}
+
+.shadow-glow-md {
+  box-shadow: 0 8px 30px rgba(59,130,246,0.2) !important;
+}
+
+.shadow-glow-lg {
+  box-shadow: 0 12px 40px rgba(59,130,246,0.25) !important;
+}
+
+.shadow-glow-xl {
+  box-shadow: 0 20px 60px rgba(59,130,246,0.3) !important;
+}
+
+/* Animation classes */
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate !important;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite !important;
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 10px rgba(59,130,246,0.3);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(59,130,246,0.6);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
+/* Enhanced Main background */
+.main-bg {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.2) 0%, transparent 60%),
+    radial-gradient(circle at 80% 30%, rgba(16, 185, 129, 0.18) 0%, transparent 55%),
+    radial-gradient(circle at 10% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 65%),
+    radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.18) 0%, transparent 50%),
+    #030712 !important;
+  background-attachment: fixed !important;
+}
+
+/* Material Design Icons with Elevation */
+.icon {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25)) !important;
+  transition: filter 0.3s ease, transform 0.2s ease !important;
+}
+
+.icon-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 8px rgba(0,0,0,0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.icon-container:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.15), 0 6px 12px rgba(0,0,0,0.25) !important;
+}
+
+/* Enhanced Hierarchical glass cards */
+.glass-card .glass-card-minimal,
+.glass-card-primary .glass-card-minimal,
+.glass-card-secondary .glass-card-minimal,
+.glass-card-accent .glass-card-minimal,
+.glass-card-dashboard .glass-card-minimal {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Enhanced Material Button Styles */
+.glass-button-primary {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  border-radius: 0.75rem !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+}
+
+.glass-button-primary:hover {
+  background: rgba(59, 130, 246, 0.3) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3) !important;
+}
+
+.glass-button-secondary {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 400 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.glass-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Enhanced nested glass card depth */
+.glass-card .glass-card-minimal {
+  box-shadow: 0 6px 24px rgba(31, 38, 135, 0.2) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.glass-card .glass-card-minimal:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.25) !important;
+}
+
+/* Material Design Status Indicators */
+.status-indicator {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  margin-right: 6px !important;
+  position: relative !important;
+}
+
+.status-indicator::after {
+  content: '' !important;
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 8px currentColor !important;
+  opacity: 0.6 !important;
+}
+
+.status-active {
+  background: #4ade80 !important;
+}
+
+.status-idle {
+  background: #ffffff !important;
+}
+
+.status-waiting {
+  background: #94a3b8 !important;
+}
+
+/* Material design icon elevation effect */
+.icon-elevated {
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)) !important;
+}
+
+/* Modern UI states */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+/* Enhanced nested glassmorphism for upload area */
+.upload-area {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.03) 100%) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 1rem !important;
+  border: 1px dashed rgba(59,130,246,0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.upload-area:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+  border-color: rgba(59,130,246,0.5) !important;
+  transform: scale(1.01) !important;
+}

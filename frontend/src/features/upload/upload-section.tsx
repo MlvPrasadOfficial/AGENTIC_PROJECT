@@ -78,11 +78,11 @@ export function UploadSection({
       'application/json': 'JSON',
       'text/plain': 'TXT',
     };
-    return typeMap[type] || type.split('/')[1].toUpperCase();
+    return typeMap[type] || type?.split('/')[1]?.toUpperCase() || 'UNKNOWN';
   };
   
   // Validate file
-  const validateFile = (file: File): { valid: boolean; error?: string } => {
+  const validateFile = useCallback((file: File): { valid: boolean; error?: string } => {
     if (file.size > maxFileSize) {
       return {
         valid: false,
@@ -98,7 +98,7 @@ export function UploadSection({
     }
     
     return { valid: true };
-  };
+  }, [maxFileSize, allowedTypes]);
   
   // Process uploaded files
   const processFiles = useCallback(async (files: FileList | File[]) => {
@@ -124,7 +124,7 @@ export function UploadSection({
           file,
           status: 'error',
           progress: 0,
-          error: validation.error,
+          ...(validation.error && { error: validation.error }),
         });
         continue;
       }
@@ -140,13 +140,18 @@ export function UploadSection({
         }
       }
       
-      newFiles.push({
+      const newFile: UploadedFile = {
         id,
         file,
         status: 'uploading',
         progress: 0,
-        preview,
-      });
+      };
+      
+      if (preview) {
+        newFile.preview = preview;
+      }
+      
+      newFiles.push(newFile);
     }
     
     setUploadedFiles(prev => [...prev, ...newFiles]);
@@ -163,7 +168,7 @@ export function UploadSection({
     if (validFiles.length > 0 && onFilesUploaded) {
       onFilesUploaded(validFiles);
     }
-  }, [uploadedFiles.length, maxFiles, maxFileSize, allowedTypes, onFilesUploaded]);
+  }, [uploadedFiles.length, maxFiles, onFilesUploaded, validateFile]);
   
   // Simulate file upload progress
   const simulateUpload = (fileId: string) => {

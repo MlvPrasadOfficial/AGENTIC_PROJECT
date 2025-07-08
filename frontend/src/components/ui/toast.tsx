@@ -156,7 +156,7 @@ export function ToastContainer() {
             key={toast.id}
             id={toast.id}
             title={toast.title}
-            description={toast.description}
+            {...(toast.description && { description: toast.description })}
             type={toast.type}
             onClose={removeToast}
           />
@@ -182,16 +182,32 @@ export function useToastNotification() {
 
   const toast = {
     success: (title: string, description?: string) => {
-      addToast({ title, description, type: 'success' });
+      addToast({ 
+        title, 
+        type: 'success',
+        ...(description && { description })
+      });
     },
     error: (title: string, description?: string) => {
-      addToast({ title, description, type: 'error' });
+      addToast({ 
+        title, 
+        type: 'error',
+        ...(description && { description })
+      });
     },
     warning: (title: string, description?: string) => {
-      addToast({ title, description, type: 'warning' });
+      addToast({ 
+        title, 
+        type: 'warning',
+        ...(description && { description })
+      });
     },
     info: (title: string, description?: string) => {
-      addToast({ title, description, type: 'info' });
+      addToast({ 
+        title, 
+        type: 'info',
+        ...(description && { description })
+      });
     },
   };
 
@@ -217,7 +233,7 @@ interface SimpleToastProps {
   duration?: number;
 }
 
-export function SimpleToast({ message, type, onClose, duration = 3000 }: SimpleToastProps) {
+export function SimpleToast({ message, type, onClose, duration = 3000 }: Readonly<SimpleToastProps>) {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -270,7 +286,7 @@ interface ToastProgressProps {
   type: 'success' | 'error' | 'warning' | 'info';
 }
 
-export function ToastProgress({ progress, type }: ToastProgressProps) {
+export function ToastProgress({ progress, type }: Readonly<ToastProgressProps>) {
   const progressColors = {
     success: 'bg-emerald-500',
     error: 'bg-red-500',

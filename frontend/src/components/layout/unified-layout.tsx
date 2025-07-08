@@ -54,23 +54,27 @@ export function UnifiedLayout({
       
       {/* Main Content Wrapper with Header Offset */}
       <div className="pt-16 min-h-screen">
-        {/* 2. MAIN CONTENT AREA (2-Column Grid: 40% Left / 60% Right) */}
+        {/* 2. MAIN CONTENT AREA (True 2-Column Grid: 40% Left / 60% Right) */}
         <div className="container mx-auto px-4 py-6 lg:px-6 lg:py-8">
-          <div className="w-full flex flex-col lg:grid lg:grid-cols-5 gap-6 lg:gap-8 mb-8 min-h-[60vh]">
-            {/* Left Column (40% Width = 2/5 columns) */}
-            <div className="lg:col-span-2 w-full space-y-6">
-              {leftColumn}
+          <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8 mb-8 min-h-[60vh]">
+            {/* Left Column (40% Width = 2/5 columns) - Upload & Chat */}
+            <div className="md:col-span-2 w-full">
+              <div className="sticky top-20 space-y-8">
+                {leftColumn}
+              </div>
             </div>
             
-            {/* Right Column (60% Width = 3/5 columns) */}
-            <div className="lg:col-span-3 w-full">
-              {rightColumn}
+            {/* Right Column (60% Width = 3/5 columns) - Agent Workflow */}
+            <div className="md:col-span-3 w-full">
+              <div className="sticky top-20">
+                {rightColumn}
+              </div>
             </div>
           </div>
         </div>
         
         {/* 3. FULL-WIDTH VISUALIZATION DASHBOARD */}
-        <div className="w-full">
+        <div className="w-full border-t border-white/10">
           {dashboard}
         </div>
       </div>

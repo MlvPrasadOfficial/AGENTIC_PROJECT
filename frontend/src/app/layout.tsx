@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import './layout-override.css';
+import './globals-override.css';
 import { cn } from '@/lib/utils';
 
 // Configure Inter font with optimal subsets
@@ -51,8 +53,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="preload" href="/css/critical.css" as="style" />
-        <link rel="stylesheet" href="/css/critical.css" />
         <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body 
@@ -63,14 +63,6 @@ export default function RootLayout({
         suppressHydrationWarning
         data-hydration-safe="true"
       >
-        {/* Skip to main content link for accessibility */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 glass-button-primary px-4 py-2 text-sm font-medium"
-        >
-          Skip to main content
-        </a>
-        
         {/* Main application structure */}
         <div className="min-h-screen">
           <main 

@@ -1,0 +1,186 @@
+/**
+ * File: page.tsx
+ * Author: GitHub Copilot
+ * Date: 2025-07-08
+ * Purpose: Home page component implementing minimal modern design with agent workflow cards
+ */
+
+'use client';
+
+// Icon imports
+import { UploadIcon } from '@/components/icons/UploadIcon';
+import { ChatIcon } from '@/components/icons/ChatIcon';
+import { SendIcon } from '@/components/icons/SendIcon';
+import { AgentIcon } from '@/components/icons/AgentIcon';
+import { TargetIcon } from '@/components/icons/TargetIcon';
+import { SqlIcon } from '@/components/icons/SqlIcon';
+import { InsightIcon } from '@/components/icons/InsightIcon';
+import { QueryIcon } from '@/components/icons/QueryIcon';
+import { CleanIcon } from '@/components/icons/CleanIcon';
+import { NarrativeIcon } from '@/components/icons/NarrativeIcon';
+import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon';
+
+// Import minimal modern styles
+import './minimal-modern.css';
+
+/**
+ * Home Page Component - Minimal Modern Design
+ * Implements a clean, minimal interface with modern UI patterns
+ * 
+ * Layout Structure:
+ * - Two Column Grid: Upload/Chat + Agent Workflow
+ * - Clean Card Components with Subtle Glassmorphism
+ * - Expandable Agent Cards with Consistent Styling
+ */
+export default function HomePage() {
+  return (
+    <main className="min-h-screen flex items-center justify-center py-16" 
+          style={{background: "linear-gradient(135deg, #0a0b14 0%, #171826 100%)"}}>
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-12 tracking-tight">
+          Enterprise Insights Copilot
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Column: Upload + Chat */}
+          <div className="flex flex-col gap-8">
+            {/* Upload Card - Minimal Design */}
+            <div className="modern-card p-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="icon-container upload-icon">
+                  <UploadIcon className="text-white" />
+                </div>
+                <h2 className="font-semibold text-xl">Upload your Data</h2>
+              </div>
+              
+              <div className="upload-area mb-4">
+                <p className="text-sm mb-1">Drag and drop a file</p>
+                <p className="text-sm text-tertiary">here, or click to browse</p>
+              </div>
+              
+              <p className="text-xs text-tertiary mb-2">CSV, XLSX, JSON supported</p>
+            </div>
+            
+            {/* Chat Card - Minimal Design */}
+            <div className="modern-card p-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="icon-container planning-icon">
+                  <ChatIcon className="text-white" />
+                </div>
+                <h2 className="font-semibold text-xl">Ask Copilot</h2>
+              </div>
+              
+              <textarea 
+                className="modern-input mb-4" 
+                placeholder="Type your analytics query..."
+                rows={3}
+              ></textarea>
+              
+              <div className="flex justify-end mb-6">
+                <button className="modern-button flex items-center gap-2">
+                  <span>Send</span>
+                  <SendIcon className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="example-query">
+                Show me sales trends by region
+              </div>
+              
+              <div className="example-query">
+                What are the top performing products?
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Column: Agent Workflow */}
+          <div className="modern-card p-6">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="icon-container planning-icon">
+                <AgentIcon className="text-white" />
+              </div>
+              <h2 className="font-semibold text-xl">Agent Workflow</h2>
+            </div>
+            
+            {/* Planning Agent */}
+            <div className="agent-card">
+              <div className="agent-card-content">
+                <div className="icon-container planning-icon">
+                  <TargetIcon className="text-white" />
+                </div>
+                <div>
+                  <h3>Planning Agent</h3>
+                </div>
+              </div>
+              <ChevronRightIcon className="text-gray-400" />
+            </div>
+            
+            {/* SQL Agent */}
+            <div className="agent-card">
+              <div className="agent-card-content">
+                <div className="icon-container sql-icon">
+                  <SqlIcon className="text-white" />
+                </div>
+                <div>
+                  <h3>SQL Agent</h3>
+                </div>
+              </div>
+              <ChevronRightIcon className="text-gray-400" />
+            </div>
+            
+            {/* Insight Agent */}
+            <div className="agent-card">
+              <div className="agent-card-content">
+                <div className="icon-container insight-icon">
+                  <InsightIcon className="text-white" />
+                </div>
+                <div>
+                  <h3>Insight Agent</h3>
+                </div>
+              </div>
+              <ChevronRightIcon className="text-gray-400" />
+            </div>
+            
+            {/* Query Agent */}
+            <div className="agent-card">
+              <div className="agent-card-content">
+                <div className="icon-container query-icon">
+                  <QueryIcon className="text-white" />
+                </div>
+                <div>
+                  <h3>Query Agent</h3>
+                </div>
+              </div>
+              <ChevronRightIcon className="text-gray-400" />
+            </div>
+            
+            {/* Cleaner Agent */}
+            <div className="agent-card">
+              <div className="agent-card-content">
+                <div className="icon-container cleaner-icon">
+                  <CleanIcon className="text-white" />
+                </div>
+                <div>
+                  <h3>Cleaner Agent</h3>
+                </div>
+              </div>
+              <ChevronRightIcon className="text-gray-400" />
+            </div>
+            
+            {/* Narrative Agent */}
+            <div className="agent-card">
+              <div className="agent-card-content">
+                <div className="icon-container narrative-icon">
+                  <NarrativeIcon className="text-white" />
+                </div>
+                <div>
+                  <h3>Narrative Agent</h3>
+                </div>
+              </div>
+              <ChevronRightIcon className="text-gray-400" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

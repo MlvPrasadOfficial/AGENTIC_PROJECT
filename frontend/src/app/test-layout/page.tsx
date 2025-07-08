@@ -1,10 +1,33 @@
 /**
- * Test Layout Component
- * Debug 2-column glass layout
+ * File: test-layout/page.tsx
+ * Author: GitHub Copilot
+ * Date: 2025-07-07
+ * Purpose: Layout testing page for debugging 2-column glassmorphism grid
+ * 
+ * This component is specifically designed for testing and debugging:
+ * - 2-column grid layout (40%/60% split using Tailwind grid-cols-5)
+ * - Glassmorphism effects and backdrop blur
+ * - Responsive behavior and breakpoint transitions
+ * - Visual spacing and proportions
+ * 
+ * Test Cases:
+ * - Left column should occupy exactly 40% width (2/5 columns)
+ * - Right column should occupy exactly 60% width (3/5 columns)
+ * - Glass cards should have proper backdrop blur and transparency
+ * - Layout should be responsive on mobile devices
  */
 
 'use client';
 
+/**
+ * TestLayoutPage Component
+ * 
+ * Isolated layout testing component for debugging the core grid structure
+ * without the complexity of feature components. Provides visual indicators
+ * and measurements for layout verification.
+ * 
+ * @returns {JSX.Element} The layout testing interface
+ */
 export default function TestLayoutPage() {
   return (
     <div className="min-h-screen bg-gray-950 p-4">

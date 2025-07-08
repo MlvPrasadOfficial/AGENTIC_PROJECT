@@ -1,0 +1,8 @@
+
+
+this tasks to be done in order 
+
+task - 1: follow all the rules mentioned in the rules.txt file
+
+
+last task : acknowledge status of each status after you have done in chat 

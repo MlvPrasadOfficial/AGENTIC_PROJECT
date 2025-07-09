@@ -1,8 +1,8 @@
 
-
-this tasks to be done in order 
-
-task-1 : use ';' instead of '&&' in commands as it powershell
+note : always use ; instead of && while running commands
 
 
-last task : acknowledge status of each status after you have done in chat 
+task-1: create a file named 'file.txt' in the 'files' folder and create table
+       with sno, status, whether it is backend or frontend, type of file compoenent, name of the File
+
+       create for all the files in both frontend an backend folder above table

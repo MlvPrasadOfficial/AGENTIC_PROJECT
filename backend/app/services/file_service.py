@@ -199,6 +199,84 @@ class FileService:
             List of FileMetadata objects
         """
         return [FileMetadata(**metadata) for metadata in self.metadata_store.values()]
+    
+    def get_file_preview(self, file_id: str, rows: int = 10, columns: Optional[List[str]] = None) -> Dict[str, Any]:
+        """
+        Get preview data from a file.
+        
+        Args:
+            file_id: The ID of the file
+            rows: Number of rows to return
+            columns: Specific columns to include
+            
+        Returns:
+            Dictionary with columns metadata and sample rows
+            
+        Raises:
+            FileNotFoundError: If file not found
+            Exception: For other errors during file reading
+        """
+        if file_id not in self.metadata_store:
+            raise FileNotFoundError(f"File {file_id} not found")
+        
+        metadata = self.metadata_store[file_id]
+        file_path = self.upload_dir / file_id
+        file_type = metadata["file_type"]
+        
+        logger.info(f"Getting preview for file: {file_id}, type: {file_type}")
+        
+        try:
+            # Read file based on type
+            if file_type in ["csv", "txt"]:
+                df = pd.read_csv(file_path, nrows=rows*2)  # Read extra rows for more accurate column profiling
+            elif file_type in ["xlsx", "xls"]:
+                df = pd.read_excel(file_path, nrows=rows*2)
+            elif file_type == "json":
+                df = pd.read_json(file_path)
+            else:
+                raise ValueError(f"Unsupported file type for preview: {file_type}")
+                
+            # Filter columns if specified
+            if columns:
+                existing_columns = [col for col in columns if col in df.columns]
+                if not existing_columns:
+                    # If none of the requested columns exist, use all columns
+                    logger.warning(f"None of the requested columns exist: {columns}")
+                else:
+                    df = df[existing_columns]
+            
+            # Get column metadata
+            column_info = []
+            for col_name, dtype in df.dtypes.items():
+                col_data = df[col_name]
+                null_count = col_data.isna().sum()
+                
+                col_info = {
+                    "name": col_name,
+                    "type": str(dtype),
+                    "nullCount": int(null_count),
+                    "uniqueCount": int(col_data.nunique())
+                }
+                
+                # Add min/max for numeric columns
+                if pd.api.types.is_numeric_dtype(dtype):
+                    col_info["min"] = col_data.min() if not col_data.empty else None
+                    col_info["max"] = col_data.max() if not col_data.empty else None
+                
+                column_info.append(col_info)
+            
+            # Convert sample rows to dictionary
+            sample_rows = df.head(rows).fillna(None).to_dict('records')
+            
+            return {
+                "columns": column_info,
+                "rows": sample_rows
+            }
+            
+        except Exception as e:
+            logger.error(f"Error generating preview for file {file_id}: {str(e)}", exc_info=True)
+            raise
+    
     def _profile_dataframe(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
         Generate profile information from a pandas DataFrame.
@@ -253,7 +331,8 @@ class FileService:
                     hist_values, bin_edges = np.histogram(col_data.dropna(), bins=10)
                     col_profile["histogram"] = hist_values.tolist()
                     col_profile["histogram_bins"] = bin_edges.tolist()
-                except:
+                except Exception as e:
+                    logger.debug(f"Failed to generate histogram for {column}: {str(e)}")
                     pass
             
             # Categorical columns - add top categories
@@ -261,7 +340,8 @@ class FileService:
                 try:
                     top_categories = col_data.value_counts().head(10).to_dict()
                     col_profile["top_categories"] = top_categories
-                except:
+                except Exception as e:
+                    logger.debug(f"Failed to calculate top categories for {column}: {str(e)}")
                     pass
                     
             # Add to columns dict
@@ -273,7 +353,8 @@ class FileService:
             try:
                 corr_matrix = numeric_df.corr().to_dict()
                 result["correlation_matrix"] = corr_matrix
-            except:
+            except Exception as e:
+                logger.warning(f"Failed to calculate correlation matrix: {str(e)}")
                 pass
         
         return result
@@ -291,10 +372,13 @@ def get_file_metadata(file_id: str) -> FileMetadata:
     Raises:
         FileNotFoundError: If file not found
     """
-    if file_id not in file_metadata_store:
+    # Create singleton instance if needed
+    file_service = FileService()
+    
+    if file_id not in file_service.metadata_store:
         raise FileNotFoundError(f"File {file_id} not found")
     
-    return FileMetadata(**file_metadata_store[file_id])
+    return FileMetadata(**file_service.metadata_store[file_id])
 
 def list_files() -> List[FileMetadata]:
     """
@@ -303,4 +387,7 @@ def list_files() -> List[FileMetadata]:
     Returns:
         List of FileMetadata objects
     """
-    return [FileMetadata(**metadata) for metadata in file_metadata_store.values()]
+    # Create singleton instance if needed
+    file_service = FileService()
+    
+    return [FileMetadata(**metadata) for metadata in file_service.metadata_store.values()]

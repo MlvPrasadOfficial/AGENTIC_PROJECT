@@ -1,0 +1,213 @@
+# Enterprise Insights Copilot - File Listing
+
+Generated on: 2025-07-09 18:30:15
+
+## Summary Statistics
+
+Total Files: 166
+Frontend Files: 124
+Backend Files: 42
+
+### Status Breakdown
+
+- Complete: 102 files
+- Documentation: 2 files
+- Empty/Stub: 1 files
+- In Progress: 1 files
+- Needs Fix: 60 files
+
+### Component Type Breakdown
+
+- API Client: 4 files
+- API Endpoint: 6 files
+- Agent: 9 files
+- CSS: 5 files
+- Configuration: 5 files
+- Core: 2 files
+- Database: 3 files
+- Documentation: 5 files
+- Feature: 13 files
+- Other: 24 files
+- Page: 6 files
+- Python Module: 5 files
+- RAG: 4 files
+- React Component: 1 files
+- Schema: 2 files
+- Script: 5 files
+- Service: 2 files
+- Styling: 1 files
+- UI Component: 61 files
+- Utility: 2 files
+- Workflow: 1 files
+
+
+## Complete File Listing
+
+| S.No | Code Completion | No Stray Code | Docstrings | Code Comments | Location | Component Type | File Path |
+|------|----------------|--------------|-----------|--------------|--------|----------|----------|
+| 1 | ✅ | ✅ | ✅ | ✅ | Backend | API Endpoint | app\api\v1\endpoints\agents.py |
+| 2 | ✅ | ✅ | ✅ | ✅ | Backend | API Endpoint | app\api\v1\endpoints\auth.py |
+| 3 | ✅ | ✅ | ✅ | ✅ | Backend | API Endpoint | app\api\v1\endpoints\chat.py |
+| 4 | ✅ | ✅ | ✅ | ✅ | Backend | API Endpoint | app\api\v1\endpoints\files.py |
+| 5 | ✅ | ✅ | ✅ | ✅ | Backend | API Endpoint | app\api\v1\endpoints\health.py |
+| 6 | ✅ | ✅ | ✅ | ✅ | Backend | API Endpoint | app\api\v1\endpoints\preview.py |
+| 7 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\base.py |
+| 8 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\critique_agent.py |
+| 9 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\data_profile_agent.py |
+| 10 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\debate_agent.py |
+| 11 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\file_upload_agent.py |
+| 12 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\insight_agent.py |
+| 13 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\planning_agent.py |
+| 14 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\report_agent.py |
+| 15 | ✅ | ✅ | ✅ | ✅ | Backend | Agent | app\agents\viz_agent.py |
+| 16 | ✅ | ✅ | ✅ | ✅ | Backend | Configuration | TASKS.md.new |
+| 17 | ✅ | ✅ | ✅ | ✅ | Backend | Configuration | requirements.txt |
+| 18 | ✅ | ✅ | ✅ | ✅ | Backend | Core | app\core\auth.py |
+| 19 | ✅ | ✅ | ✅ | ✅ | Backend | Core | app\core\config.py |
+| 20 | ✅ | ✅ | ✅ | ✅ | Backend | Database | app\db\crud.py |
+| 21 | ✅ | ✅ | ✅ | ✅ | Backend | Database | app\db\database.py |
+| 22 | ✅ | ✅ | ✅ | ✅ | Backend | Database | app\db\models.py |
+| 23 | ✅ | ✅ | ✅ | ✅ | Backend | Documentation | DEPLOYMENT.md |
+| 24 | ✅ | ✅ | ✅ | ✅ | Backend | Documentation | IMPLEMENTATION_SUMMARY.md |
+| 25 | ✅ | ✅ | ✅ | ✅ | Backend | Documentation | TASKS.md |
+| 26 | ✅ | ✅ | ✅ | ✅ | Backend | Documentation | app\api\README.md |
+| 27 | ✅ | ✅ | ✅ | ✅ | Backend | Python Module | app\api\v1\api.py |
+| 28 | ✅ | ✅ | ✅ | ✅ | Backend | Python Module | app\llm\llm_client.py |
+| 29 | ✅ | ✅ | ✅ | ✅ | Backend | Python Module | app\main.py |
+| 30 | ✅ | ✅ | ✅ | ✅ | Backend | Python Module | main.py |
+| 31 | ✅ | ✅ | ✅ | ✅ | Backend | Python Module | tests\test_agents.py |
+| 32 | ✅ | ✅ | ✅ | ✅ | Backend | RAG | app\rag\document_processor.py |
+| 33 | ✅ | ✅ | ✅ | ✅ | Backend | RAG | app\rag\document_store.py |
+| 34 | ✅ | ✅ | ✅ | ✅ | Backend | RAG | app\rag\embeddings.py |
+| 35 | ✅ | ✅ | ✅ | ✅ | Backend | RAG | app\rag\rag_system.py |
+| 36 | ✅ | ✅ | ✅ | ✅ | Backend | Schema | app\schemas\chat.py |
+| 37 | ✅ | ✅ | ✅ | ✅ | Backend | Schema | app\schemas\file.py |
+| 38 | ✅ | ✅ | ✅ | ✅ | Backend | Service | app\services\chat_service.py |
+| 39 | ✅ | ✅ | ✅ | ✅ | Backend | Service | app\services\file_service.py |
+| 40 | ✅ | ✅ | ✅ | ✅ | Backend | Utility | app\utils\logger.py |
+| 41 | ✅ | ✅ | ✅ | ✅ | Backend | Utility | app\utils\prompts.py |
+| 42 | ✅ | ✅ | ✅ | ✅ | Backend | Workflow | app\workflow\agent_workflow.py |
+| 43 | ✅ | ✅ | ✅ | ✅ | Frontend | API Client | src\lib\api\agentService.ts |
+| 44 | ✅ | ✅ | ✅ | ✅ | Frontend | API Client | src\lib\api\apiClient.ts |
+| 45 | ✅ | ✅ | ✅ | ✅ | Frontend | API Client | src\lib\api\chatService.ts |
+| 46 | ✅ | ✅ | ✅ | ✅ | Frontend | API Client | src\lib\api\fileService.ts |
+| 47 | ✅ | ✅ | ✅ | ✅ | Frontend | CSS | public\css\critical.css |
+| 48 | ✅ | ✅ | ✅ | ✅ | Frontend | CSS | src\app\globals-override.css |
+| 49 | ✅ | ✅ | ✅ | ✅ | Frontend | CSS | src\app\globals.css |
+| 50 | ✅ | ✅ | ✅ | ✅ | Frontend | CSS | src\app\layout-override.css |
+| 51 | ✅ | ✅ | ✅ | ✅ | Frontend | CSS | src\app\minimal-modern.css |
+| 52 | ✅ | ✅ | ✅ | ✅ | Frontend | Configuration | .eslintrc.json |
+| 53 | ✅ | ✅ | ✅ | ✅ | Frontend | Configuration | package.json |
+| 54 | ✅ | ✅ | ✅ | ✅ | Frontend | Configuration | tsconfig.json |
+| 55 | ✅ | ✅ | ✅ | ✅ | Frontend | Documentation | public\fonts\README.md |
+| 56 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\agents\AgentCard.tsx |
+| 57 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\agents\AgentPipeline.tsx |
+| 58 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\agents\StatusIndicator.tsx |
+| 59 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\agents\agent-workflow.tsx |
+| 60 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\chat\ChatInterface.tsx |
+| 61 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\chat\MessageBubble.tsx |
+| 62 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\chat\chat-section.tsx |
+| 63 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\dashboard\ChartCard.tsx |
+| 64 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\dashboard\ChartControls.tsx |
+| 65 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\dashboard\ChartGrid.tsx |
+| 66 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\dashboard\visualization-dashboard.tsx |
+| 67 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\upload\FilePreview.tsx |
+| 68 | ✅ | ✅ | ✅ | ✅ | Frontend | Feature | src\features\upload\upload-section.tsx |
+| 69 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | .env |
+| 70 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\fonts\inter-var.woff2 |
+| 71 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\critique-agent-icon-black.svg |
+| 72 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\critique-agent-icon.svg |
+| 73 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\data-profile-agent-icon-black.svg |
+| 74 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\data-profile-agent-icon.svg |
+| 75 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\debate-agent-icon-black.svg |
+| 76 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\debate-agent-icon.svg |
+| 77 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\file-upload-agent-icon-black.svg |
+| 78 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\file-upload-agent-icon.svg |
+| 79 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\insight-agent-icon-black.svg |
+| 80 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\insight-agent-icon.svg |
+| 81 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\planning-agent-icon-black.svg |
+| 82 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\planning-agent-icon.svg |
+| 83 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\report-agent-icon-black.svg |
+| 84 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\report-agent-icon.svg |
+| 85 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\upload-folder-icon-black.svg |
+| 86 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\upload-folder-icon-large.svg |
+| 87 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\upload-folder-icon.svg |
+| 88 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\viz-agent-icon-black.svg |
+| 89 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | public\icons\viz-agent-icon.svg |
+| 90 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | src\app\page.tsx.bak |
+| 91 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | src\app\page.tsx.bak2 |
+| 92 | ✅ | ✅ | ✅ | ✅ | Frontend | Other | src\app\page.tsx.new |
+| 93 | ✅ | ✅ | ✅ | ✅ | Frontend | Page | src\app\layout.tsx |
+| 94 | ✅ | ✅ | ✅ | ✅ | Frontend | Page | src\app\page-fixed.tsx |
+| 95 | ✅ | ✅ | ✅ | ✅ | Frontend | Page | src\app\page-simple.tsx |
+| 96 | ✅ | ✅ | ✅ | ✅ | Frontend | Page | src\app\page.tsx |
+| 97 | ✅ | ✅ | ✅ | ✅ | Frontend | Page | src\app\simple-page.tsx |
+| 98 | ✅ | ✅ | ✅ | ✅ | Frontend | Page | src\app\test-layout\page.tsx |
+| 99 | ✅ | ✅ | ✅ | ✅ | Frontend | React Component | src\__tests__\upload-section.test.tsx |
+| 100 | ✅ | ✅ | ✅ | ✅ | Frontend | Script | next-env.d.ts |
+| 101 | ✅ | ✅ | ✅ | ✅ | Frontend | Script | next.config.js |
+| 102 | ✅ | ✅ | ✅ | ✅ | Frontend | Script | src\lib\services\environmentService.ts |
+| 103 | ✅ | ✅ | ✅ | ✅ | Frontend | Script | src\lib\utils.ts |
+| 104 | ✅ | ✅ | ✅ | ✅ | Frontend | Script | tailwind.config.js |
+| 105 | ✅ | ✅ | ✅ | ✅ | Frontend | Styling | src\styles\glassmorphism.css |
+| 106 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\D3Visualization.tsx |
+| 107 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\agents\AgentWorkflow.tsx |
+| 108 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\chat\ChatInterface.tsx |
+| 109 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\AgentIcon.tsx |
+| 110 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\BarChartIcon.tsx |
+| 111 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\ChatIcon.tsx |
+| 112 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\ChevronRightIcon.tsx |
+| 113 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\CleanIcon.tsx |
+| 114 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\CloseIcon.tsx |
+| 115 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\CritiqueIcon.tsx |
+| 116 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\DataProfileIcon.tsx |
+| 117 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\DebateIcon.tsx |
+| 118 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\FileUploadIcon.tsx |
+| 119 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\HistoryIcon.tsx |
+| 120 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\InfoIcon.tsx |
+| 121 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\InsightIcon.tsx |
+| 122 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\LineChartIcon.tsx |
+| 123 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\NarrativeIcon.tsx |
+| 124 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\PieChartIcon.tsx |
+| 125 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\PreviewIcon.tsx |
+| 126 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\QueryIcon.tsx |
+| 127 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\QuestionIcon.tsx |
+| 128 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\ReportDocIcon.tsx |
+| 129 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\ReportIcon.tsx |
+| 130 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\SendIcon.tsx |
+| 131 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\SqlIcon.tsx |
+| 132 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\SuggestionIcon.tsx |
+| 133 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\TableIcon.tsx |
+| 134 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\TargetIcon.tsx |
+| 135 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\TrendIcon.tsx |
+| 136 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\UploadFolderIcon.tsx |
+| 137 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\UploadIcon.tsx |
+| 138 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\VisualizationIcon.tsx |
+| 139 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\VizIcon.tsx |
+| 140 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\CritiqueAgentIcon.tsx |
+| 141 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\DataProfileAgentIcon.tsx |
+| 142 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\DebateAgentIcon.tsx |
+| 143 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\FileUploadAgentIcon.tsx |
+| 144 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\InsightAgentIcon.tsx |
+| 145 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\PlanningAgentIcon.tsx |
+| 146 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\ReportAgentIcon.tsx |
+| 147 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\VizAgentIcon.tsx |
+| 148 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\icons\agents\index.ts |
+| 149 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\index.ts |
+| 150 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\layout\DashboardLayout.tsx |
+| 151 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\layout\MainLayout.tsx |
+| 152 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\layout\footer.tsx |
+| 153 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\layout\header.tsx |
+| 154 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\layout\unified-layout.tsx |
+| 155 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\navigation\header.tsx |
+| 156 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\providers.tsx |
+| 157 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\shared\error-boundary.tsx |
+| 158 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\ui\GlassButton.tsx |
+| 159 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\ui\GlassCard.tsx |
+| 160 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\ui\ProgressBar.tsx |
+| 161 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\ui\button.tsx |
+| 162 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\ui\card.tsx |
+| 163 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\ui\loading-spinner.tsx |
+| 164 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\ui\toast.tsx |
+| 165 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\upload\FileUpload.tsx |
+| 166 | ✅ | ✅ | ✅ | ✅ | Frontend | UI Component | src\components\visualization\VisualizationDashboard.tsx |

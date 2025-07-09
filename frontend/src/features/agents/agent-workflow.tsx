@@ -10,12 +10,22 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { 
+  FileUploadAgentIcon, 
+  DataProfileAgentIcon, 
+  PlanningAgentIcon, 
+  InsightAgentIcon,
+  VizAgentIcon,
+  CritiqueAgentIcon,
+  DebateAgentIcon,
+  ReportAgentIcon
+} from '@/components/icons/agents';
 
 interface Agent {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  icon: 'file-upload' | 'data-profile' | 'planning' | 'insight' | 'viz' | 'critique' | 'debate' | 'report';
   status: 'idle' | 'processing' | 'completed' | 'error';
   progress: number;
   startTime?: Date;
@@ -60,70 +70,50 @@ export function AgentWorkflow({
 }: AgentWorkflowProps) {
   const [agents, setAgents] = useState<Agent[]>([
     {
-      id: 'data-agent',
-      name: 'Data Agent',
+      id: 'file-upload-agent',
+      name: 'File Upload Agent',
       description: 'File ingestion and validation',
-      icon: '📊',
+      icon: 'file-upload',
       status: 'idle',
       progress: 0,
       logs: [],
       dependencies: [],
     },
     {
-      id: 'cleaner-agent',
-      name: 'Cleaner Agent',
+      id: 'data-profile-agent',
+      name: 'Data Profile Agent',
       description: 'Data cleaning and quality assessment',
-      icon: '🧹',
+      icon: 'data-profile',
       status: 'idle',
       progress: 0,
       logs: [],
-      dependencies: ['data-agent'],
+      dependencies: ['file-upload-agent'],
     },
     {
       id: 'planning-agent',
       name: 'Planning Agent',
       description: 'Query parsing and routing logic',
-      icon: '🎯',
+      icon: 'planning',
       status: 'idle',
       progress: 0,
       logs: [],
-      dependencies: ['cleaner-agent'],
+      dependencies: ['data-profile-agent'],
     },
     {
-      id: 'query-agent',
-      name: 'Query Agent',
+      id: 'insight-agent',
+      name: 'Insight Agent',
       description: 'Natural language query processing',
-      icon: '❓',
+      icon: 'insight',
       status: 'idle',
       progress: 0,
       logs: [],
       dependencies: ['planning-agent'],
     },
     {
-      id: 'sql-agent',
-      name: 'SQL Agent',
-      description: 'Database query generation and execution',
-      icon: '🗄️',
-      status: 'idle',
-      progress: 0,
-      logs: [],
-      dependencies: ['query-agent'],
-    },
-    {
-      id: 'insight-agent',
-      name: 'Insight Agent',
-      description: 'Textual analysis and insights generation',
-      icon: '💡',
-      status: 'idle',
-      progress: 0,
-      logs: [],
-      dependencies: ['sql-agent'],
-    },
-    {
-      id: 'chart-agent',
-      name: 'Chart Agent',
+      id: 'viz-agent',
+      name: 'Viz Agent',
       description: 'Visualization configuration and rendering',
-      icon: '📈',
+      icon: 'viz',
       status: 'idle',
       progress: 0,
       logs: [],
@@ -133,41 +123,31 @@ export function AgentWorkflow({
       id: 'critique-agent',
       name: 'Critique Agent',
       description: 'Quality assessment and improvement suggestions',
-      icon: '⚖️',
+      icon: 'critique',
       status: 'idle',
       progress: 0,
       logs: [],
-      dependencies: ['chart-agent'],
+      dependencies: ['viz-agent'],
     },
     {
       id: 'debate-agent',
       name: 'Debate Agent',
       description: 'Multi-perspective analysis and consensus',
-      icon: '🤝',
+      icon: 'debate',
       status: 'idle',
       progress: 0,
       logs: [],
       dependencies: ['critique-agent'],
     },
     {
-      id: 'narrative-agent',
-      name: 'Narrative Agent',
-      description: 'Story generation and explanation',
-      icon: '📄',
+      id: 'report-agent',
+      name: 'Report Agent',
+      description: 'Comprehensive report compilation',
+      icon: 'report',
       status: 'idle',
       progress: 0,
       logs: [],
       dependencies: ['debate-agent'],
-    },
-    {
-      id: 'report-agent',
-      name: 'Report Agent',
-      description: 'Comprehensive report compilation',
-      icon: '📋',
-      status: 'idle',
-      progress: 0,
-      logs: [],
-      dependencies: ['narrative-agent'],
     },
   ]);
 
@@ -439,7 +419,14 @@ export function AgentWorkflow({
                 <div className="flex items-center gap-3">
                   {/* Agent Icon */}
                   <div className="w-10 h-10 bg-gray-700/30 rounded-lg flex items-center justify-center text-lg">
-                    {agent.icon}
+                    {agent.icon === 'file-upload' && <FileUploadAgentIcon size={24} />}
+                    {agent.icon === 'data-profile' && <DataProfileAgentIcon size={24} />}
+                    {agent.icon === 'planning' && <PlanningAgentIcon size={24} />}
+                    {agent.icon === 'insight' && <InsightAgentIcon size={24} />}
+                    {agent.icon === 'viz' && <VizAgentIcon size={24} />}
+                    {agent.icon === 'critique' && <CritiqueAgentIcon size={24} />}
+                    {agent.icon === 'debate' && <DebateAgentIcon size={24} />}
+                    {agent.icon === 'report' && <ReportAgentIcon size={24} />}
                   </div>
                   
                   {/* Agent Info */}

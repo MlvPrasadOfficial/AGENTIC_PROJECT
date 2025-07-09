@@ -9,7 +9,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import environmentService from '../services/environmentService';
+import { environmentService } from '../services/environmentService';
 
 /**
  * Configuration for the API client
@@ -73,8 +73,13 @@ class ApiClient {
    * @param config - Configuration for the API client
    */
   constructor(config: ApiClientConfig) {
+    // If we're in development mode and no explicit baseUrl is provided, use localhost
+    const baseURL = process.env.NODE_ENV === 'development' && !config.baseUrl 
+      ? 'http://localhost:8000/api/v1' 
+      : config.baseUrl;
+      
     this.client = axios.create({
-      baseURL: config.baseUrl,
+      baseURL,
       timeout: config.timeout || 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -83,6 +88,7 @@ class ApiClient {
       }
     });
 
+    console.log(`API Client initialized with baseURL: ${baseURL}`);
     this.setupInterceptors();
   }
 

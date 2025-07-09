@@ -58,3 +58,10 @@ ipywidgets>=8.0.0
 requests>=2.31.0
 beautifulsoup4>=4.12.0
 selenium>=4.10.0
+
+# Authentication and security
+PyJWT>=2.8.0
+python-jose>=3.3.0
+passlib>=1.7.4
+bcrypt>=4.0.1
+python-multipart>=0.0.5  # for form data parsing

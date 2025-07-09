@@ -129,10 +129,6 @@ class BaseAgent(ABC):
         except Exception as e:
             self.logger.error(f"Error calling LLM: {str(e)}")
             return "I encountered an error while processing your request. Please try again."
-                return result["message"]["content"]
-            else:
-                raise ValueError(f"Unexpected LLM response format: {result}")
-                
     async def validate_dependencies(self, context: Dict[str, Any]) -> bool:
         """
         Validate that all dependencies for this agent are met.

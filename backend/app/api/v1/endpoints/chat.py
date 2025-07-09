@@ -1,10 +1,11 @@
 # Chat Endpoints
 # File: chat.py
 # Author: GitHub Copilot
-# Date: 2025-07-08
+# Date: 2025-07-09
 # Purpose: Chat endpoints for the Enterprise Insights Copilot backend
 
 import asyncio
+import json
 from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException, Depends, WebSocket, WebSocketDisconnect, Request
 from fastapi.responses import StreamingResponse
@@ -14,9 +15,10 @@ from app.services.chat_service import (
     create_chat_session,
     get_chat_history,
     process_chat_message,
-    stream_chat_response
+    stream_chat_response,
+    chat_sessions
 )
-from app.schemas.chat import ChatMessage, ChatSession, ChatResponse, StreamChunk
+from app.schemas.chat import ChatMessage, ChatSession, ChatResponse, StreamChunk, ChatRequest
 
 logger = setup_logger(__name__)
 router = APIRouter()
@@ -47,103 +49,135 @@ async def get_session_history(session_id: str) -> List[ChatMessage]:
         HTTPException if session not found
     """
     logger.info(f"Getting chat history for session {session_id}")
-    
     try:
         return get_chat_history(session_id)
-    except ValueError:
-        raise HTTPException(status_code=404, detail=f"Chat session {session_id} not found")
+    except HTTPException as e:
+        logger.error(f"Error getting chat history: {e.detail}")
+        raise
 
 @router.post("/sessions/{session_id}/messages", response_model=ChatResponse)
-async def send_message(session_id: str, message: ChatMessage) -> ChatResponse:
+async def create_message(session_id: str, chat_request: ChatRequest) -> ChatResponse:
     """
-    Send a message in a chat session.
+    Process a new chat message and get response.
     
     Args:
         session_id: The chat session ID
-        message: The chat message to send
+        chat_request: The chat request containing the message
         
     Returns:
-        Chat response
+        Chat response with generated text
         
     Raises:
         HTTPException if session not found or processing fails
     """
-    logger.info(f"Processing message in session {session_id}")
+    logger.info(f"Processing message for session {session_id}")
     
-    try:
-        return await process_chat_message(session_id, message)
-    except ValueError:
-        raise HTTPException(status_code=404, detail=f"Chat session {session_id} not found")
-    except Exception as e:
-        logger.error(f"Message processing failed: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Message processing failed: {str(e)}")
-
-@router.post("/sessions/{session_id}/stream", response_class=StreamingResponse)
-async def stream_message(session_id: str, message: ChatMessage):
-    """
-    Stream a response for a chat message.
-    
-    Args:
-        session_id: The chat session ID
-        message: The chat message to process
-        
-    Returns:
-        Streaming response with chunks of the generated response
-        
-    Raises:
-        HTTPException if session not found or processing fails
-    """
-    logger.info(f"Streaming response in session {session_id}")
-    
-    try:
-        return StreamingResponse(
-            stream_chat_response(session_id, message),
-            media_type="text/event-stream"
+    if chat_request.stream:
+        # Handle streaming separately
+        raise HTTPException(
+            status_code=400, 
+            detail="Use the /sessions/{session_id}/stream endpoint for streaming"
         )
-    except ValueError:
-        raise HTTPException(status_code=404, detail=f"Chat session {session_id} not found")
+    
+    try:
+        return await process_chat_message(
+            session_id=session_id,
+            message=chat_request.message,
+            file_id=chat_request.file_id,
+            use_rag=chat_request.use_rag
+        )
+    except HTTPException as e:
+        logger.error(f"Error processing chat message: {e.detail}")
+        raise
     except Exception as e:
-        logger.error(f"Message streaming failed: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Message streaming failed: {str(e)}")
+        logger.error(f"Unexpected error processing chat message: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
-@router.websocket("/sessions/{session_id}/ws")
-async def websocket_chat(websocket: WebSocket, session_id: str):
+@router.post("/sessions/{session_id}/stream")
+async def stream_message(session_id: str, chat_request: ChatRequest) -> StreamingResponse:
+    """
+    Stream a chat response.
+    
+    Args:
+        session_id: The chat session ID
+        chat_request: The chat request containing the message
+        
+    Returns:
+        Streaming response with generated text chunks
+        
+    Raises:
+        HTTPException if session not found or processing fails
+    """
+    logger.info(f"Streaming response for session {session_id}")
+    
+    if not chat_request.stream:
+        # If not streaming, redirect to regular endpoint
+        raise HTTPException(
+            status_code=400, 
+            detail="Use the /sessions/{session_id}/messages endpoint for non-streaming"
+        )
+    
+    try:
+        # Use generator to stream response
+        async def generate_stream():
+            async for chunk in stream_chat_response(
+                session_id=session_id,
+                message=chat_request.message,
+                file_id=chat_request.file_id,
+                use_rag=chat_request.use_rag
+            ):
+                # Convert to JSON and yield
+                yield json.dumps(chunk.model_dump()) + "\n"
+        
+        return StreamingResponse(
+            generate_stream(),
+            media_type="application/x-ndjson"
+        )
+    except HTTPException as e:
+        logger.error(f"Error streaming chat response: {e.detail}")
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error streaming chat response: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+@router.websocket("/ws/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, session_id: str):
     """
     WebSocket endpoint for real-time chat.
     
     Args:
         websocket: WebSocket connection
-        session_id: Chat session ID
+        session_id: The chat session ID
     """
-    logger.info(f"WebSocket connection requested for chat session: {session_id}")
-    
     await websocket.accept()
+    logger.info(f"WebSocket connection established for session {session_id}")
     
     try:
-        # Check if session exists
-        try:
-            get_chat_history(session_id)
-        except ValueError:
-            # Create new session if not found
-            create_chat_session(session_id)
+        # Check if session exists or create new one
+        if session_id not in chat_sessions:
+            create_chat_session()
             
         while True:
             # Receive message from client
             data = await websocket.receive_json()
+            message = data.get("message", "")
+            file_id = data.get("file_id")
+            use_rag = data.get("use_rag", True)
             
-            # Process message
-            message = ChatMessage(
-                role=data.get("role", "user"),
-                content=data.get("content", ""),
-                metadata=data.get("metadata", {})
-            )
+            logger.info(f"WebSocket message received: {message[:50]}...")
             
-            # Process in background and stream responses
-            async for chunk in stream_chat_response(session_id, message):
-                await websocket.send_json(chunk.dict())
+            # Process message with streaming
+            async for chunk in stream_chat_response(
+                session_id=session_id,
+                message=message,
+                file_id=file_id,
+                use_rag=use_rag
+            ):
+                # Send chunk to client
+                await websocket.send_json(chunk.model_dump())
                 
     except WebSocketDisconnect:
-        logger.info(f"WebSocket disconnected for chat session: {session_id}")
+        logger.info(f"WebSocket disconnected for session {session_id}")
     except Exception as e:
-        logger.error(f"WebSocket error: {str(e)}", exc_info=True)
-        await websocket.close(code=1011, reason=str(e))
+        logger.error(f"Error in WebSocket connection: {str(e)}")
+        await websocket.close(code=1001)

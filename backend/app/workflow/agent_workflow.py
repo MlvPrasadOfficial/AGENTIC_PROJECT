@@ -11,46 +11,279 @@ import time
 
 from langchain.schema import Document
 from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
 from pydantic import BaseModel, Field
 
 from app.agents.file_upload_agent import FileUploadAgent
 from app.agents.data_profile_agent import DataProfileAgent
 from app.agents.planning_agent import PlanningAgent
+from app.agents.insight_agent import InsightAgent
+from app.agents.visualization_agent import VisualizationAgent
+from app.agents.critique_agent import CritiqueAgent
+from app.agents.debate_agent import DebateAgent
+from app.agents.report_agent import ReportAgent
+from app.agents.base import BaseAgentRequest
 from app.utils.logger import setup_logger
 
 # Setup logger
 logger = setup_logger(__name__)
 
-# Define state schema
+# Define state schema for LangGraph
 class WorkflowState(TypedDict):
-    """State for the agent workflow"""
+    """Enhanced state for the LangGraph agent workflow"""
     query: str
     file_id: Optional[str]
     status: str
     current_agent: str
     agent_results: Dict[str, Any]
+    route_decision: Optional[str]  # "insight" or "visualization"
+    final_output: Optional[Dict[str, Any]]
     error: Optional[str]
     start_time: float
-    
+    session_id: str
 
 class AgentWorkflow:
     """
-    Workflow manager for orchestrating agents using LangGraph.
-    This class manages the flow between agents in the Enterprise Insights Copilot.
+    LangGraph-powered workflow manager for orchestrating all Enterprise Insights agents.
+    Implements conditional routing and multi-agent coordination.
     """
     
     def __init__(self):
-        """Initialize the agent workflow"""
-        # Initialize agents
+        """Initialize the LangGraph agent workflow"""
+        # Initialize all LangChain agents
         self.file_upload_agent = FileUploadAgent()
         self.data_profile_agent = DataProfileAgent()
         self.planning_agent = PlanningAgent()
+        self.insight_agent = InsightAgent()
+        self.visualization_agent = VisualizationAgent()
+        self.critique_agent = CritiqueAgent()
+        self.debate_agent = DebateAgent()
+        self.report_agent = ReportAgent()
         
-        # Build the workflow graph
-        self.workflow = self._build_workflow()
+        # Initialize memory saver for state persistence
+        self.memory = MemorySaver()
+        
+        # Build the LangGraph workflow
+        self.workflow = self._build_langgraph_workflow()
         logger.info("Agent workflow initialized")
     
-    def _build_workflow(self) -> StateGraph:
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """Build the LangGraph workflow with all agents and conditional routing"""
+        
+        # Create the state graph
+        workflow = StateGraph(WorkflowState)
+        
+        # Add all agent nodes
+        workflow.add_node("planning", self._run_planning_agent)
+        workflow.add_node("insight", self._run_insight_agent) 
+        workflow.add_node("visualization", self._run_visualization_agent)
+        workflow.add_node("critique", self._run_critique_agent)
+        workflow.add_node("debate", self._run_debate_agent)
+        workflow.add_node("report", self._run_report_agent)
+        
+        # Set entry point
+        workflow.set_entry_point("planning")
+        
+        # Add conditional routing from planning agent
+        workflow.add_conditional_edges(
+            "planning",
+            self._route_after_planning,
+            {
+                "insight": "insight",
+                "visualization": "visualization",
+                "end": END
+            }
+        )
+        
+        # Add edges from insight/visualization to critique
+        workflow.add_edge("insight", "critique")
+        workflow.add_edge("visualization", "critique")
+        
+        # Add sequential edges through the pipeline
+        workflow.add_edge("critique", "debate")
+        workflow.add_edge("debate", "report")
+        workflow.add_edge("report", END)
+        
+        # Compile the workflow with memory
+        return workflow.compile(checkpointer=self.memory)
+    
+    def _route_after_planning(self, state: WorkflowState) -> str:
+        """Conditional routing logic after planning agent"""
+        planning_result = state.get("agent_results", {}).get("planning", {})
+        
+        # Extract route decision from planning agent result
+        if "route_to" in planning_result:
+            route = planning_result["route_to"].lower()
+            if route in ["insight", "visualization"]:
+                state["route_decision"] = route
+                return route
+        
+        # Default to insight agent if no clear routing decision
+        state["route_decision"] = "insight"
+        return "insight"
+    
+    async def _run_planning_agent(self, state: WorkflowState) -> WorkflowState:
+        """Execute planning agent via LangChain"""
+        state["current_agent"] = "planning"
+        state["status"] = "processing"
+        
+        try:
+            request = BaseAgentRequest(
+                query=state["query"],
+                context_data=state.get("agent_results", {}),
+                file_id=state.get("file_id")
+            )
+            
+            result = await self.planning_agent.run(request)
+            
+            state["agent_results"]["planning"] = {
+                "status": result.status,
+                "result": result.result,
+                "route_to": "insight" if "statistics" in state["query"].lower() else "visualization"
+            }
+            
+            logger.info(f"Planning agent completed: {result.status}")
+            
+        except Exception as e:
+            logger.error(f"Planning agent failed: {e}")
+            state["error"] = str(e)
+            state["status"] = "error"
+        
+        return state
+    
+    async def _run_insight_agent(self, state: WorkflowState) -> WorkflowState:
+        """Execute insight agent via LangChain"""
+        state["current_agent"] = "insight"
+        
+        try:
+            request = BaseAgentRequest(
+                query=state["query"],
+                context_data=state.get("agent_results", {}),
+                file_id=state.get("file_id")
+            )
+            
+            result = await self.insight_agent.run(request)
+            state["agent_results"]["insight"] = {
+                "status": result.status,
+                "result": result.result
+            }
+            
+            logger.info(f"Insight agent completed: {result.status}")
+            
+        except Exception as e:
+            logger.error(f"Insight agent failed: {e}")
+            state["error"] = str(e)
+        
+        return state
+    
+    async def _run_visualization_agent(self, state: WorkflowState) -> WorkflowState:
+        """Execute visualization agent via LangChain"""
+        state["current_agent"] = "visualization"
+        
+        try:
+            request = BaseAgentRequest(
+                query=state["query"],
+                context_data=state.get("agent_results", {}),
+                file_id=state.get("file_id")
+            )
+            
+            result = await self.visualization_agent.run(request)
+            state["agent_results"]["visualization"] = {
+                "status": result.status,
+                "result": result.result
+            }
+            
+            logger.info(f"Visualization agent completed: {result.status}")
+            
+        except Exception as e:
+            logger.error(f"Visualization agent failed: {e}")
+            state["error"] = str(e)
+        
+        return state
+    
+    async def _run_critique_agent(self, state: WorkflowState) -> WorkflowState:
+        """Execute critique agent via LangChain"""
+        state["current_agent"] = "critique"
+        
+        try:
+            request = BaseAgentRequest(
+                query=state["query"],
+                context_data=state.get("agent_results", {}),
+                file_id=state.get("file_id")
+            )
+            
+            result = await self.critique_agent.run(request)
+            state["agent_results"]["critique"] = {
+                "status": result.status,
+                "result": result.result
+            }
+            
+            logger.info(f"Critique agent completed: {result.status}")
+            
+        except Exception as e:
+            logger.error(f"Critique agent failed: {e}")
+            state["error"] = str(e)
+        
+        return state
+    
+    async def _run_debate_agent(self, state: WorkflowState) -> WorkflowState:
+        """Execute debate agent via LangChain"""
+        state["current_agent"] = "debate"
+        
+        try:
+            request = BaseAgentRequest(
+                query=state["query"],
+                context_data=state.get("agent_results", {}),
+                file_id=state.get("file_id")
+            )
+            
+            result = await self.debate_agent.run(request)
+            state["agent_results"]["debate"] = {
+                "status": result.status,
+                "result": result.result
+            }
+            
+            logger.info(f"Debate agent completed: {result.status}")
+            
+        except Exception as e:
+            logger.error(f"Debate agent failed: {e}")
+            state["error"] = str(e)
+        
+        return state
+    
+    async def _run_report_agent(self, state: WorkflowState) -> WorkflowState:
+        """Execute report agent via LangChain"""
+        state["current_agent"] = "report"
+        
+        try:
+            request = BaseAgentRequest(
+                query=state["query"],
+                context_data=state.get("agent_results", {}),
+                file_id=state.get("file_id")
+            )
+            
+            result = await self.report_agent.run(request)
+            state["agent_results"]["report"] = {
+                "status": result.status,
+                "result": result.result
+            }
+            
+            # Set final output
+            state["final_output"] = {
+                "analysis_results": state["agent_results"],
+                "route_taken": state.get("route_decision", "insight"),
+                "completion_time": time.time() - state["start_time"]
+            }
+            
+            state["status"] = "completed"
+            logger.info(f"Report agent completed: {result.status}")
+            
+        except Exception as e:
+            logger.error(f"Report agent failed: {e}")
+            state["error"] = str(e)
+            state["status"] = "error"
+        
+        return state
         """
         Build the LangGraph workflow for agent orchestration.
         

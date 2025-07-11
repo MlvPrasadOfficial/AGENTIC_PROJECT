@@ -1,0 +1,5 @@
+cd c:\JUL7PROJECT\frontend ; npm run dev
+
+
+cd c:\JUL7PROJECT\backend ; python main.py
+

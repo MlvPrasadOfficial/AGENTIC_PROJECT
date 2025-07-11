@@ -108,8 +108,8 @@ class ApiClient {
         }
         
         // Add request timestamp
-        config.meta = {
-          ...config.meta,
+        (config as any).meta = {
+          ...(config as any).meta,
           requestStartTime: Date.now()
         };
         
@@ -126,22 +126,23 @@ class ApiClient {
     const responseInterceptor = this.client.interceptors.response.use(
       (response: AxiosResponse) => {
         // Calculate request time
-        const requestTime = Date.now() - (response.config.meta?.requestStartTime || 0);
+        const requestTime = Date.now() - ((response.config as any).meta?.requestStartTime || 0);
         
-        // Format successful response
-        return {
-          data: response.data,
-          success: true,
-          meta: {
+        // Add meta information to response
+        response.data = {
+          ...response.data,
+          _meta: {
             timestamp: new Date().toISOString(),
             processingTime: requestTime,
             requestId: response.headers['x-request-id'] || '',
           }
         };
+        
+        return response;
       },
       (error: AxiosError) => {
         // Handle errors
-        const requestTime = Date.now() - (error.config?.meta?.requestStartTime || 0);
+        const requestTime = Date.now() - ((error.config as any)?.meta?.requestStartTime || 0);
         
         // Format error response
         const errorResponse: ApiResponse = {
@@ -281,6 +282,13 @@ class ApiClient {
         }
       }
     });
+  }
+
+  /**
+   * Get the base URL for the API client
+   */
+  get baseUrl(): string {
+    return this.client.defaults.baseURL || '';
   }
 }
 

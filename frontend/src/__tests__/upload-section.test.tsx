@@ -68,13 +68,13 @@ describe('UploadSection Component', () => {
       const user = userEvent.setup();
       render(<UploadSection />);
 
-      const fileInput = screen.getByLabelText(/browse files/i);
+      const fileInput = screen.getByLabelText(/browse files/i) as HTMLInputElement;
       const testFile = createMockFile('test.csv', 1024, 'text/csv');
 
       await user.upload(fileInput, testFile);
 
       expect(fileInput.files).toHaveLength(1);
-      expect(fileInput.files[0]).toBe(testFile);
+      expect(fileInput.files![0]).toBe(testFile);
     });
 
     it('handles drag and drop file upload', async () => {
@@ -440,10 +440,10 @@ describe('UploadSection Integration', () => {
   });
 
   it('passes file data to parent components', async () => {
-    const onFileUpload = jest.fn();
+    const onFilesUploaded = jest.fn();
     const user = userEvent.setup();
     
-    render(<UploadSection onFileUpload={onFileUpload} />);
+    render(<UploadSection onFilesUploaded={onFilesUploaded} />);
 
     const fileInput = screen.getByLabelText(/browse files/i);
     const testFile = createMockFile('test.csv', 1024, 'text/csv');
@@ -451,7 +451,7 @@ describe('UploadSection Integration', () => {
     await user.upload(fileInput, testFile);
 
     await waitFor(() => {
-      expect(onFileUpload).toHaveBeenCalledWith(
+      expect(onFilesUploaded).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'test.csv',
           size: 1024,

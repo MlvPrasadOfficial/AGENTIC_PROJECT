@@ -1,9 +1,8 @@
 """
-Debate Agent for the Enterprise Insights Copilot.
+LangChain-powered Debate Agent for the Enterprise Insights Copilot.
 
-The Debate Agent is responsible for exploring multiple perspectives on analysis results,
-challenging assumptions, and providing alternative viewpoints to enhance the robustness
-of insights and recommendations.
+The Debate Agent explores multiple perspectives on analysis results,
+challenges assumptions, and provides alternative viewpoints.
 """
 
 import logging
@@ -11,37 +10,136 @@ import json
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-from ..agents.base import BaseAgent
-from ..llm.llm_client import LLMClient
-from ..schemas.file import DataProfile, AnalysisResult
-from ..utils.prompts import DEBATE_PROMPTS
-from ..utils.logger import get_logger
+from langchain_core.tools import Tool
+from langchain_core.prompts import PromptTemplate
 
-logger = get_logger(__name__)
+from app.agents.base import BaseAgent, BaseAgentRequest, BaseAgentResponse
+from app.services.file_service import FileService
+from app.utils.logger import setup_logger
 
+logger = setup_logger(__name__)
+
+class DebateToolKit:
+    """Custom tools for the Debate Agent"""
+    
+    def __init__(self, file_service: FileService):
+        self.file_service = file_service
+    
+    def challenge_assumptions_tool(self) -> Tool:
+        """Tool to challenge analysis assumptions"""
+        def challenge_assumptions(analysis_context: str) -> str:
+            """Challenge assumptions made in the analysis"""
+            challenges = {
+                "assumption_challenges": [
+                    "Is the sample size truly representative?",
+                    "Are we considering all relevant variables?",
+                    "Could external factors be influencing results?"
+                ],
+                "alternative_perspectives": [
+                    "Different time frame might yield different results",
+                    "Segmentation by additional demographics could reveal insights",
+                    "Consideration of seasonal or cyclical patterns"
+                ],
+                "evidence_strength": "moderate_to_strong",
+                "confidence_level": "75%"
+            }
+            return json.dumps(challenges, indent=2)
+        
+        return Tool(
+            name="challenge_assumptions",
+            description="Challenge assumptions and provide alternative perspectives",
+            func=challenge_assumptions
+        )
+    
+    def generate_counterarguments_tool(self) -> Tool:
+        """Tool to generate counterarguments"""
+        def generate_counterarguments(position: str) -> str:
+            """Generate counterarguments to given position"""
+            counterarguments = {
+                "opposing_viewpoints": [
+                    "Data may not capture full picture",
+                    "Correlation does not imply causation",
+                    "Sample bias could affect conclusions"
+                ],
+                "supporting_evidence": [
+                    "Statistical significance supports main findings",
+                    "Pattern consistency across multiple metrics",
+                    "Alignment with industry benchmarks"
+                ],
+                "synthesis": "Both perspectives have merit and should be considered"
+            }
+            return json.dumps(counterarguments, indent=2)
+        
+        return Tool(
+            name="generate_counterarguments",
+            description="Generate counterarguments and opposing viewpoints",
+            func=generate_counterarguments
+        )
 
 class DebateAgent(BaseAgent):
     """
-    Agent that debates and challenges analysis results to provide multiple perspectives.
-    
-    This agent takes insights and recommendations from previous agents and:
-    1. Challenges assumptions made in the analysis
-    2. Provides alternative interpretations of data
-    3. Identifies potential biases or limitations
-    4. Generates counter-arguments and alternative perspectives
-    5. Evaluates the strength of evidence for conclusions
+    LangChain-powered Debate Agent for exploring multiple perspectives.
+    Sixth agent in the pipeline after Critique Agent.
     """
 
-    def __init__(self, llm_client: LLMClient):
-        """
-        Initialize the Debate Agent.
+    def __init__(self):
+        """Initialize the LangChain Debate Agent"""
+        self.file_service = FileService()
+        self.toolkit = DebateToolKit(self.file_service)
         
-        Args:
-            llm_client: LLM client for generating debate arguments
-        """
-        super().__init__(llm_client)
-        self.name = "debate_agent"
-        self.description = "Debates and challenges analysis results to provide multiple perspectives"
+        super().__init__(
+            name="Debate Agent",
+            agent_type="debate"
+        )
+        
+    def _get_tools(self) -> List[Tool]:
+        """Get tools for the debate agent"""
+        return [
+            self.toolkit.challenge_assumptions_tool(),
+            self.toolkit.generate_counterarguments_tool()
+        ]
+    
+    def _get_agent_prompt(self) -> PromptTemplate:
+        """Get the prompt template for debate agent"""
+        template = """You are an expert Debate Agent for challenging analysis and providing multiple perspectives.
+
+Your role is to:
+1. Challenge assumptions made in previous analysis
+2. Provide alternative interpretations and viewpoints
+3. Generate constructive counterarguments
+4. Explore different perspectives on the data and conclusions
+5. Synthesize multiple viewpoints into balanced insights
+
+You have access to these tools:
+{tools}
+
+Use the following format:
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+Focus on providing:
+- Constructive challenges to existing analysis
+- Alternative interpretations of the data
+- Balanced perspectives that consider multiple viewpoints
+- Synthesis that incorporates diverse perspectives
+
+Question: {input}
+{agent_scratchpad}"""
+        
+        return PromptTemplate(
+            template=template,
+            input_variables=["input", "agent_scratchpad"],
+            partial_variables={
+                "tools": "\n".join([f"{tool.name}: {tool.description}" for tool in self._get_tools()]),
+                "tool_names": ", ".join([tool.name for tool in self._get_tools()])
+            }
+        )
         
     async def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """

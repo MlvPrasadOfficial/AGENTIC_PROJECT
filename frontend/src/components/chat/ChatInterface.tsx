@@ -8,14 +8,14 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ChatMessage, chatService } from '@/lib/api/chatService';
+import chatService, { ChatMessage } from '@/lib/api/chatService';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ChatIcon } from '@/components/icons/ChatIcon';
 import { SendIcon } from '@/components/icons/SendIcon';
 import { SuggestionIcon } from '@/components/icons/SuggestionIcon';
 import { HistoryIcon } from '@/components/icons/HistoryIcon';
 import { ReportIcon } from '@/components/icons/ReportIcon';
-import { toast } from '@/components/ui/Toast';
+import { useToast } from '@/components/providers';
 
 /**
  * ChatInterface props
@@ -41,6 +41,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onMessageSent,
   onResponseReceived,
 }) => {
+  // Hook for toast notifications
+  const { addToast } = useToast();
+  
   // State management
   const [inputValue, setInputValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -60,8 +63,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     const loadConversationHistory = async () => {
       try {
-        const history = await chatService.getConversations({ limit: 5 });
-        setConversations(history.map(conv => ({
+        const history = await chatService.getConversations(5);
+        setConversations(history.conversations.map((conv: any) => ({
           id: conv.id,
           title: conv.title
         })));
@@ -72,8 +75,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     const loadReports = async () => {
       try {
-        const reportsList = await chatService.getReports({ limit: 5 });
-        setReports(reportsList.map(report => ({
+        const reportsList = await chatService.getReports(5);
+        setReports(reportsList.reports.map((report: any) => ({
           id: report.id,
           title: report.title
         })));
@@ -94,13 +97,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       const loadConversationMessages = async () => {
         try {
           const conversationMessages = await chatService.getConversationMessages(conversationId);
-          setMessages(conversationMessages);
+          setMessages(conversationMessages.messages);
         } catch (error) {
           console.error('Failed to load conversation messages:', error);
-          toast({
+          addToast({
             type: 'error',
             title: 'Error',
-            message: 'Failed to load conversation history'
+            description: 'Failed to load conversation history'
           });
         }
       };
@@ -139,7 +142,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     // Create a new abort controller for this request
     abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
     
     try {
       // Create a user message
@@ -159,66 +161,43 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       
       // Send message to backend
       const responsePromise = conversationId
-        ? chatService.sendMessage(conversationId, messageText, { fileId: currentFileId, signal })
-        : chatService.createConversation(messageText, { fileId: currentFileId, signal });
+        ? chatService.sendMessage(conversationId, messageText, currentFileId)
+        : chatService.createConversation(messageText, currentFileId);
       
       // Stream response if available
       if ('streamResponse' in chatService) {
         await chatService.streamMessage(
           conversationId || 'new',
           messageText,
-          {
-            fileId: currentFileId,
-            signal,
-            onUpdate: (chunk) => {
-              setCurrentStreamedMessage(prev => prev + chunk);
-            },
-            onComplete: (response) => {
-              // Add complete response to messages
-              setMessages(prev => [
-                ...prev,
-                response
-              ]);
-              
-              // Clear streaming state
-              setCurrentStreamedMessage('');
-              
-              // Set conversation ID if new
-              if (!conversationId && response.conversationId) {
-                setConversationId(response.conversationId);
-              }
-              
-              // Notify parent
-              onResponseReceived?.(response);
-            }
+          currentFileId,
+          (chunk: any) => {
+            setCurrentStreamedMessage(prev => prev + chunk);
           }
         );
       } else {
         // Non-streaming fallback
         const response = await responsePromise;
         
-        // Add response to messages
-        setMessages(prev => [
-          ...prev,
-          response
-        ]);
-        
-        // Set conversation ID if new
-        if (!conversationId && 'conversationId' in response) {
-          setConversationId(response.conversationId);
+        // Handle different response types
+        if (conversationId) {
+          // sendMessage returns ChatMessage
+          setMessages(prev => [...prev, response as ChatMessage]);
+          onResponseReceived?.(response as ChatMessage);
+        } else {
+          // createConversation returns ChatConversation
+          const conversation = response as any;
+          setConversationId(conversation.id);
+          // For new conversations, we'll need to get the initial message separately
         }
-        
-        // Notify parent
-        onResponseReceived?.(response);
       }
     } catch (error) {
       // Only show error if not aborted
       if (!(error instanceof DOMException && error.name === 'AbortError')) {
         console.error('Chat error:', error);
-        toast({
+        addToast({
           type: 'error',
           title: 'Error',
-          message: error instanceof Error ? error.message : 'Failed to send message'
+          description: error instanceof Error ? error.message : 'Failed to send message'
         });
       }
     } finally {
@@ -262,12 +241,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     
     try {
       setIsLoading(true);
-      const report = await chatService.generateReport(conversationId);
+      const report = await chatService.generateReport(conversationId, 'Generated Report');
       
-      toast({
+      addToast({
         type: 'success',
         title: 'Report Generated',
-        message: 'Your report has been generated successfully'
+        description: 'Your report has been generated successfully'
       });
       
       // Add to reports list
@@ -280,10 +259,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       ]);
     } catch (error) {
       console.error('Failed to generate report:', error);
-      toast({
+      addToast({
         type: 'error',
         title: 'Error',
-        message: error instanceof Error ? error.message : 'Failed to generate report'
+        description: error instanceof Error ? error.message : 'Failed to generate report'
       });
     } finally {
       setIsLoading(false);

@@ -1,8 +1,7 @@
+note  1: always use ; instead of && while running commands
+note  2: always mention you are running background or foreground when running commands
 
-note : always use ; instead of && while running commands
 
+task-1: 
 
-task-1: create a file named 'file.txt' in the 'files' folder and create table
-       with sno, status, whether it is backend or frontend, type of file compoenent, name of the File
-
-       create for all the files in both frontend an backend folder above table
+final task: Log ALL changes in TIMESTAMPS - `changelogs/YYYY-MM-DD-HHMMSS_description.md`

@@ -11,11 +11,12 @@ from datetime import datetime
 from pathlib import Path
 import mimetypes
 
-from app.agents.base import BaseAgent, BaseAgentResponse
+from app.agents.base import BaseAgent, BaseAgentResponse, BaseAgentRequest
 from app.services.file_service import FileService
 from app.schemas.file import FileMetadata, FileResponse
 from app.utils.prompts import FILE_UPLOAD_PROMPT, DEFAULT_SYSTEM_MESSAGE
 from app.core.config import settings
+from langchain.prompts import PromptTemplate
 
 class FileUploadAgent(BaseAgent):
     """
@@ -31,38 +32,35 @@ class FileUploadAgent(BaseAgent):
         )
         self.file_service = FileService()
         self.supported_formats = ["csv", "xlsx", "json"]
-        self.max_file_size = settings.MAX_UPLOAD_SIZE
-        self.upload_directory = Path(settings.UPLOAD_DIRECTORY)
+        self.max_file_size = settings.MAX_FILE_SIZE
+        self.upload_directory = Path(settings.UPLOAD_DIR)
         
         # Ensure upload directory exists
         if not self.upload_directory.exists():
             self.upload_directory.mkdir(parents=True, exist_ok=True)
             self.logger.info(f"Created upload directory at {self.upload_directory}")
     
-    async def run(self, 
-                 query: str, 
-                 context: Optional[Dict[str, Any]] = None,
-                 file_id: Optional[str] = None) -> BaseAgentResponse:
+    async def run(self, request: BaseAgentRequest) -> BaseAgentResponse:
         """
         Process an uploaded file.
         
         Args:
-            query: Description or instructions about the file
-            context: Additional context about the file
-            file_id: ID of the file to process
+            request: The agent request containing query, context, and file_id
             
         Returns:
             Agent response with file processing results
         """
         start_time = time.time()
         
-        if not file_id:
+        if not request.file_id:
             return self._create_response(
                 status="error",
                 message="No file ID provided",
                 result={"error": "File ID is required"},
                 processing_time=time.time() - start_time
             )
+        
+        file_id = request.file_id  # <-- Missing line to extract file_id from request
         
         try:
             # Get file metadata
@@ -89,7 +87,7 @@ class FileUploadAgent(BaseAgent):
                 )
             
             # Process file
-            processed_file = await self.file_service.process_file(file_id)
+            await self.file_service.process_file(file_id)
             
             # Get structure summary
             file_structure = await self._get_file_structure(file_id)
@@ -210,3 +208,43 @@ class FileUploadAgent(BaseAgent):
         except Exception as e:
             self.logger.error(f"Error generating file summary: {str(e)}")
             return "Unable to generate file summary due to an error."
+    
+    def _get_tools(self) -> List:
+        """Get the tools for this agent"""
+        # File Upload Agent doesn't need complex tools since it mainly validates files
+        return []
+    
+    def _get_agent_prompt(self) -> PromptTemplate:
+        """Get the prompt template for this agent"""
+        # ReAct agent prompt template for file upload validation
+        template = """You are a file upload validation agent. Your job is to validate and process uploaded files.
+
+You have access to the following tools:
+{tools}
+
+Use the following format:
+
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+For file upload tasks:
+1. Validate the file format and size
+2. Check file structure and content
+3. Process the file if valid
+4. Report validation results
+
+Begin!
+
+Question: {input}
+{agent_scratchpad}"""
+        
+        return PromptTemplate(
+            input_variables=["input", "tools", "tool_names", "agent_scratchpad"],
+            template=template
+        )

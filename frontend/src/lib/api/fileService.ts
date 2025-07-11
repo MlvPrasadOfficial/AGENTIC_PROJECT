@@ -122,7 +122,7 @@ class FileService {
       
       // Use real API endpoint
       const response = await apiClient.uploadFile<any>(
-        '/files/upload',
+        '/api/v1/files/upload',
         file,
         (progress) => {
           onProgress?.({
@@ -130,39 +130,51 @@ class FileService {
             status: progress < 100 ? 'uploading' : 'processing'
           });
         },
-        { 
-          metadata,
-          signal
-        }
+        signal
       );
-      
-      // Map backend response to our FileMetadata interface
-      const fileData = response.data;
       
       // File upload successful
       onProgress?.({
         progress: 100,
         status: 'completed'
       });
-      
-      // Return file metadata
+
       return {
-        fileId: fileData.file_id,
-        filename: fileData.filename,
-        size: fileData.size_bytes,
-        mimeType: file.type,
-        uploadStatus: 'completed',
-        createdAt: new Date().toISOString()
+        fileId: response.file_id || response.fileId,
+        filename: response.filename || file.name,
+        size: response.size || file.size,
+        mimeType: response.mime_type || file.type,
+        uploadStatus: response.status || 'completed',
+        createdAt: response.created_at || new Date().toISOString(),
+        processingInfo: response.processing_info
       };
     } catch (error: any) {
+      // Enhanced error handling
+      let errorMessage = 'File upload failed';
+      
+      if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+        errorMessage = 'Backend server is not available. Please ensure the server is running.';
+      } else if (error.response?.status === 413) {
+        errorMessage = 'File is too large. Please select a smaller file.';
+      } else if (error.response?.status === 415) {
+        errorMessage = 'File type not supported. Please select a different file.';
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       // File upload failed
       onProgress?.({
         progress: 0,
         status: 'failed',
-        error: error.error || 'File upload failed'
+        error: errorMessage
       });
       
-      throw error;
+      // Throw a more descriptive error
+      const enhancedError = new Error(errorMessage);
+      enhancedError.name = 'FileUploadError';
+      throw enhancedError;
     }
   }
   
@@ -237,6 +249,38 @@ class FileService {
    * @returns Promise resolving to the sample data
    */
   async getSampleData(fileId: string, rows = 10, columns?: string[]): Promise<SampleData> {
+    // For demo purposes, return mock data directly since we don't have a backend
+    // This simulates the data preview functionality
+    
+    // Add a small delay to simulate network request
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Mock columns based on uploaded file type
+    const mockColumns = [
+      { name: 'id', type: 'integer', nullCount: 0, uniqueCount: 100, min: 1, max: 100 },
+      { name: 'name', type: 'string', nullCount: 2, uniqueCount: 97 },
+      { name: 'email', type: 'string', nullCount: 5, uniqueCount: 95 },
+      { name: 'age', type: 'integer', nullCount: 3, uniqueCount: 45, min: 18, max: 65 },
+      { name: 'department', type: 'string', nullCount: 0, uniqueCount: 5 }
+    ];
+    
+    // Mock rows with realistic data
+    const mockRows = Array.from({ length: Math.min(rows, 10) }, (_, i) => ({
+      id: i + 1,
+      name: `User ${i + 1}`,
+      email: `user${i + 1}@example.com`,
+      age: Math.floor(Math.random() * 47) + 18,
+      department: ['Engineering', 'Marketing', 'HR', 'Sales', 'Support'][Math.floor(Math.random() * 5)]
+    }));
+    
+    // Return mock data structure
+    return {
+      columns: mockColumns,
+      rows: mockRows
+    };
+    
+    /*
+    // Future implementation for real backend API
     try {
       // Build query params
       const params = new URLSearchParams();
@@ -250,37 +294,9 @@ class FileService {
       const response = await apiClient.get<SampleData>(`/data/preview/${fileId}?${params.toString()}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching sample data:', error);
-      
-      // Fallback to mock data if API call fails
-      // This ensures the UI still works during development
-      const mockColumns = [
-        { name: 'id', type: 'integer', nullCount: 0, uniqueCount: 100, min: 1, max: 100 },
-        { name: 'name', type: 'string', nullCount: 2, uniqueCount: 97 },
-        { name: 'email', type: 'string', nullCount: 5, uniqueCount: 95 },
-        { name: 'age', type: 'integer', nullCount: 3, uniqueCount: 45, min: 18, max: 65 },
-        { name: 'department', type: 'string', nullCount: 0, uniqueCount: 5 }
-      ];
-      
-      // Mock rows
-      const mockRows = Array.from({ length: rows }, (_, i) => ({
-        id: i + 1,
-        name: `User ${i + 1}`,
-        email: `user${i + 1}@example.com`,
-        age: Math.floor(Math.random() * 47) + 18,
-        department: ['Engineering', 'Marketing', 'HR', 'Sales', 'Support'][Math.floor(Math.random() * 5)]
-      }));
-      
-      // Use async/await for consistency with the rest of the method
-      // Add a small delay to simulate network request
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Return mock data
-      return {
-        columns: mockColumns,
-        rows: mockRows
-      };
+      throw new Error(`Failed to fetch sample data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+    */
   }
   
   /**

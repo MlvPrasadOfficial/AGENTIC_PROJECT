@@ -6,7 +6,7 @@
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import health, files, agents, chat, auth, preview
+from app.api.v1.endpoints import health, files, agents, chat, auth, preview, websocket, vector
 
 # Create main API router
 api_router = APIRouter()
@@ -18,3 +18,5 @@ api_router.include_router(preview.router, prefix="/data/preview", tags=["preview
 api_router.include_router(agents.router, prefix="/agents", tags=["agents"])
 api_router.include_router(chat.router, prefix="/chat", tags=["chat"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(websocket.router, prefix="/ws", tags=["websocket"])
+api_router.include_router(vector.router, prefix="/vector", tags=["vector"])

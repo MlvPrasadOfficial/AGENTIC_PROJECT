@@ -53,6 +53,24 @@ Your task is to decide which agent should handle this query. Respond with:
 Explain your reasoning briefly."""
 
 # Insight Agent prompts
+INSIGHT_ANALYSIS_PROMPT = """Generate detailed insights from the data based on the user's query.
+Focus on extracting meaningful patterns, trends, anomalies, and actionable intelligence.
+
+User Query: {query}
+
+Data Context:
+{data_context}
+
+Analysis Requirements:
+- Identify key patterns and trends
+- Highlight any anomalies or outliers
+- Provide statistical summaries where relevant
+- Extract actionable business insights
+- Consider correlations and relationships
+- Address the specific aspects mentioned in the query
+
+Provide comprehensive insights that directly address the user's query with clear explanations and recommendations."""
+
 INSIGHT_PROMPT = """Generate detailed insights from the data based on the user's query.
 Focus on extracting meaningful patterns, trends, anomalies, and actionable intelligence.
 
@@ -64,6 +82,31 @@ Data Context:
 Provide comprehensive insights that address the user's query."""
 
 # Viz Agent prompts
+VISUALIZATION_PROMPT = """Create a D3.js visualization configuration based on the user's query.
+You need to determine the most appropriate chart type and configuration.
+
+User Query: {query}
+
+Data Context:
+{data_context}
+
+Chart Requirements:
+- Select the most appropriate chart type for the data and query
+- Configure proper data mapping and transformations
+- Set up axes, labels, and legends appropriately
+- Choose an effective color scheme
+- Ensure the visualization clearly addresses the user's question
+
+Provide a complete configuration object for D3.js that includes:
+1. Chart type (bar, line, pie, scatter, histogram, box plot, etc.)
+2. Data mapping and transformations
+3. Axes configuration (if applicable)
+4. Color scheme and styling
+5. Legend and labels
+6. Interactive features (if appropriate)
+
+The configuration should be in valid JSON format and ready to use with D3.js."""
+
 VIZ_PROMPT = """Create a D3.js visualization configuration based on the user's query.
 You need to determine the most appropriate chart type and configuration.
 

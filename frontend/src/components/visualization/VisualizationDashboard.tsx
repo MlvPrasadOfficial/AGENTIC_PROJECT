@@ -11,33 +11,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { BarChartIcon } from '@/components/icons/BarChartIcon';
-import { PieChartIcon } from '@/components/icons/PieChartIcon';
-import { LineChartIcon } from '@/components/icons/LineChart';
 import { TableIcon } from '@/components/icons/TableIcon';
-import { TrendIcon } from '@/components/icons/TrendIcon';
-import { agentService } from '@/lib/api/agentService';
-import { Toast } from '@/components/ui/Toast';
+import agentService from '@/lib/api/agentService';
+import { useToast } from '@/components/providers';
 
-/**
- * Chart configuration
- */
-interface ChartConfig {
-  /** Chart type */
-  type: 'bar' | 'line' | 'pie' | 'area' | 'table';
-  /** Chart title */
-  title: string;
-  /** Data source (query or file ID) */
-  dataSource: string;
-  /** Chart dimensions */
-  dimensions: {
-    /** Chart width */
-    width: number;
-    /** Chart height */
-    height: number;
-  };
-  /** Chart options */
-  options: Record<string, any>;
-}
 
 /**
  * Chart data with metadata
@@ -90,6 +67,9 @@ export const VisualizationDashboard: React.FC<VisualizationDashboardProps> = ({
   workflowId,
   showDataTable = true,
 }) => {
+  // Hook for toast notifications
+  const { addToast } = useToast();
+  
   // State for charts and data
   const [charts, setCharts] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -135,10 +115,10 @@ export const VisualizationDashboard: React.FC<VisualizationDashboardProps> = ({
       console.error('Failed to load visualizations:', error);
       setError('Failed to load visualizations. Please try again.');
       
-      Toast({
+      addToast({
         type: 'error',
         title: 'Visualization Error',
-        message: error instanceof Error ? error.message : 'Failed to load visualizations'
+        description: error instanceof Error ? error.message : 'Failed to load visualizations'
       });
     } finally {
       setIsLoading(false);
@@ -165,10 +145,10 @@ export const VisualizationDashboard: React.FC<VisualizationDashboardProps> = ({
     } catch (error) {
       console.error('Failed to load sample data:', error);
       
-      Toast({
+      addToast({
         type: 'error',
         title: 'Data Load Error',
-        message: error instanceof Error ? error.message : 'Failed to load data preview'
+        description: error instanceof Error ? error.message : 'Failed to load data preview'
       });
     }
   };
@@ -183,7 +163,7 @@ export const VisualizationDashboard: React.FC<VisualizationDashboardProps> = ({
     d3.select(chartsContainerRef.current).selectAll('.chart-container').remove();
     
     // Render each chart
-    charts.forEach((chart, index) => {
+    charts.forEach((chart) => {
       const chartContainer = d3.select(chartsContainerRef.current)
         .append('div')
         .attr('class', 'chart-container mb-8 p-4 bg-blue-900/20 rounded-lg')
@@ -578,7 +558,7 @@ export const VisualizationDashboard: React.FC<VisualizationDashboardProps> = ({
   return (
     <GlassCard size="xl" variant="elevated" blurIntensity="strong" className="glass-card-dashboard w-full">
       <div className="flex items-center gap-3 mb-6">
-        <BarChartIcon className="icon text-blue-300 text-2xl" aria-label="Visualization" title="Visualization" />
+        <BarChartIcon className="icon text-blue-300 text-2xl" aria-label="Visualization" />
         <h2 className="text-xl font-semibold text-white">Visualization Dashboard</h2>
       </div>
       

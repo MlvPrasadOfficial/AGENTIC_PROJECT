@@ -1,8 +1,8 @@
 # LLM Client
 # File: llm_client.py
 # Author: GitHub Copilot
-# Date: 2025-07-08
-# Purpose: Client for interacting with LLaMA and other LLM models
+# Date: 2025-07-11
+# Purpose: Enhanced client for interacting with Ollama locally and other LLM models
 
 import os
 import time
@@ -11,6 +11,9 @@ from typing import Dict, Any, Optional, List, Union
 import requests
 import httpx
 from pydantic import BaseModel
+
+from langchain_ollama import OllamaLLM
+from langchain_core.prompts import PromptTemplate
 
 from app.core.config import settings
 from app.utils.logger import setup_logger
@@ -37,21 +40,99 @@ class LLMResponse(BaseModel):
 
 class LLMClient:
     """
-    Client for interacting with LLaMA and other LLM models.
-    Supports both local LLaMA models via Ollama and remote API models.
+    Enhanced client for interacting with Ollama locally and other LLM models.
+    Supports both local Ollama models and remote API models with better connection handling.
     """
     
     def __init__(self):
-        """Initialize the LLM client"""
-        self.model = settings.LLM_MODEL
+        """Initialize the enhanced LLM client"""
+        self.model = settings.OLLAMA_MODEL
         self.api_key = settings.LLM_API_KEY
         self.use_local = settings.USE_LOCAL_LLM
-        self.local_url = settings.LOCAL_LLM_URL
+        self.local_url = settings.OLLAMA_BASE_URL
         self.api_url = settings.LLM_API_URL
         self.cache = {}  # Simple in-memory cache
-        self.cache_ttl = settings.LLM_CACHE_TTL  # Time-to-live for cache entries in seconds
+        self.cache_ttl = settings.LLM_CACHE_TTL
         
-        logger.info(f"Initialized LLM client with model: {self.model}, local: {self.use_local}")
+        # Initialize LangChain Ollama client for better local integration
+        try:
+            self.ollama_llm = OllamaLLM(
+                model=self.model,
+                base_url=self.local_url,
+                temperature=settings.OLLAMA_TEMPERATURE,
+                timeout=settings.OLLAMA_TIMEOUT
+            )
+            logger.info(f"Initialized LangChain Ollama client with model: {self.model}")
+        except Exception as e:
+            logger.error(f"Failed to initialize Ollama client: {e}")
+            self.ollama_llm = None
+        
+        logger.info(f"Initialized enhanced LLM client with model: {self.model}, local: {self.use_local}")
+    
+    async def check_ollama_connection(self) -> bool:
+        """
+        Check if Ollama server is running and accessible.
+        
+        Returns:
+            True if Ollama is accessible, False otherwise
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{self.local_url}/api/tags",
+                    timeout=5.0
+                )
+                if response.status_code == 200:
+                    models = response.json().get("models", [])
+                    available_models = [model["name"] for model in models]
+                    logger.info(f"Ollama server accessible. Available models: {available_models}")
+                    
+                    # Check if our model is available
+                    if not any(self.model in model_name for model_name in available_models):
+                        logger.warning(f"Model {self.model} not found in available models: {available_models}")
+                        return False
+                    
+                    return True
+                else:
+                    logger.error(f"Ollama server returned status: {response.status_code}")
+                    return False
+                    
+        except Exception as e:
+            logger.error(f"Failed to connect to Ollama server at {self.local_url}: {e}")
+            return False
+    
+    async def pull_model_if_needed(self) -> bool:
+        """
+        Pull the model if it's not available locally.
+        
+        Returns:
+            True if model is available, False otherwise
+        """
+        try:
+            # Check if model is already available
+            if await self.check_ollama_connection():
+                return True
+            
+            logger.info(f"Pulling model {self.model} from Ollama...")
+            
+            # Pull the model
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.local_url}/api/pull",
+                    json={"name": self.model},
+                    timeout=300.0  # 5 minutes for model download
+                )
+                
+                if response.status_code == 200:
+                    logger.info(f"Successfully pulled model {self.model}")
+                    return True
+                else:
+                    logger.error(f"Failed to pull model: {response.text}")
+                    return False
+                    
+        except Exception as e:
+            logger.error(f"Error pulling model: {e}")
+            return False
     
     async def generate(self, request: LLMRequest) -> LLMResponse:
         """
@@ -77,7 +158,13 @@ class LLMClient:
         # Generate text based on configuration
         try:
             if self.use_local:
-                response = await self._generate_local(request)
+                # Check Ollama connection first
+                if not await self.check_ollama_connection():
+                    # Try to pull model if needed
+                    if not await self.pull_model_if_needed():
+                        raise Exception("Ollama server not accessible and model pull failed")
+                
+                response = await self._generate_local_enhanced(request)
             else:
                 response = await self._generate_api(request)
                 
@@ -86,16 +173,64 @@ class LLMClient:
                 self._add_to_cache(cache_key, response)
                 
             return response
+            
         except Exception as e:
             logger.error(f"Error generating text from LLM: {str(e)}")
             # Return fallback response
             return LLMResponse(
-                text="I'm sorry, I encountered an error and couldn't process your request.",
+                text="I'm sorry, I encountered an error and couldn't process your request. Please ensure Ollama is running locally with the required model.",
                 finish_reason="error",
                 model=self.model,
                 usage={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
                 processing_time=time.time() - start_time
             )
+    
+    async def _generate_local_enhanced(self, request: LLMRequest) -> LLMResponse:
+        """
+        Generate text using enhanced local Ollama integration with LangChain.
+        
+        Args:
+            request: The LLM request
+            
+        Returns:
+            LLM response with generated text
+        """
+        start_time = time.time()
+        
+        try:
+            # Use LangChain Ollama client if available
+            if self.ollama_llm:
+                # Prepare prompt with system message
+                full_prompt = request.prompt
+                if request.system_message:
+                    full_prompt = f"System: {request.system_message}\n\nUser: {request.prompt}"
+                
+                # Generate response
+                response_text = await self.ollama_llm.ainvoke(full_prompt)
+                
+                # Estimate token usage (rough approximation)
+                prompt_tokens = len(request.prompt.split()) + (len(request.system_message.split()) if request.system_message else 0)
+                completion_tokens = len(response_text.split())
+                
+                return LLMResponse(
+                    text=response_text,
+                    finish_reason="stop",
+                    model=self.model,
+                    usage={
+                        "prompt_tokens": prompt_tokens,
+                        "completion_tokens": completion_tokens,
+                        "total_tokens": prompt_tokens + completion_tokens
+                    },
+                    processing_time=time.time() - start_time
+                )
+            else:
+                # Fallback to direct HTTP API
+                return await self._generate_local(request)
+                
+        except Exception as e:
+            logger.error(f"Error in enhanced local generation: {e}")
+            # Fallback to original method
+            return await self._generate_local(request)
     
     async def _generate_local(self, request: LLMRequest) -> LLMResponse:
         """
@@ -129,7 +264,7 @@ class LLMClient:
             response = await client.post(
                 f"{self.local_url}/api/generate",
                 json=ollama_request,
-                timeout=settings.LLM_REQUEST_TIMEOUT
+                timeout=settings.OLLAMA_TIMEOUT
             )
             
             if response.status_code != 200:

@@ -1,0 +1,322 @@
+# Vector Store with Pinecone Integration
+# File: vector_store.py
+# Author: GitHub Copilot
+# Date: 2025-07-11
+# Purpose: Pinecone vector database integration for Enterprise Insights Copilot
+
+import time
+import uuid
+from typing import List, Dict, Any, Optional, Tuple
+from datetime import datetime
+
+try:
+    from pinecone import Pinecone, ServerlessSpec
+    PINECONE_AVAILABLE = True
+except ImportError:
+    PINECONE_AVAILABLE = False
+    print("WARNING: Pinecone not available. Vector store will run in local-only mode.")
+
+try:
+    from sentence_transformers import SentenceTransformer
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
+    print("WARNING: SentenceTransformers not available. Embeddings will be disabled.")
+
+import numpy as np
+from pydantic import BaseModel
+
+from app.core.config import settings
+from app.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+class VectorDocument(BaseModel):
+    """Document model for vector storage"""
+    id: str
+    content: str
+    metadata: Dict[str, Any]
+    embedding: Optional[List[float]] = None
+
+class VectorSearchResult(BaseModel):
+    """Search result model"""
+    id: str
+    content: str
+    metadata: Dict[str, Any]
+    score: float
+
+class PineconeVectorStore:
+    """
+    Pinecone vector database client for storing and searching document embeddings.
+    Supports local embedding generation using SentenceTransformers.
+    """
+    
+    def __init__(self):
+        """Initialize Pinecone vector store"""
+        self.pc = None
+        self.index = None
+        self.embedding_model = None
+        self.dimension = settings.PINECONE_DIMENSION
+        self.index_name = settings.PINECONE_INDEX_NAME
+        self.namespace = "default"
+        
+        # Initialize embedding model for local embeddings
+        if SENTENCE_TRANSFORMERS_AVAILABLE:
+            try:
+                self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+                self.dimension = self.embedding_model.get_sentence_embedding_dimension()
+                logger.info(f"SUCCESS: Initialized SentenceTransformer with dimension: {self.dimension}")
+            except Exception as e:
+                logger.error(f"WARNING: Failed to initialize embedding model: {e}")
+                self.embedding_model = None
+        else:
+            logger.warning("WARNING: SentenceTransformers not available, embeddings disabled")
+    
+    async def initialize(self) -> bool:
+        """
+        Initialize Pinecone connection and create index if needed.
+        
+        Returns:
+            True if initialization successful, False otherwise
+        """
+        try:
+            # Initialize Pinecone client
+            if not settings.PINECONE_API_KEY:
+                logger.warning("WARNING: PINECONE_API_KEY not set, using local fallback mode")
+                return False
+            
+            if not PINECONE_AVAILABLE:
+                logger.warning("WARNING: Pinecone library not available, using local fallback mode")
+                return False
+            
+            self.pc = Pinecone(api_key=settings.PINECONE_API_KEY)
+            
+            # Check if index exists, create if not
+            existing_indexes = self.pc.list_indexes().names()
+            
+            if self.index_name not in existing_indexes:
+                logger.info(f"Creating Pinecone index: {self.index_name}")
+                self.pc.create_index(
+                    name=self.index_name,
+                    dimension=self.dimension,
+                    metric=settings.PINECONE_METRIC,
+                    spec=ServerlessSpec(
+                        cloud=settings.PINECONE_CLOUD,
+                        region=settings.PINECONE_REGION
+                    )
+                )
+                
+                # Wait for index to be ready
+                while not self.pc.describe_index(self.index_name).status['ready']:
+                    time.sleep(1)
+                    
+                logger.info(f"Index {self.index_name} created successfully")
+            
+            # Connect to index
+            self.index = self.pc.Index(self.index_name)
+            logger.info(f"Connected to Pinecone index: {self.index_name}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize Pinecone: {e}")
+            return False
+    
+    def generate_embedding(self, text: str) -> List[float]:
+        """
+        Generate embedding for text using local SentenceTransformer.
+        
+        Args:
+            text: Text to embed
+            
+        Returns:
+            List of embedding values
+        """
+        try:
+            if not self.embedding_model:
+                raise ValueError("Embedding model not initialized")
+                
+            # Generate embedding
+            embedding = self.embedding_model.encode(text)
+            
+            # Convert to list and ensure correct dimension
+            embedding_list = embedding.tolist()
+            
+            if len(embedding_list) != self.dimension:
+                logger.warning(f"Embedding dimension mismatch: {len(embedding_list)} vs {self.dimension}")
+            
+            return embedding_list
+            
+        except Exception as e:
+            logger.error(f"Error generating embedding: {e}")
+            # Return zero vector as fallback
+            return [0.0] * self.dimension
+    
+    async def upsert_documents(self, documents: List[VectorDocument]) -> bool:
+        """
+        Upsert documents into Pinecone index.
+        
+        Args:
+            documents: List of documents to upsert
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            if not self.index:
+                logger.error("Pinecone index not initialized")
+                return False
+            
+            # Prepare vectors for upsert
+            vectors = []
+            for doc in documents:
+                # Generate embedding if not provided
+                if not doc.embedding:
+                    doc.embedding = self.generate_embedding(doc.content)
+                
+                # Add timestamp to metadata
+                metadata = doc.metadata.copy()
+                metadata.update({
+                    "content": doc.content,
+                    "timestamp": datetime.now().isoformat(),
+                    "content_length": len(doc.content)
+                })
+                
+                vectors.append({
+                    "id": doc.id,
+                    "values": doc.embedding,
+                    "metadata": metadata
+                })
+            
+            # Upsert in batches
+            batch_size = settings.PINECONE_BATCH_SIZE
+            for i in range(0, len(vectors), batch_size):
+                batch = vectors[i:i + batch_size]
+                self.index.upsert(
+                    vectors=batch,
+                    namespace=self.namespace
+                )
+                logger.info(f"Upserted batch {i//batch_size + 1} with {len(batch)} vectors")
+            
+            logger.info(f"Successfully upserted {len(documents)} documents")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error upserting documents: {e}")
+            return False
+    
+    async def search(self, 
+                    query: str, 
+                    top_k: int = None, 
+                    filter_dict: Dict[str, Any] = None) -> List[VectorSearchResult]:
+        """
+        Search for similar documents in Pinecone.
+        
+        Args:
+            query: Search query text
+            top_k: Number of results to return
+            filter_dict: Metadata filters
+            
+        Returns:
+            List of search results
+        """
+        try:
+            if not self.index:
+                logger.error("Pinecone index not initialized")
+                return []
+            
+            if top_k is None:
+                top_k = settings.PINECONE_TOP_K
+            
+            # Generate query embedding
+            query_embedding = self.generate_embedding(query)
+            
+            # Perform search
+            search_response = self.index.query(
+                vector=query_embedding,
+                top_k=top_k,
+                include_metadata=settings.PINECONE_INCLUDE_METADATA,
+                include_values=settings.PINECONE_INCLUDE_VALUES,
+                namespace=self.namespace,
+                filter=filter_dict
+            )
+            
+            # Parse results
+            results = []
+            for match in search_response.matches:
+                result = VectorSearchResult(
+                    id=match.id,
+                    content=match.metadata.get("content", ""),
+                    metadata={k: v for k, v in match.metadata.items() if k != "content"},
+                    score=float(match.score)
+                )
+                results.append(result)
+            
+            logger.info(f"Found {len(results)} similar documents for query: {query[:50]}...")
+            return results
+            
+        except Exception as e:
+            logger.error(f"Error searching documents: {e}")
+            return []
+    
+    async def delete_documents(self, document_ids: List[str]) -> bool:
+        """
+        Delete documents from Pinecone index.
+        
+        Args:
+            document_ids: List of document IDs to delete
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            if not self.index:
+                logger.error("Pinecone index not initialized")
+                return False
+            
+            # Delete documents
+            self.index.delete(
+                ids=document_ids,
+                namespace=self.namespace
+            )
+            
+            logger.info(f"Deleted {len(document_ids)} documents")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error deleting documents: {e}")
+            return False
+    
+    async def get_index_stats(self) -> Dict[str, Any]:
+        """
+        Get statistics about the Pinecone index.
+        
+        Returns:
+            Dictionary with index statistics
+        """
+        try:
+            if not self.index:
+                logger.error("Pinecone index not initialized")
+                return {}
+            
+            stats = self.index.describe_index_stats()
+            
+            return {
+                "total_vectors": stats.total_vector_count,
+                "dimension": stats.dimension,
+                "index_fullness": stats.index_fullness,
+                "namespaces": dict(stats.namespaces) if stats.namespaces else {}
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting index stats: {e}")
+            return {}
+
+# Create singleton instance
+vector_store = PineconeVectorStore()
+
+async def get_vector_store() -> PineconeVectorStore:
+    """Get vector store instance for dependency injection"""
+    if not vector_store.index:
+        await vector_store.initialize()
+    return vector_store

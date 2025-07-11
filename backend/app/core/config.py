@@ -10,6 +10,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Application settings
+    PROJECT_NAME: str = "Enterprise Insights Copilot"
+    PROJECT_DESCRIPTION: str = "AI-powered data analysis and insights platform with multi-agent workflow"
     APP_NAME: str = "Agentic Copilot"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = True
@@ -34,6 +36,7 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 100000000  # 100MB
     ALLOWED_EXTENSIONS: List[str] = ["csv", "xlsx", "xls", "json", "txt", "pdf"]
     UPLOAD_TIMEOUT: int = 300
+    GENERATE_FILE_SUMMARY: bool = True
     
     # Database settings (SQLite for simplicity in this prototype)
     DATABASE_URL: str = "sqlite:///./agentic_copilot.db"
@@ -94,8 +97,8 @@ class Settings(BaseSettings):
     PINECONE_API_KEY: Optional[str] = None
     PINECONE_ENVIRONMENT: str = "us-east-1"
     PINECONE_INDEX_NAME: str = "pineindex"
-    PINECONE_HOST: Optional[str] = None
-    PINECONE_DIMENSION: int = 384
+    PINECONE_HOST: Optional[str] = "https://pineindex-z6a2ifp.svc.aped-4627-b74a.pinecone.io"
+    PINECONE_DIMENSION: int = 1024  # Updated to match llama-text-embed-v2
     PINECONE_METRIC: str = "cosine"
     PINECONE_CLOUD: str = "aws"
     PINECONE_REGION: str = "us-east-1"
@@ -112,6 +115,15 @@ class Settings(BaseSettings):
     OLLAMA_TIMEOUT: int = 120
     OLLAMA_TEMPERATURE: float = 0.7
     OLLAMA_MAX_TOKENS: int = 2048
+    
+    # RAG settings
+    RAG_CHUNK_SIZE: int = 1000
+    RAG_CHUNK_OVERLAP: int = 200
+    RAG_TOP_K: int = 5
+    RAG_SIMILARITY_THRESHOLD: float = 0.7
+    RAG_EMBEDDING_DIM: int = 384
+    RAG_INDEX_DIR: str = "rag_index"
+    RAG_ENABLE_RERANKING: bool = True
     
     # LangChain settings
     LANGCHAIN_TRACING_V2: bool = True

@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Query, Path
 from pydantic import BaseModel, Field
 
 from app.utils.logger import setup_logger
-from app.services.file_service import get_file_preview, FileService
+from app.services.file_service import FileService
 
 logger = setup_logger(__name__)
 router = APIRouter()

@@ -329,6 +329,82 @@ class AgentService {
     
     return reportStatus;
   }
+  
+  /**
+   * Get status of all agents (placeholder method)
+   */
+  async getAgentStatuses(): Promise<any[]> {
+    console.warn('getAgentStatuses not implemented');
+    return [];
+  }
+  
+  /**
+   * Get active workflows (placeholder method)
+   */
+  async getActiveWorkflows(): Promise<any[]> {
+    console.warn('getActiveWorkflows not implemented');
+    return [];
+  }
+  
+  /**
+   * Get workflow status (placeholder method)
+   */
+  async getWorkflowStatus(_workflowId: string): Promise<any> {
+    console.warn('getWorkflowStatus not implemented');
+    return { agentStatuses: [] };
+  }
+  
+  /**
+   * Start workflow (placeholder method)
+   */
+  async startWorkflow(_params: any): Promise<any> {
+    console.warn('startWorkflow not implemented');
+    return { id: 'mock-workflow-id' };
+  }
+  
+  /**
+   * Pause workflow (placeholder method)
+   */
+  async pauseWorkflow(_workflowId: string): Promise<void> {
+    console.warn('pauseWorkflow not implemented');
+  }
+  
+  /**
+   * Resume workflow (placeholder method)
+   */
+  async resumeWorkflow(_workflowId: string): Promise<void> {
+    console.warn('resumeWorkflow not implemented');
+  }
+  
+  /**
+   * Reset workflow (placeholder method)
+   */
+  async resetWorkflow(_workflowId: string): Promise<void> {
+    console.warn('resetWorkflow not implemented');
+  }
+  
+  /**
+   * Get agent logs (placeholder method)
+   */
+  async getAgentLogs(_workflowId: string, _agentId: string): Promise<any[]> {
+    console.warn('getAgentLogs not implemented');
+    return [];
+  }
+  
+  /**
+   * Download report (placeholder method)
+   */
+  async downloadReport(_workflowId: string): Promise<void> {
+    console.warn('downloadReport not implemented');
+  }
+  
+  /**
+   * Get workflow visualizations (placeholder method)
+   */
+  async getWorkflowVisualizations(_workflowId: string): Promise<any[]> {
+    console.warn('getWorkflowVisualizations not implemented');
+    return [];
+  }
 }
 
 // Create and export the agent service instance

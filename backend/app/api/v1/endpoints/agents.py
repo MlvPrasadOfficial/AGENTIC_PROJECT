@@ -4,6 +4,8 @@
 # Date: 2025-07-08
 # Purpose: Endpoints for agent operations in the Enterprise Insights Copilot backend
 
+import time
+import asyncio
 from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Depends
 
@@ -12,10 +14,10 @@ from app.agents.base import BaseAgentResponse
 from app.schemas.agent import (
     AgentRequest, 
     AgentResponse, 
-    PipelineStatus,
+    PipelineStatusInfo,
     AgentType
 )
-from app.services.agent_service import run_agent, get_pipeline_status
+from app.services.agent_service import run_agent, get_pipeline_status, start_pipeline
 from app.workflow.agent_workflow import AgentWorkflow
 
 logger = setup_logger(__name__)
@@ -89,11 +91,11 @@ async def run_single_agent(
         logger.error(f"Agent execution failed: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Agent execution failed: {str(e)}")
 
-@router.post("/pipeline/start", response_model=PipelineStatus)
-async def start_pipeline(
+@router.post("/pipeline/start", response_model=PipelineStatusInfo)
+async def start_pipeline_endpoint(
     request: AgentRequest,
     background_tasks: BackgroundTasks,
-) -> PipelineStatus:
+) -> PipelineStatusInfo:
     """
     Start the full agent pipeline with the given input.
     
@@ -110,23 +112,26 @@ async def start_pipeline(
     
     try:
         # Start the pipeline in background
-        pipeline_id = f"pipeline_{int(time.time())}"
-        background_tasks.add_task(run_pipeline, pipeline_id, request)
+        pipeline_id = await start_pipeline(
+            query=request.query,
+            file_id=request.file_id,
+            context=request.context_data
+        )
         
-        return PipelineStatus(
+        return PipelineStatusInfo(
             pipeline_id=pipeline_id,
             status="started",
             message="Pipeline started successfully",
             progress=0,
-            active_agent=AgentType.file_upload,
+            active_agent=AgentType.FILE_UPLOAD,
             completed_agents=[],
         )
     except Exception as e:
         logger.error(f"Pipeline start failed: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Pipeline start failed: {str(e)}")
 
-@router.get("/pipeline/{pipeline_id}/status", response_model=PipelineStatus)
-async def check_pipeline_status(pipeline_id: str) -> PipelineStatus:
+@router.get("/pipeline/{pipeline_id}/status", response_model=PipelineStatusInfo)
+async def check_pipeline_status(pipeline_id: str) -> PipelineStatusInfo:
     """
     Check the status of a running pipeline.
     

@@ -17,6 +17,7 @@ from app.services.file_service import FileService
 from app.schemas.file import FileMetadata
 from app.utils.prompts import DATA_PROFILE_PROMPT, DEFAULT_SYSTEM_MESSAGE
 from app.core.config import settings
+from langchain.prompts import PromptTemplate
 
 class DataProfileAgent(BaseAgent):
     """
@@ -287,3 +288,43 @@ Based on this profile, provide:
         except Exception as e:
             self.logger.error(f"Error generating profile insights: {str(e)}")
             return "Unable to generate insights due to an error."
+    
+    def _get_tools(self) -> List:
+        """Get the tools for this agent"""
+        # Data Profile Agent doesn't need complex tools since it mainly analyzes data structure
+        return []
+    
+    def _get_agent_prompt(self) -> PromptTemplate:
+        """Get the prompt template for this agent"""
+        # ReAct agent prompt template for data profiling
+        template = """You are a data profiling agent. Your job is to analyze data structure and generate statistical profiles.
+
+You have access to the following tools:
+{tools}
+
+Use the following format:
+
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+For data profiling tasks:
+1. Load and examine the data structure
+2. Calculate statistical summaries
+3. Identify data quality issues
+4. Generate comprehensive profile report
+
+Begin!
+
+Question: {input}
+{agent_scratchpad}"""
+        
+        return PromptTemplate(
+            input_variables=["input", "tools", "tool_names", "agent_scratchpad"],
+            template=template
+        )

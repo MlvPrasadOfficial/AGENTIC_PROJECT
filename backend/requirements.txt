@@ -9,9 +9,13 @@ pydantic-settings>=2.0.3
 httpx>=0.24.1
 
 # LLM and Agent System
-langchain>=0.0.267
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-community>=0.0.20
 langgraph>=0.0.20
-llama-cpp-python>=0.2.6
+langchain-ollama>=0.1.0
+ollama>=0.1.7
+pinecone>=3.0.0
 sentence-transformers>=2.2.2
 faiss-cpu>=1.7.4
 
@@ -39,3 +43,5 @@ loguru>=0.7.0
 # Testing
 pytest>=7.4.0
 pytest-asyncio>=0.21.1
+pytest-cov>=4.1.0
+pytest-mock>=3.11.1

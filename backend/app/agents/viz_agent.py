@@ -19,6 +19,7 @@ from app.agents.base import BaseAgent, BaseAgentResponse
 from app.services.file_service import FileService
 from app.utils.prompts import VISUALIZATION_PROMPT, DEFAULT_SYSTEM_MESSAGE
 from app.core.config import settings
+from langchain.prompts import PromptTemplate
 
 class VizAgent(BaseAgent):
     """
@@ -596,4 +597,44 @@ class VizAgent(BaseAgent):
         return (
             context is not None and 
             "data_profile" in context
+        )
+    
+    def _get_tools(self) -> List:
+        """Get the tools for this agent"""
+        # Viz Agent doesn't need complex tools since it mainly creates visualizations
+        return []
+    
+    def _get_agent_prompt(self) -> PromptTemplate:
+        """Get the prompt template for this agent"""
+        # ReAct agent prompt template for visualization
+        template = """You are a data visualization agent. Your job is to create effective charts and graphs.
+
+You have access to the following tools:
+{tools}
+
+Use the following format:
+
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+For visualization tasks:
+1. Analyze the data to understand its structure
+2. Choose appropriate chart types for the data and query
+3. Create clear, informative visualizations
+4. Ensure proper labeling and formatting
+
+Begin!
+
+Question: {input}
+{agent_scratchpad}"""
+        
+        return PromptTemplate(
+            input_variables=["input", "tools", "tool_names", "agent_scratchpad"],
+            template=template
         )

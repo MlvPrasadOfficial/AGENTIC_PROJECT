@@ -117,14 +117,25 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       onFileUploaded?.(response.fileId);
     } catch (error) {
       console.error('File upload error:', error);
+      
+      // Enhanced error message handling
+      let errorMessage = 'Failed to upload file';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object' && 'message' in error) {
+        errorMessage = String(error.message);
+      }
+      
       // Notify error through callback
       setIsUploading(false);
-      onError?.(error instanceof Error ? error : new Error('Upload failed'));
+      onError?.(error instanceof Error ? error : new Error(errorMessage));
       
       toast({
         type: 'error',
         title: 'Upload Error',
-        message: error instanceof Error ? error.message : 'Failed to upload file'
+        message: errorMessage
       });
     }
   }, [handleProgress, onFileUploaded, onError]);
@@ -180,7 +191,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   }, []);
   
   // Configure dropzone
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop: (acceptedFiles) => {
       void onDrop(acceptedFiles);
     },
@@ -191,7 +202,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       'application/json': ['.json'],
     },
     maxFiles: 1,
-    multiple: false
+    multiple: false,
+    noClick: true, // Disable automatic click to open file dialog
+    noKeyboard: true // Disable keyboard activation
   });
   
   return (
@@ -211,13 +224,21 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             <div 
               {...getRootProps()} 
               className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors
-                ${isDragActive ? 'border-gray-400 bg-gray-800/20' : 'border-gray-500/30 hover:border-gray-400/50 bg-gray-800/10'}`}
+                ${isDragActive ? 'border-gray-400 bg-gray-800/20' : 'border-gray-500/30 bg-gray-800/10'}`}
+              style={{ cursor: 'default' }} // Prevent cursor change on hover
             >
               <input {...getInputProps()} />
               <div className="text-gray-200 mb-4">Drag and drop a file here, or click to browse</div>
-              <div className="glass-button mt-4 px-6 py-3 text-white cursor-pointer">
+              <button 
+                type="button" 
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent event bubbling to dropzone
+                  open(); // Use dropzone's open function to open file dialog
+                }}
+                className="glass-button mt-4 px-6 py-3 text-white cursor-pointer hover:bg-blue-600/20 transition-colors focus:ring-2 focus:ring-blue-400/50 focus:outline-none"
+              >
                 📎 Browse Files
-              </div>
+              </button>
             </div>
           );
         } else if (isUploading) {

@@ -10,7 +10,11 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 from pydantic import BaseModel
 
-from app.agents.base import BaseAgent, BaseAgentResponse
+from langchain_core.tools import Tool
+from langchain_core.prompts import PromptTemplate
+from langchain.tools.base import BaseTool
+
+from app.agents.base import BaseAgent, BaseAgentRequest, BaseAgentResponse
 from app.services.file_service import FileService
 from app.schemas.file import FileMetadata
 from app.utils.prompts import PLANNING_PROMPT, DEFAULT_SYSTEM_MESSAGE
@@ -23,19 +27,109 @@ class AnalysisPlan(BaseModel):
     metrics: List[Dict[str, Any]]
     insights_focus: List[str]
 
+class PlanningToolKit:
+    """Custom tools for the Planning Agent"""
+    
+    def __init__(self, file_service: FileService):
+        self.file_service = file_service
+    
+    def get_data_profile_tool(self) -> Tool:
+        """Tool to get data profile from file service"""
+        def get_data_profile(file_id: str) -> str:
+            """Get data profile for planning purposes"""
+            try:
+                profile = self.file_service.get_data_profile(file_id)
+                return json.dumps(profile, indent=2)
+            except Exception as e:
+                return f"Error getting data profile: {str(e)}"
+        
+        return Tool(
+            name="get_data_profile",
+            description="Get detailed data profile including columns, types, statistics",
+            func=get_data_profile
+        )
+    
+    def create_analysis_plan_tool(self) -> Tool:
+        """Tool to create structured analysis plan"""
+        def create_analysis_plan(requirements: str) -> str:
+            """Create structured analysis plan based on requirements"""
+            plan_template = {
+                "analysis_type": "statistical_analysis",
+                "steps": [
+                    "Data validation and cleaning",
+                    "Exploratory data analysis", 
+                    "Statistical testing",
+                    "Insight generation"
+                ],
+                "visualizations": ["correlation_matrix", "distribution_plots"],
+                "metrics": ["mean", "median", "correlation"],
+                "focus_areas": []
+            }
+            return json.dumps(plan_template, indent=2)
+        
+        return Tool(
+            name="create_analysis_plan", 
+            description="Create structured analysis plan with steps and requirements",
+            func=create_analysis_plan
+        )
+
 class PlanningAgent(BaseAgent):
     """
-    Planning Agent responsible for creating analysis plans based on data profile and user query.
-    This is the third agent in the Enterprise Insights Copilot pipeline.
+    LangChain-powered Planning Agent for creating analysis plans.
+    Routes to either Insight Agent or Visualization Agent based on query intent.
     """
     
     def __init__(self):
-        """Initialize the Planning Agent"""
+        """Initialize the LangChain Planning Agent"""
+        self.file_service = FileService()
+        self.toolkit = PlanningToolKit(self.file_service)
+        
         super().__init__(
             name="Planning Agent",
             agent_type="planning"
         )
-        self.file_service = FileService()
+    
+    def _get_tools(self) -> List[Tool]:
+        """Get tools for the planning agent"""
+        return [
+            self.toolkit.get_data_profile_tool(),
+            self.toolkit.create_analysis_plan_tool()
+        ]
+    
+    def _get_agent_prompt(self) -> PromptTemplate:
+        """Get the prompt template for planning agent"""
+        template = """You are an expert Planning Agent for data analysis. 
+        
+Your role is to:
+1. Analyze user queries to understand their intent
+2. Examine data profiles to understand available data
+3. Create structured analysis plans
+4. Route to appropriate agents (Insight or Visualization)
+
+You have access to these tools:
+{tools}
+
+Use the following format:
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+Question: {input}
+{agent_scratchpad}"""
+        
+        return PromptTemplate(
+            template=template,
+            input_variables=["input", "agent_scratchpad"],
+            partial_variables={
+                "tools": "\n".join([f"{tool.name}: {tool.description}" for tool in self._get_tools()]),
+                "tool_names": ", ".join([tool.name for tool in self._get_tools()])
+            }
+        )
     
     async def run(self, 
                  query: str, 

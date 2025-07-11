@@ -11,6 +11,9 @@ import json
 from datetime import datetime
 import numpy as np
 from pathlib import Path
+from pinecone import Pinecone, ServerlessSpec
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.vectorstores import Pinecone as LangchainPinecone
 
 from app.utils.logger import setup_logger
 from app.core.config import settings
@@ -64,27 +67,78 @@ class DocumentChunk:
 
 class DocumentStore:
     """
-    Simple vector store for RAG implementation.
-    For production, this would be replaced with a proper vector database like FAISS or Pinecone.
+    LangChain-powered vector store with Pinecone integration for RAG implementation.
+    Supports both local fallback and production Pinecone database.
     """
     
     def __init__(self, persist_directory: Optional[str] = None):
         """
-        Initialize the document store.
+        Initialize the document store with LangChain embeddings and Pinecone.
         
         Args:
-            persist_directory: Directory to persist vectors (optional)
+            persist_directory: Directory to persist vectors (fallback)
         """
         self.documents: List[DocumentChunk] = []
         self.persist_directory = persist_directory or settings.VECTOR_STORE_PATH
-        self.embedding_dim = 768  # Default for sentence-transformers models
+        self.embedding_dim = settings.PINECONE_DIMENSION
         
-        # Create persist directory if it doesn't exist
+        # Initialize LangChain embeddings with Ollama
+        self.embeddings = OllamaEmbeddings(
+            model="llama3.1:latest",
+            base_url=settings.OLLAMA_BASE_URL
+        )
+        
+        # Initialize Pinecone client
+        self.pinecone_client = None
+        self.vector_store = None
+        self._initialize_pinecone()
+        
+        # Create persist directory if it doesn't exist (fallback)
         if self.persist_directory:
             os.makedirs(self.persist_directory, exist_ok=True)
             
-        # Load any existing documents
-        self._load_documents()
+        # Load any existing documents (fallback mode)
+        if not self.pinecone_client:
+            self._load_documents()
+    
+    def _initialize_pinecone(self):
+        """Initialize Pinecone client and vector store"""
+        try:
+            if settings.PINECONE_API_KEY and settings.PINECONE_HOST:
+                # Initialize Pinecone client
+                self.pinecone_client = Pinecone(
+                    api_key=settings.PINECONE_API_KEY
+                )
+                
+                # Check if index exists, create if not
+                index_name = settings.PINECONE_INDEX_NAME
+                existing_indexes = [index.name for index in self.pinecone_client.list_indexes()]
+                
+                if index_name not in existing_indexes:
+                    # Create index with serverless spec
+                    self.pinecone_client.create_index(
+                        name=index_name,
+                        dimension=settings.PINECONE_DIMENSION,
+                        metric=settings.PINECONE_METRIC,
+                        spec=ServerlessSpec(
+                            cloud=settings.PINECONE_CLOUD,
+                            region=settings.PINECONE_REGION
+                        )
+                    )
+                    logger.info(f"Created Pinecone index: {index_name}")
+                
+                # Initialize LangChain Pinecone vector store
+                self.vector_store = LangchainPinecone.from_existing_index(
+                    index_name=index_name,
+                    embedding=self.embeddings
+                )
+                
+                logger.info("Pinecone vector store initialized successfully")
+                
+        except Exception as e:
+            logger.warning(f"Failed to initialize Pinecone: {e}. Using local storage fallback.")
+            self.pinecone_client = None
+            self.vector_store = None
     
     def add_document(
         self, 
@@ -94,10 +148,60 @@ class DocumentStore:
         chunk_id: Optional[str] = None,
     ) -> str:
         """
-        Add a document to the store.
+        Add a document to the vector store using LangChain and Pinecone.
         
         Args:
             text: Document text
+            metadata: Document metadata
+            embedding: Optional pre-computed embedding
+            chunk_id: Optional chunk ID
+            
+        Returns:
+            The chunk ID of the added document
+        """
+        chunk_id = chunk_id or str(uuid.uuid4())
+        
+        try:
+            if self.vector_store:
+                # Use LangChain Pinecone vector store
+                doc_metadata = {
+                    **metadata,
+                    "chunk_id": chunk_id,
+                    "timestamp": datetime.now().isoformat()
+                }
+                
+                # Add document to Pinecone via LangChain
+                self.vector_store.add_texts(
+                    texts=[text],
+                    metadatas=[doc_metadata],
+                    ids=[chunk_id]
+                )
+                
+                logger.info(f"Added document to Pinecone: {chunk_id}")
+                return chunk_id
+                
+            else:
+                # Fallback to local storage
+                if embedding is None:
+                    # Generate embedding using Ollama
+                    embedding = self.embeddings.embed_query(text)
+                
+                chunk = DocumentChunk(
+                    text=text,
+                    metadata=metadata,
+                    embedding=embedding,
+                    chunk_id=chunk_id,
+                )
+                
+                self.documents.append(chunk)
+                self._persist_documents()
+                
+                logger.info(f"Added document to local store: {chunk_id}")
+                return chunk_id
+                
+        except Exception as e:
+            logger.error(f"Failed to add document: {e}")
+            raise
             metadata: Document metadata
             embedding: Pre-computed embedding (optional)
             chunk_id: Optional chunk ID

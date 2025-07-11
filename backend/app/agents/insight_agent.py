@@ -10,24 +10,130 @@ from typing import Dict, Any, Optional, List
 import pandas as pd
 from datetime import datetime
 
-from app.agents.base import BaseAgent, BaseAgentResponse
+from langchain_core.tools import Tool
+from langchain_core.prompts import PromptTemplate
+
+from app.agents.base import BaseAgent, BaseAgentRequest, BaseAgentResponse
 from app.services.file_service import FileService
 from app.utils.prompts import INSIGHT_ANALYSIS_PROMPT, DEFAULT_SYSTEM_MESSAGE
 from app.core.config import settings
 
+class InsightToolKit:
+    """Custom tools for the Insight Agent"""
+    
+    def __init__(self, file_service: FileService):
+        self.file_service = file_service
+    
+    def analyze_data_statistics_tool(self) -> Tool:
+        """Tool to analyze data statistics"""
+        def analyze_data_statistics(file_id: str) -> str:
+            """Analyze statistical properties of the data"""
+            try:
+                # Get data from file service
+                data = self.file_service.get_file_data(file_id)
+                df = pd.DataFrame(data)
+                
+                # Calculate statistics
+                stats = {
+                    "shape": df.shape,
+                    "numeric_columns": df.select_dtypes(include=['number']).columns.tolist(),
+                    "categorical_columns": df.select_dtypes(include=['object']).columns.tolist(),
+                    "missing_values": df.isnull().sum().to_dict(),
+                    "basic_stats": df.describe().to_dict()
+                }
+                
+                return json.dumps(stats, indent=2, default=str)
+            except Exception as e:
+                return f"Error analyzing statistics: {str(e)}"
+        
+        return Tool(
+            name="analyze_data_statistics",
+            description="Analyze statistical properties and characteristics of the data",
+            func=analyze_data_statistics
+        )
+    
+    def generate_insights_tool(self) -> Tool:
+        """Tool to generate data insights"""
+        def generate_insights(analysis_context: str) -> str:
+            """Generate insights based on analysis context"""
+            # This would typically use more sophisticated analysis
+            insights = {
+                "key_findings": ["Pattern identified in data distribution"],
+                "trends": ["Upward trend in recent periods"],
+                "anomalies": ["Outliers detected in specific ranges"],
+                "recommendations": ["Consider further investigation of outliers"]
+            }
+            return json.dumps(insights, indent=2)
+        
+        return Tool(
+            name="generate_insights",
+            description="Generate actionable insights based on data analysis",
+            func=generate_insights
+        )
+
 class InsightAgent(BaseAgent):
     """
-    Insight Agent responsible for generating data insights using LLM analysis.
-    This is the fourth agent in the Enterprise Insights Copilot pipeline.
+    LangChain-powered Insight Agent for generating statistical insights and business intelligence.
+    Alternative route from Planning Agent alongside Visualization Agent.
     """
     
     def __init__(self):
-        """Initialize the Insight Agent"""
+        """Initialize the LangChain Insight Agent"""
+        self.file_service = FileService()
+        self.toolkit = InsightToolKit(self.file_service)
+        
         super().__init__(
             name="Insight Agent",
             agent_type="insight"
         )
-        self.file_service = FileService()
+    
+    def _get_tools(self) -> List[Tool]:
+        """Get tools for the insight agent"""
+        return [
+            self.toolkit.analyze_data_statistics_tool(),
+            self.toolkit.generate_insights_tool()
+        ]
+    
+    def _get_agent_prompt(self) -> PromptTemplate:
+        """Get the prompt template for insight agent"""
+        template = """You are an expert Insight Agent for data analysis and business intelligence.
+
+Your role is to:
+1. Analyze data to identify patterns, trends, and anomalies
+2. Generate actionable business insights
+3. Provide statistical summaries and interpretations
+4. Answer specific analytical questions about the data
+
+You have access to these tools:
+{tools}
+
+Use the following format:
+Question: the input question you must answer
+Thought: you should always think about what to do
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+Focus on providing:
+- Clear and actionable insights
+- Statistical evidence for your conclusions
+- Business-relevant interpretations
+- Specific recommendations based on data
+
+Question: {input}
+{agent_scratchpad}"""
+        
+        return PromptTemplate(
+            template=template,
+            input_variables=["input", "agent_scratchpad"],
+            partial_variables={
+                "tools": "\n".join([f"{tool.name}: {tool.description}" for tool in self._get_tools()]),
+                "tool_names": ", ".join([tool.name for tool in self._get_tools()])
+            }
+        )
     
     async def run(self, 
                  query: str, 

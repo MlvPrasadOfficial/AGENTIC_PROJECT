@@ -359,6 +359,24 @@ class FileService:
         
         return result
 
+async def process_file(file_id: str) -> Dict[str, Any]:
+    """
+    Process a file and return processing results.
+    
+    Args:
+        file_id: The file ID to process
+        
+    Returns:
+        Dict containing processing results
+        
+    Raises:
+        FileNotFoundError: If file not found
+    """
+    # Create singleton instance if needed
+    file_service = FileService()
+    
+    return await file_service.process_file(file_id)
+
 def get_file_metadata(file_id: str) -> FileMetadata:
     """
     Get metadata for a specific file.

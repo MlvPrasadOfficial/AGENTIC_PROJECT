@@ -7,8 +7,9 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { AgentType, AgentStatus, agentService } from '@/lib/api/agentService';
+import React, { useState, useEffect } from 'react';
+import { AgentType, AgentStatus } from '@/lib/api/agentService';
+import agentService from '@/lib/api/agentService';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { AgentIcon } from '@/components/icons/AgentIcon';
 import { CleanIcon } from '@/components/icons/CleanIcon';
@@ -20,7 +21,7 @@ import { InsightIcon } from '@/components/icons/InsightIcon';
 import { CritiqueIcon } from '@/components/icons/CritiqueIcon';
 import { NarrativeIcon } from '@/components/icons/NarrativeIcon';
 import { ReportDocIcon } from '@/components/icons/ReportDocIcon';
-import { toast } from '@/components/ui/Toast';
+import { useToast } from '@/components/providers';
 
 /**
  * Agent information type
@@ -45,8 +46,6 @@ interface AgentWorkflowProps {
   fileId?: string;
   /** Callback when all agents complete */
   onWorkflowComplete?: (results: any) => void;
-  /** Callback when an agent status changes */
-  onAgentStatusChange?: (agentId: AgentType, status: AgentStatus) => void;
 }
 
 /**
@@ -56,14 +55,16 @@ interface AgentWorkflowProps {
 export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
   fileId,
   onWorkflowComplete,
-  onAgentStatusChange,
 }) => {
+  // Use toast hook for notifications
+  const { addToast } = useToast();
+  
   // State for tracking agent statuses and workflow state
   const [agents, setAgents] = useState<AgentInfo[]>([
     {
       id: 'data_profile',
       name: 'Data Agent',
-      icon: <AgentIcon className="icon text-blue-300" aria-label="Data Agent" title="Data Agent" />,
+      icon: <AgentIcon className="icon text-blue-300" aria-label="Data Agent" />,
       description: 'Data profiling and analysis',
       color: 'blue',
       status: 'idle',
@@ -72,7 +73,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'file_upload',
       name: 'Cleaner Agent',
-      icon: <CleanIcon className="icon text-orange-300" aria-label="Cleaner Agent" title="Cleaner Agent" />,
+      icon: <CleanIcon className="icon text-orange-300" aria-label="Cleaner Agent" />,
       description: 'Data cleaning and preprocessing',
       color: 'orange',
       dependencies: ['data_profile'],
@@ -82,7 +83,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'planning',
       name: 'Planning Agent',
-      icon: <TargetIcon className="icon text-purple-300" aria-label="Planning Agent" title="Planning Agent" />,
+      icon: <TargetIcon className="icon text-purple-300" aria-label="Planning Agent" />,
       description: 'Analysis planning and strategy',
       color: 'purple',
       dependencies: ['file_upload'],
@@ -92,7 +93,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'insight',
       name: 'Query Agent',
-      icon: <QuestionIcon className="icon text-blue-300" aria-label="Query Agent" title="Query Agent" />,
+      icon: <QuestionIcon className="icon text-blue-300" aria-label="Query Agent" />,
       description: 'Query formulation and execution',
       color: 'blue',
       dependencies: ['planning'],
@@ -102,7 +103,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'debate',
       name: 'Debate Agent',
-      icon: <DebateIcon className="icon text-pink-300" aria-label="Debate Agent" title="Debate Agent" />,
+      icon: <DebateIcon className="icon text-pink-300" aria-label="Debate Agent" />,
       description: 'Multi-perspective analysis',
       color: 'pink',
       dependencies: ['insight'],
@@ -112,7 +113,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'viz',
       name: 'SQL Agent',
-      icon: <SqlIcon className="icon text-green-300" aria-label="SQL Agent" title="SQL Agent" />,
+      icon: <SqlIcon className="icon text-green-300" aria-label="SQL Agent" />,
       description: 'Database connectivity and queries',
       color: 'green',
       status: 'idle',
@@ -121,7 +122,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'insight',
       name: 'Insight Agent',
-      icon: <InsightIcon className="icon text-yellow-300" aria-label="Insight Agent" title="Insight Agent" />,
+      icon: <InsightIcon className="icon text-yellow-300" aria-label="Insight Agent" />,
       description: 'Pattern discovery and insights',
       color: 'yellow',
       dependencies: ['debate', 'viz'],
@@ -131,7 +132,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'viz',
       name: 'Chart Agent',
-      icon: <BarChartIcon className="icon text-indigo-300" aria-label="Chart Agent" title="Chart Agent" />,
+      icon: <AgentIcon className="icon text-indigo-300" aria-label="Chart Agent" />,
       description: 'Data visualization generation',
       color: 'indigo',
       dependencies: ['insight'],
@@ -141,7 +142,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'critique',
       name: 'Critique Agent',
-      icon: <CritiqueIcon className="icon text-red-300" aria-label="Critique Agent" title="Critique Agent" />,
+      icon: <CritiqueIcon className="icon text-red-300" aria-label="Critique Agent" />,
       description: 'Quality checking and validation',
       color: 'red',
       dependencies: ['viz'],
@@ -149,9 +150,9 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
       progress: 0,
     },
     {
-      id: 'narrative',
+      id: 'report',
       name: 'Narrative Agent',
-      icon: <NarrativeIcon className="icon text-teal-300" aria-label="Narrative Agent" title="Narrative Agent" />,
+      icon: <NarrativeIcon className="icon text-teal-300" aria-label="Narrative Agent" />,
       description: 'Story generation from insights',
       color: 'teal',
       dependencies: ['critique'],
@@ -161,10 +162,10 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     {
       id: 'report',
       name: 'Report Agent',
-      icon: <ReportDocIcon className="icon text-emerald-300" aria-label="Report Agent" title="Report Agent" />,
+      icon: <ReportDocIcon className="icon text-emerald-300" aria-label="Report Agent" />,
       description: 'Final report generation',
       color: 'emerald',
-      dependencies: ['narrative'],
+      dependencies: ['critique'],
       status: 'idle',
       progress: 0,
     },
@@ -238,7 +239,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
       // Update agent states
       setAgents(prevAgents => 
         prevAgents.map(agent => {
-          const status = workflowStatus.agentStatuses.find(s => s.agentType === agent.id);
+          const status = workflowStatus.agentStatuses.find((s: any) => s.agentType === agent.id);
           return status ? {
             ...agent,
             status: status.status,
@@ -256,20 +257,20 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
       if (workflowStatus.status === 'completed') {
         setIsRunning(false);
         onWorkflowComplete?.(workflowStatus.results);
-        toast({
+        addToast({
           type: 'success',
           title: 'Workflow Complete',
-          message: 'All agents have completed their tasks successfully!'
+          description: 'All agents have completed their tasks successfully!'
         });
       }
       
       // Check if workflow failed
       if (workflowStatus.status === 'failed') {
         setIsRunning(false);
-        toast({
+        addToast({
           type: 'error',
           title: 'Workflow Failed',
-          message: workflowStatus.error || 'An error occurred during workflow execution.'
+          description: workflowStatus.error || 'An error occurred during workflow execution.'
         });
       }
     } catch (error) {
@@ -284,10 +285,10 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     if (isRunning) return;
     
     if (!fileId) {
-      toast({
+      addToast({
         type: 'warning',
         title: 'File Required',
-        message: 'Please upload a file first to start the workflow.'
+        description: 'Please upload a file first to start the workflow.'
       });
       return;
     }
@@ -306,10 +307,10 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
       
       setWorkflowId(workflow.id);
       
-      toast({
+      addToast({
         type: 'success',
         title: 'Workflow Started',
-        message: 'The agent workflow has been initiated.'
+        description: 'The agent workflow has been initiated.'
       });
       
       // Update agent statuses
@@ -317,10 +318,10 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     } catch (error) {
       setIsRunning(false);
       console.error('Failed to start workflow:', error);
-      toast({
+      addToast({
         type: 'error',
         title: 'Workflow Error',
-        message: error instanceof Error ? error.message : 'Failed to start workflow'
+        description: error instanceof Error ? error.message : 'Failed to start workflow'
       });
     }
   };
@@ -334,17 +335,17 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     try {
       await agentService.pauseWorkflow(workflowId);
       setIsPaused(true);
-      toast({
+      addToast({
         type: 'info',
         title: 'Workflow Paused',
-        message: 'The agent workflow has been paused.'
+        description: 'The agent workflow has been paused.'
       });
     } catch (error) {
       console.error('Failed to pause workflow:', error);
-      toast({
+      addToast({
         type: 'error',
         title: 'Error',
-        message: error instanceof Error ? error.message : 'Failed to pause workflow'
+        description: error instanceof Error ? error.message : 'Failed to pause workflow'
       });
     }
   };
@@ -358,17 +359,17 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     try {
       await agentService.resumeWorkflow(workflowId);
       setIsPaused(false);
-      toast({
+      addToast({
         type: 'info',
         title: 'Workflow Resumed',
-        message: 'The agent workflow has been resumed.'
+        description: 'The agent workflow has been resumed.'
       });
     } catch (error) {
       console.error('Failed to resume workflow:', error);
-      toast({
+      addToast({
         type: 'error',
         title: 'Error',
-        message: error instanceof Error ? error.message : 'Failed to resume workflow'
+        description: error instanceof Error ? error.message : 'Failed to resume workflow'
       });
     }
   };
@@ -394,21 +395,21 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
           ...agent,
           status: 'idle',
           progress: 0,
-          message: undefined
+          message: ''
         }))
       );
       
-      toast({
+      addToast({
         type: 'info',
         title: 'Workflow Reset',
-        message: 'The agent workflow has been reset.'
+        description: 'The agent workflow has been reset.'
       });
     } catch (error) {
       console.error('Failed to reset workflow:', error);
-      toast({
+      addToast({
         type: 'error',
         title: 'Error',
-        message: error instanceof Error ? error.message : 'Failed to reset workflow'
+        description: error instanceof Error ? error.message : 'Failed to reset workflow'
       });
     }
   };
@@ -430,10 +431,10 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
       }
     } catch (error) {
       console.error('Failed to fetch agent logs:', error);
-      toast({
+      addToast({
         type: 'error',
         title: 'Error',
-        message: 'Failed to retrieve agent logs'
+        description: 'Failed to retrieve agent logs'
       });
     }
   };
@@ -492,7 +493,7 @@ export const AgentWorkflow: React.FC<AgentWorkflowProps> = ({
     <GlassCard size="lg" variant="elevated" blurIntensity="strong" className="glass-card-accent">
       <div className="flex items-center gap-3 mb-6">
         <div className="p-3 rounded-xl bg-emerald-500/20 text-emerald-300 text-lg">
-          <AgentIcon className="icon text-emerald-300" aria-label="Agent Workflow" title="Agent Workflow" />
+          <AgentIcon className="icon text-emerald-300" aria-label="Agent Workflow" />
         </div>
         <div>
           <h2 className="text-xl font-semibold text-white">Agent Workflow</h2>

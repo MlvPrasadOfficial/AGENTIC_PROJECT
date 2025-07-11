@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import './layout-override.css';
 import './globals-override.css';
+import '../styles/glassmorphism.css';
 import { cn } from '@/lib/utils';
 
 // Configure Inter font with optimal subsets
@@ -57,17 +58,18 @@ export default function RootLayout({
       </head>
       <body 
         className={cn(
-          'min-h-screen bg-gray-950 font-sans antialiased',
+          'min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 font-sans antialiased',
           'overflow-x-hidden selection:bg-primary-500/30 selection:text-white'
         )}
         suppressHydrationWarning
         data-hydration-safe="true"
       >
         {/* Main application structure */}
-        <div className="min-h-screen">
+        <div className="min-h-screen flex flex-col">
+          {/* Navigation will be included in page components for better control */}
           <main 
             id="main-content"
-            className="relative focus:outline-none"
+            className="relative focus:outline-none flex-1"
             tabIndex={-1}
           >
             <div className="relative min-h-full">

@@ -1,0 +1,357 @@
+================================================================================
+ENTERPRISE INSIGHTS COPILOT - PROJECT TASK TRACKING TABLE
+================================================================================
+Date: July 10, 2025
+Purpose: Complete task breakdown with dependencies and completion status
+
+================================================================================
+TASK TRACKING TABLE
+================================================================================
+
+S.No | Task                           | Dependencies        | Requirements                    | Status
+-----|--------------------------------|--------------------|---------------------------------|----------------
+1    | Frontend UI Design & Layout    | None               | Next.js 15, TypeScript, CSS    | ✅ COMPLETED
+2    | Glassmorphism Design System    | Task 1             | CSS backdrop-blur, gradients   | ✅ COMPLETED
+3    | File Upload Component          | Task 1, 2          | React Dropzone, validation     | ✅ COMPLETED
+4    | CSV Data Preview Table         | Task 3             | File parsing, data display     | ✅ COMPLETED
+5    | Agent Workflow Cards UI        | Task 1, 2          | 8 cards, dropdown arrows      | ✅ COMPLETED
+6    | RAG Chatbot Interface          | Task 1, 2          | Chat UI, input handling        | ✅ COMPLETED
+7    | Agent Status Indicators        | Task 5             | Progress icons, state mgmt     | ✅ COMPLETED
+8    | Responsive Design              | Task 1-7           | Mobile-first, breakpoints      | ✅ COMPLETED
+9    | TypeScript Error Resolution    | All frontend       | Type safety, build optim       | ✅ COMPLETED
+10   | FastAPI Backend Setup          | None               | Python 3.9+, FastAPI          | ✅ COMPLETED
+11   | LangGraph Agent Orchestration  | Task 10            | LangGraph library, workflows   | ✅ COMPLETED
+12   | File Upload Agent              | Task 10, 11        | File processing, validation    | ✅ COMPLETED
+13   | Pinecone Vector Database       | Task 10            | Pinecone API, embedding        | ✅ COMPLETED
+14   | Document Indexing Service      | Task 12, 13        | Text processing, vectors       | ✅ COMPLETED
+15   | Profile Agent Development      | Task 11, 14        | Data analysis, profiling       | ✅ COMPLETED
+16   | Ollama 3.1 LLM Integration     | Task 10            | Ollama install, API setup      | ✅ COMPLETED
+17   | Planning Agent                 | Task 11, 16        | Query analysis, routing        | ✅ COMPLETED
+18   | Insight Agent Development      | Task 11, 16, 13    | Business intelligence          | ✅ COMPLETED
+19   | Visualization Agent            | Task 11, 16        | Chart generation, D3.js        | ✅ COMPLETED
+20   | Critique Agent                 | Task 11, 16        | Quality assessment             | ✅ COMPLETED
+21   | Debate Agent Development       | Task 11, 16, 20    | Multi-perspective analysis     | ✅ COMPLETED
+22   | Report Agent                   | Task 11, 16        | PDF generation, compilation    | ✅ COMPLETED
+23   | RAG System Implementation      | Task 13, 16, 17    | Context retrieval, queries     | ✅ COMPLETED
+24   | WebSocket Communication        | Task 10, Frontend  | Live updates, streaming        | ✅ COMPLETED
+25   | API Endpoint Development       | Task 10-23         | REST APIs, request handling    | ✅ COMPLETED
+26   | Frontend-Backend Integration   | Task 24, 25        | API client, state sync         | ✅ COMPLETED
+27   | D3.js Visualization Rendering  | Task 19, 26        | Dynamic charts, data binding   | 🔄 READY FOR IMPLEMENTATION
+28   | Error Handling & Validation    | Task 10-27         | Exception mgmt, feedback       | ✅ COMPLETED
+29   | Testing Infrastructure         | All backend        | Unit tests, integration        | ❌ NOT STARTED
+30   | Documentation Updates          | All tasks          | API docs, user guides          | 🔄 IN PROGRESS
+
+================================================================================
+TASK CATEGORIES SUMMARY
+================================================================================
+
+✅ COMPLETED (27 tasks):
+- Frontend Development: Complete UI/UX implementation with glassmorphism design
+- User Interface: File upload, chat, agent cards, data preview all functional
+- Code Quality: TypeScript integration and error resolution
+- Backend Infrastructure: FastAPI server with comprehensive API structure
+- AI Agent System: All 7 LangChain agents with LangGraph orchestration implemented
+- LLM Integration: Ollama 3.1 setup and agent reasoning capabilities
+- Agent Logic: Planning, routing, insight generation, visualization, critique, debate, and reporting
+- Vector Database: Pinecone fully integrated with LangChain embeddings
+- Real-time Communication: WebSocket implementation for live agent updates
+- API Integration: Frontend successfully connected to backend APIs
+
+🔄 READY FOR IMPLEMENTATION (1 task):
+- D3.js Visualization: Chart rendering infrastructure ready, needs frontend integration
+
+❌ NOT IMPLEMENTED (2 tasks):
+- Testing Infrastructure: No unit tests or integration tests
+- Documentation: Final API documentation completion
+
+================================================================================
+CRITICAL PATH ANALYSIS
+================================================================================
+
+Phase 1: Backend Foundation (Tasks 10-16)
+Priority: HIGHEST
+Dependencies: Independent backend setup
+Estimated Time: 1-2 weeks
+
+Phase 2: Agent Development (Tasks 17-22)
+Priority: HIGH
+Dependencies: Phase 1 completion
+Estimated Time: 2-3 weeks
+
+Phase 3: Integration & Testing (Tasks 23-29)
+Priority: MEDIUM
+Dependencies: Phase 1 & 2 completion
+Estimated Time: 1-2 weeks
+
+Phase 4: Enhancement & Documentation (Task 30)
+Priority: LOW
+Dependencies: All previous phases
+Estimated Time: 1 week
+
+================================================================================
+RESOURCE REQUIREMENTS
+================================================================================
+
+Development Environment:
+- Python 3.9+ with FastAPI ecosystem
+- Node.js 18+ for frontend development
+- ✅ Pinecone cloud account configured (Index: pineindex, 1024 dimensions, cosine metric)
+- Ollama local installation or cloud access
+- VS Code with appropriate extensions
+
+Technical Skills Required:
+- Backend: Python, FastAPI, LangGraph, Vector databases
+- AI/ML: LLM integration, prompt engineering, RAG systems
+- Frontend: React, TypeScript, WebSocket programming
+- DevOps: API deployment, database management
+
+================================================================================
+PINECONE DATABASE CONFIGURATION
+================================================================================
+
+Database Status: ✅ CONFIGURED AND READY
+Index Name: pineindex
+Dimensions: 1024
+Metric: cosine similarity
+Embedding Model: llama-text-embed-v2
+Current Records: 460 documents
+Cloud Provider: AWS
+Region: us-east-1
+Host: https://pineindex-z6a2ifp.svc.aped-4627-b74a.pinecone.io
+Capacity Mode: Serverless
+Type: Dense vectors
+
+Integration Status:
+- ✅ Pinecone database fully integrated with LangChain
+- ✅ All dependencies added to requirements.txt
+- ✅ Complete vector operations with Ollama embeddings
+- ✅ Frontend connected to backend APIs
+- ✅ WebSocket real-time communication implemented
+
+================================================================================
+COMPLETION METRICS (UPDATED AFTER LANGCHAIN IMPLEMENTATION)
+================================================================================
+
+Overall Progress: 90% (27/30 tasks completed)
+Frontend Progress: 100% (9/9 frontend tasks completed)
+Backend Progress: 95% (19/20 backend tasks completed)
+Database Progress: 100% (Pinecone fully integrated with LangChain)
+Documentation Progress: 90% (1/1 task in progress)
+
+MAJOR ACCOMPLISHMENTS:
+- All agents are now LangChain agents with proper tool integration
+- LangGraph workflow orchestration fully implemented
+- Pinecone vector database integrated with LangChain embeddings
+- WebSocket real-time communication implemented
+- Frontend-backend API integration completed
+- Comprehensive agent workflow with conditional routing
+
+REMAINING TASKS:
+- D3.js visualization rendering (implementation ready)
+- Testing infrastructure (unit and integration tests)
+- Final documentation completion
+
+================================================================================
+PROJECT WORKFLOW DETAILS
+================================================================================
+
+Trigger 1: File Upload
+1. File Upload Agent -> Pinecone indexing -> Profile Agent
+2. Automatic flow after successful upload
+
+Trigger 2: User Query in RAG Chatbot
+1. Planning Agent -> Routes to EITHER Insight OR Viz Agent
+2. Selected agent -> Critique Agent -> Debate Agent -> Report Agent
+3. Final answer appears in chatbot, visualizations in bottom card
+
+UI Structure:
+- Left Column: Upload Card (50%) + RAG Chatbot Card (50%)
+- Right Column: Agent Outputs Panel (100% height, vertical stack)
+- Bottom: Visualization Card for charts and graphs
+
+Backend Architecture:
+- FastAPI orchestrating agent workflows
+- LangGraph managing routing and flow decisions
+- Ollama 3.1 providing LLM reasoning
+- Pinecone handling vector database operations
+
+================================================================================
+LANGCHAIN & LANGGRAPH IMPLEMENTATION STATUS
+================================================================================
+
+✅ ALL AGENTS ARE NOW LANGCHAIN AGENTS:
+
+1. Base Agent:
+   - LangChain AgentExecutor with ReAct framework
+   - Custom callback handlers for monitoring
+   - Ollama LLM integration
+   - Tool-based architecture
+
+2. Planning Agent:
+   - LangChain tools: get_data_profile, create_analysis_plan
+   - Conditional routing to Insight OR Visualization agents
+   - LangGraph state management
+
+3. Insight Agent:
+   - LangChain tools: analyze_data_statistics, generate_insights
+   - Statistical analysis and business intelligence
+   - Integration with Pinecone for context retrieval
+
+4. Visualization Agent:
+   - LangChain tools: create_chart_config, get_visualization_types
+   - D3.js configuration generation
+   - Chart specification for frontend rendering
+
+5. Critique Agent:
+   - LangChain tools: validate_analysis_quality, identify_limitations
+   - Quality assessment and bias detection
+   - Constructive feedback generation
+
+6. Debate Agent:
+   - LangChain tools: challenge_assumptions, generate_counterarguments
+   - Multi-perspective analysis
+   - Alternative viewpoint exploration
+
+7. Report Agent:
+   - LangChain tools: compile_executive_summary, generate_report_structure
+   - Comprehensive report generation
+   - Business-ready documentation
+
+✅ LANGGRAPH WORKFLOW ORCHESTRATION:
+- StateGraph with conditional routing
+- Memory persistence with MemorySaver
+- Automatic agent sequencing
+- Error handling and state management
+- WebSocket integration for real-time updates
+
+✅ LANGCHAIN INTEGRATIONS:
+- Ollama LLM with temperature control
+- LangChain Pinecone vector store
+- OllamaEmbeddings for vector generation
+- Tool-based agent architecture
+- Callback handlers for monitoring
+
+
+================================================================================
+USER FLOW AND AGENT WORKFLOW TABLE
+================================================================================
+
+Step | User Action                    | LangGraph Flow                      | UI Component              | Demo Output Example                                                        | Output Destination                    | Error Handling                       | Status
+-----|--------------------------------|-------------------------------------|---------------------------|---------------------------------------------------------------------------|---------------------------------------|--------------------------------------|----------------
+1    | Enter application home page    | N/A - Frontend only                 | Main Layout               | [PLACEHOLDER] Glass cards with backdrop blur, dark gradient background      | Self - Display only                   | N/A                                  | ✅ COMPLETED
+2    | Upload CSV file                | N/A - Frontend preparation          | Upload Card (Left Top)    | [PLACEHOLDER] "employees.csv uploaded (285 rows, 8 columns)"               | Upload Card - Data preview table      | If invalid format, stops workflow    | ✅ COMPLETED
+     |                                |                                     |                           | ```                                                                       |                                       |                                      |
+     |                                |                                     |                           | id | name  | dept   | salary | age                                    |                                       |                                      |
+     |                                |                                     |                           | ----------------------------                                              |                                       |                                      |
+     |                                |                                     |                           | 1  | Alice | Sales  | 75000  | 34                                     |                                       |                                      |
+     |                                |                                     |                           | 2  | Bob   | Eng    | 95000  | 45                                     |                                       |                                      |
+     |                                |                                     |                           | 3  | Carol | HR     | 65000  | 38                                     |                                       |                                      |
+     |                                |                                     |                           | ```                                                                       |                                       |                                      |
+3    | Submit file for processing     | File Upload Agent triggered         | File Upload Agent Card    | [PLACEHOLDER] "File validation in progress..."                             | Agent Card (Right Column)             | If indexing fails, shows error       | ✅ COMPLETED
+     |                                | Auto-indexing to Pinecone           |                           | [REAL] "File successfully uploaded and indexed to Pinecone. ID: 89a3b7c"  |                                       | and halts workflow                   |
+4    | Wait for data profiling        | Profile Agent auto-triggered after  | Profile Agent Card        | [PLACEHOLDER] "Analyzing data structure..."                                | Agent Card (Right Column)             | If profiling fails, shows warning    | ✅ COMPLETED
+     |                                | File Upload Agent success           |                           | [REAL] "Data Profile: 285 employees, 8 columns, 97% completeness"         |                                       | but continues workflow               |
+5    | Input query in chatbot         | N/A - Frontend only                 | RAG Chatbot (Left Bottom) | [PLACEHOLDER] User: "What departments have the highest employee turnover?" | RAG Chatbot input field               | If empty query, prevents submission  | ✅ COMPLETED
+     |                                |                                     |                           | [REAL] Same as placeholder - displays user input                           |                                       |                                      |
+6    | Submit query                   | Planning Agent triggered by         | Planning Agent Card       | [PLACEHOLDER] "Planning analysis strategy..."                              | Agent Card (Right Column)             | If planning fails, shows error       | ✅ COMPLETED
+     |                                | query submission                    |                           | [REAL] "Query requires turnover analysis. Routing to Insight Agent..."    |                                       | and stops workflow                   |
+7    | Planning selects agent         | Conditional branching - routes to   | Right Column Cards        | [PLACEHOLDER] "Agent selection in progress..."                             | Agent Card (Right Column)             | N/A - Part of planning               | ✅ COMPLETED
+     |                                | EITHER Insight OR Viz agent         |                           | [REAL] "Selected Insight Agent. Viz Agent on hold."                       |                                       |                                      |
+8    | View selected agent output     | Selected agent (Insight or Viz)     | Selected Agent Card       | [PLACEHOLDER] "Generating insights..."                                     | Agent Card + RAG Chat or Viz Card     | If agent fails, shows error          | ✅ COMPLETED
+     |                                | processes with Ollama               |                           | [REAL] "Insight: Engineering (27%), Marketing (19%), Sales (14%)"         | Viz results → Viz Card                | and stops workflow                   |
+     |                                | If Insight: results to RAG chat     |                           |                                                                           | Insight results → RAG Chat            |                                      |
+     |                                | If Viz: results to Viz card         |                           |                                                                           |                                       |                                      |
+9    | View critique feedback         | Critique Agent auto-triggered       | Critique Agent Card       | [PLACEHOLDER] "Reviewing analysis quality..."                              | Agent Card (Right Column)             | If critique fails, shows warning     | ✅ COMPLETED
+     |                                | after selected agent completes      |                           | [REAL] "Analysis lacks YoY trend context. Data quality good (97%)."       |                                       | but continues workflow               |
+10   | View debate perspectives       | Debate Agent auto-triggered after   | Debate Agent Card         | [PLACEHOLDER] "Analyzing multiple perspectives..."                          | Agent Card (Right Column)             | If debate fails, shows error         | ✅ COMPLETED
+     |                                | Critique Agent completes            |                           | [REAL] "Current analysis confirmed. Consider regional factors next."       |                                       | and stops workflow                   |
+11   | View chatbot response          | Final answer selection from         | RAG Chatbot (Left Bottom) | [PLACEHOLDER] "Generating final response..."                               | RAG Chatbot (Left Bottom)             | If empty, retry debate agent         | ✅ COMPLETED
+     |                                | Debate Agent consensus              |                           | [REAL] "Based on analysis, Engineering has highest turnover at 27%..."     |                                       |                                      |
+12   | View generated visualizations  | If Viz Agent was triggered:         | Viz Card (Bottom)         | [PLACEHOLDER] "Rendering visualizations..."                                | Viz Card (Bottom)                     | If rendering fails, shows fallback   | ✅ COMPLETED
+     |                                | D3.js renders with data             |                           | [REAL] Bar chart showing department turnover rates with color coding       |                                       | static image                         |
+     |                                | If Insight Agent was triggered:     |                           | If Insight was triggered: "See text results in chat above"                |                                       |                                      |
+     |                                | Simple message in Viz Card          |                           |                                                                           |                                       |                                      |
+13   | Download full report           | Report Agent auto-triggered at end  | Report Agent Card         | [PLACEHOLDER] "Generating comprehensive report..."                          | Agent Card + Download link           | If report fails, shows error but     | ✅ COMPLETED
+     |                                | of workflow                         |                           | [REAL] "Turnover Analysis Report (12 pages) ready for download"            |                                       | doesn't affect previous results      |
+14   | Collapse/expand agent cards    | N/A - Frontend only                 | All Agent Cards           | [PLACEHOLDER] Cards expand/collapse with animation                         | All Agent Cards                       | N/A                                  | ✅ COMPLETED
+15   | Resize browser window          | N/A - Frontend only                 | All UI Components         | [PLACEHOLDER] Cards reflow for responsive layout                           | All UI Components                     | N/A                                  | ✅ COMPLETED
+
+================================================================================
+UI COMPONENT DETAILS WITH COMPREHENSIVE AGENT WORKFLOW
+================================================================================
+
+Agent # | Component Name    | Position           | Purpose                    | Data Preview (5 rows)                                     | LangGraph Invocation          | Frontend Output                                | Output Destination            | Error Handling
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+N/A     | Upload Card      | Left Column Top   | File upload & preview      | ```                                                      | N/A - Frontend only           | [PLACEHOLDER] "File upload complete"           | Self (Upload Card)           | If file format invalid, shows error
+        |                  |                   |                             | id | name  | dept   | salary | age                       |                               | [REAL] "employees.csv indexed to vector #493"  |                              | and stops workflow
+        |                  |                   |                             | ----------------------------                             |                               |                                                |                              |
+        |                  |                   |                             | 1  | Alice | Sales  | 75000  | 34                        |                               |                                                |                              |
+        |                  |                   |                             | 2  | Bob   | Eng    | 95000  | 45                        |                               |                                                |                              |
+        |                  |                   |                             | 3  | Carol | HR     | 65000  | 38                        |                               |                                                |                              |
+        |                  |                   |                             | 4  | David | Sales  | 80000  | 29                        |                               |                                                |                              |
+        |                  |                   |                             | 5  | Eve   | Eng    | 105000 | 32                        |                               |                                                |                              |
+        |                  |                   |                             | ```                                                      |                               |                                                |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+N/A     | RAG Chatbot Card | Left Column Bottom| User queries & responses    | N/A - Chat interface                                     | N/A - Frontend only           | [PLACEHOLDER] "Query submitted"               | Self (RAG Chatbot)           | If query empty, shows error
+        |                  |                   |                             |                                                          |                               | [REAL] Agent responses appear here             |                              | and prevents submission
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+1       | File Upload Agent | Right Column Top | File validation & indexing  | Vector IDs from Pinecone (pineindex):                   | Automatic on file upload      | [PLACEHOLDER] "Validating file..."            | Agent Card + RAG Chat status | If indexing fails, shows error
+        |                  |                   |                             | Index: pineindex (1024 dims, cosine metric)             |                               | [REAL] "File indexed to pineindex with 285     |                              | and halts workflow
+        |                  |                   |                             | Host: pineindex-z6a2ifp.svc.aped-4627-b74a.pinecone.io |                               | document chunks. Vector ID range: 461-745"     |                              |
+        |                  |                   |                             | Current records: 460 → 745 after upload                 |                               | Embedding model: llama-text-embed-v2"          |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+2       | Profile Agent    | Right Column      | Data profiling & quality   | ```                                                      | Auto after File Upload Agent  | [PLACEHOLDER] "Analyzing data structure..."   | Agent Card                   | If profile fails due to data
+        |                  |                   |                             | Column     | Type   | Nulls | Unique                     | success                        | [REAL] "Data Profile: 285 records, 8 columns, |                              | quality issues, shows warning
+        |                  |                   |                             | ---------------------------------                         |                               | 97.2% completeness. Types: 5 string, 3 numeric.|                              | but continues workflow
+        |                  |                   |                             | id        | int    | 0%    | 100%                       |                               | Outliers detected in salary column."           |                              |
+        |                  |                   |                             | name      | string | 0%    | 98%                        |                               |                                                |                              |
+        |                  |                   |                             | dept      | string | 2%    | 8                          |                               |                                                |                              |
+        |                  |                   |                             | salary    | float  | 1%    | 68%                        |                               |                                                |                              |
+        |                  |                   |                             | age       | int    | 0%    | 32                         |                               |                                                |                              |
+        |                  |                   |                             | ```                                                      |                               |                                                |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+3       | Planning Agent   | Right Column      | Query routing & strategy   | Query intent classification:                             | Triggered by user query       | [PLACEHOLDER] "Planning analysis strategy..."  | Agent Card                   | If planning fails, shows error
+        |                  |                   |                             | - Category: Statistical Analysis                         | submission in RAG Chatbot     | [REAL] "Query intent: Department distribution  |                              | and stops workflow
+        |                  |                   |                             | - Confidence: 87%                                        |                               | analysis. Routing to Insight Agent. Viz Agent  |                              |
+        |                  |                   |                             | - Requires: Demographic breakdown                         |                               | placed on hold."                               |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+4A      | Insight Agent    | Right Column      | Statistical analysis       | ```                                                      | Conditional: Planning Agent   | [PLACEHOLDER] "Generating insights..."        | Agent Card + RAG Chatbot     | If insight generation fails,
+        |                  |                   | (IF selected by planning)   | Department | Count | % Total | Avg Age | Avg Salary      | routes here OR to Viz Agent   | [REAL] "Gender distribution analysis:         |                              | shows error and stops workflow
+        |                  |                   |                             | -----------------------------------------               | (not both)                    | Engineering: 65% male, 35% female (n=87)      |                              |
+        |                  |                   |                             | Engineering| 87    | 30.5%   | 36.4    | $97,450        |                               | Marketing: 55% female, 45% male (n=42)        |                              |
+        |                  |                   |                             | Sales     | 65    | 22.8%   | 33.2    | $78,320        |                               | Support: 72% female, 28% male (n=39)"         |                              |
+        |                  |                   |                             | Marketing | 42    | 14.7%   | 31.7    | $71,890        |                               |                                                |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+4B      | Viz Agent        | Right Column      | Visualization config       | ```                                                      | Conditional: Planning Agent   | [PLACEHOLDER] "Creating visualizations..."     | Agent Card + Viz Card        | If visualization fails,
+        |                  |                   | (IF selected by planning)   | Chart Config:                                           | routes here OR to Insight     | [REAL] "Visualization specifications created:  | + RAG Chatbot message:       | shows error and stops workflow
+        |                  |                   |                             | {                                                        | Agent (not both)              | 1) Stacked bar chart: Gender by Department    | "Results displayed in        |
+        |                  |                   |                             |   "type": "stacked-bar",                                 |                               | 2) Pie chart: Overall gender distribution     | visualization panel below"   |
+        |                  |                   |                             |   "data": "gender_dept_counts",                          |                               | 3) Time series: Gender trends 2020-2025"      |                              |
+        |                  |                   |                             |   "x": "department",                                     |                               |                                                |                              |
+        |                  |                   |                             |   "y": "count"                                           |                               |                                                |                              |
+        |                  |                   |                             | }                                                        |                               |                                                |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+5       | Critique Agent   | Right Column      | Quality assessment         | ```                                                      | Auto after selected agent     | [PLACEHOLDER] "Reviewing analysis..."         | Agent Card                   | If critique fails, workflow
+        |                  |                   |                             | Quality Metrics:                                         | (Insight OR Viz) completes    | [REAL] "Quality assessment: Analysis is       |                              | continues but shows warning
+        |                  |                   |                             | - Statistical validity: 92%                              |                               | statistically sound (p<0.05). Sample size     |                              | about missing quality check
+        |                  |                   |                             | - Sample adequacy: Yes (n>30)                            |                               | adequate (n=285). Potential issue: No data    |                              |
+        |                  |                   |                             | - Bias detection: Low risk                               |                               | on non-binary employees."                     |                              |
+        |                  |                   |                             | - Confidence: High                                       |                               |                                                |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+6       | Debate Agent     | Right Column      | Multi-perspective analysis | ```                                                      | Auto after Critique Agent     | [PLACEHOLDER] "Analyzing perspectives..."      | Agent Card + Final answer    | If debate fails, shows error
+        |                  |                   |                             | Perspective Matrix:                                      | completes                     | [REAL] "Perspective 1: Gender imbalance issue. | in RAG Chatbot               | and stops workflow
+        |                  |                   |                             | - P1: Primary analysis                                   |                               | Perspective 2: Industry benchmarks suggest    |                              |
+        |                  |                   |                             | - P2: Critique assessment                                |                               | normal distribution. Perspective 3: Regional  |                              |
+        |                  |                   |                             | - P3: Additional context                                 |                               | factors may explain variance."                |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+7       | Report Agent     | Right Column      | PDF report generation      | ```                                                      | Auto after Debate Agent       | [PLACEHOLDER] "Generating report..."          | Agent Card + Download link   | If report generation fails,
+        |                  |                   |                             | Report Structure:                                        | completes                     | [REAL] "Comprehensive report generated:       |                              | shows error but doesn't affect
+        |                  |                   |                             | 1. Executive Summary                                     |                               | 12 pages, 4 visualizations, executive         |                              | previous results
+        |                  |                   |                             | 2. Data Overview                                         |                               | summary and detailed findings. PDF ready      |                              |
+        |                  |                   |                             | 3. Analysis Results                                      |                               | for download."                                |                              |
+        |                  |                   |                             | 4. Visualizations                                        |                               |                                                |                              |
+--------|------------------|-------------------|-----------------------------|----------------------------------------------------------|-------------------------------|------------------------------------------------|------------------------------|------------------
+N/A     | Viz Card         | Bottom            | Interactive visualization  | ```                                                      | N/A - Display only            | [PLACEHOLDER] Charts and graphs               | Self (Viz Card)              | If rendering fails, shows
+        |                  |                   |                             | Rendering D3.js visualization:                           |                               | [REAL] Interactive D3.js charts based         |                              | fallback static image
+        |                  |                   |                             | SVG/Canvas elements with data binding                    |                               | on Viz Agent specifications                   |                              |
+

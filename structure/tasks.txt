@@ -8,8 +8,8 @@ Note-04: Solve all tasks sequentially..and mention your strategy before solving 
 
 complete all the tasks:
 
-Task-01: 1. the changes you have made , hasnt changed it,  the the right column uses vibrant colors, use  same theme like left column 
-         2. read the code for left column theme and make changes in right column 
+Task-01: 1. add code comments g1 g2 g3 g4 wise in page.tsx
+          2.check the inconsistencies in the righht column duplicate agent panels
 
 
 Task-03: After completing above tasks go to the files created or edited for above tasks,

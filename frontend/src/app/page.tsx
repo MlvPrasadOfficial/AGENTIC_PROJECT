@@ -868,8 +868,9 @@ export default function Page() {
           
           {/* Right Column (60%) - Hierarchical Glass3D Agent Workflow */}
           <div className="right-column">
-            {/* Master Glass Card - Outer Container with 3D Effects */}
+            {/* G1: Master Glass Card - Outer Container with 3D Effects (Level 1) */}
             <div className="glass-card-primary h-full min-h-[600px] p-6 shadow-2xl">
+              {/* G2: Secondary Glass Card - Inner Container with Enhanced Blur (Level 2) */}
               <div className="glass-card-secondary h-full p-6 backdrop-blur-xl border-2 border-white/20 rounded-2xl">
                 <div className="flex items-center justify-between mb-8">
                   <div>
@@ -881,10 +882,10 @@ export default function Page() {
                   </div>
                 </div>
                 
-                {/* Inner Glass Container for Agent Cards */}
+                {/* G3: Accent Glass Container - Agent Cards Container (Level 3) */}
                 <div className="glass-card h-full p-4 rounded-xl border border-white/10 backdrop-blur-md overflow-y-auto">
                   <div className="space-y-4">
-                {/* File Upload Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - File Upload Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -925,7 +926,7 @@ export default function Page() {
                   )}
                 </div>
 
-                {/* Data Profile Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - Data Profile Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -965,7 +966,7 @@ export default function Page() {
                   )}
                 </div>
 
-                {/* Planning Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - Planning Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -1005,7 +1006,7 @@ export default function Page() {
                   )}
                 </div>
 
-                {/* Insight Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - Insight Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -1045,7 +1046,7 @@ export default function Page() {
                   )}
                 </div>
 
-                {/* Viz Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - Viz Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -1084,45 +1085,8 @@ export default function Page() {
                     </div>
                   )}
                 </div>
-                  <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
-                    onClick={() => toggleAgent('viz')}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/viz-agent-icon-black.svg" alt="Viz Agent" width={20} height={20} />
-                      </div>
-                      <div>
-                        <span className="text-base font-semibold text-white">📈 Viz Agent</span>
-                        <p className="text-sm text-gray-400">Creates interactive visualizations</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {getAgentState('viz').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('viz').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('viz').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('viz').isExpanded ? 'rotate-180' : ''}`}>
-                        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-                          <path d="M8 11L3 6h10l-5 5z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  {getAgentState('viz').isExpanded && (
-                    <div className="px-5 pb-5 text-sm text-gray-400 bg-gradient-to-r from-gray-800/10 to-gray-900/10 rounded-b-lg border-t border-white/10">
-                      <div className="glass-card-minimal p-4 mt-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="mb-3"><strong className="text-cyan-300">Function:</strong> Creates interactive charts and visualizations</p>
-                        {getAgentState('viz').output && (
-                          <div className="bg-gray-900/30 p-3 rounded-lg border border-white/10">
-                            <p className="whitespace-pre-line"><strong className="text-green-300">Output:</strong><br/>{getAgentState('viz').output}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Critique Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - Critique Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -1161,45 +1125,8 @@ export default function Page() {
                     </div>
                   )}
                 </div>
-                  <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
-                    onClick={() => toggleAgent('critique')}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/critique-agent-icon-black.svg" alt="Critique Agent" width={20} height={20} />
-                      </div>
-                      <div>
-                        <span className="text-base font-semibold text-white">🔍 Critique Agent</span>
-                        <p className="text-sm text-gray-400">Reviews and validates analysis quality</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {getAgentState('critique').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('critique').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('critique').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('critique').isExpanded ? 'rotate-180' : ''}`}>
-                        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-                          <path d="M8 11L3 6h10l-5 5z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  {getAgentState('critique').isExpanded && (
-                    <div className="px-5 pb-5 text-sm text-gray-400 bg-gradient-to-r from-gray-800/10 to-gray-900/10 rounded-b-lg border-t border-white/10">
-                      <div className="glass-card-minimal p-4 mt-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="mb-3"><strong className="text-red-300">Function:</strong> Reviews and validates analysis quality</p>
-                        {getAgentState('critique').output && (
-                          <div className="bg-gray-900/30 p-3 rounded-lg border border-white/10">
-                            <p className="whitespace-pre-line"><strong className="text-green-300">Output:</strong><br/>{getAgentState('critique').output}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Debate Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - Debate Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -1238,45 +1165,8 @@ export default function Page() {
                     </div>
                   )}
                 </div>
-                  <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
-                    onClick={() => toggleAgent('debate')}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/debate-agent-icon-black.svg" alt="Debate Agent" width={20} height={20} />
-                      </div>
-                      <div>
-                        <span className="text-base font-semibold text-white">💬 Debate Agent</span>
-                        <p className="text-sm text-gray-400">Explores alternative perspectives</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {getAgentState('debate').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('debate').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('debate').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('debate').isExpanded ? 'rotate-180' : ''}`}>
-                        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-                          <path d="M8 11L3 6h10l-5 5z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  {getAgentState('debate').isExpanded && (
-                    <div className="px-5 pb-5 text-sm text-gray-400 bg-gradient-to-r from-gray-800/10 to-gray-900/10 rounded-b-lg border-t border-white/10">
-                      <div className="glass-card-minimal p-4 mt-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="mb-3"><strong className="text-indigo-300">Function:</strong> Explores alternative perspectives and approaches</p>
-                        {getAgentState('debate').output && (
-                          <div className="bg-gray-900/30 p-3 rounded-lg border border-white/10">
-                            <p className="whitespace-pre-line"><strong className="text-green-300">Output:</strong><br/>{getAgentState('debate').output}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Report Agent - Enhanced Glass3D Card */}
+                {/* G4: Individual Agent Cards - Report Agent (Level 4) */}
                 <div className="glass-card">
                   <div 
                     className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
@@ -1305,43 +1195,6 @@ export default function Page() {
                   {getAgentState('report').isExpanded && (
                     <div className="px-5 pb-5 text-sm text-gray-400 bg-gradient-to-r from-gray-800/10 to-gray-900/10 rounded-b-lg border-t border-white/10">
                       <div className="glass-card p-4 mt-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="mb-3"><strong className="text-green-300">Function:</strong> Compiles comprehensive final report</p>
-                        {getAgentState('report').output && (
-                          <div className="bg-gray-900/30 p-3 rounded-lg border border-white/10">
-                            <p className="whitespace-pre-line"><strong className="text-green-300">Output:</strong><br/>{getAgentState('report').output}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                  <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
-                    onClick={() => toggleAgent('report')}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/report-agent-icon-black.svg" alt="Report Agent" width={20} height={20} />
-                      </div>
-                      <div>
-                        <span className="text-base font-semibold text-white">📋 Report Agent</span>
-                        <p className="text-sm text-gray-400">Compiles comprehensive final report</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {getAgentState('report').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('report').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('report').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('report').isExpanded ? 'rotate-180' : ''}`}>
-                        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-                          <path d="M8 11L3 6h10l-5 5z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  {getAgentState('report').isExpanded && (
-                    <div className="px-5 pb-5 text-sm text-gray-400 bg-gradient-to-r from-gray-800/10 to-gray-900/10 rounded-b-lg border-t border-white/10">
-                      <div className="glass-card-minimal p-4 mt-3 bg-white/5 rounded-lg border border-white/10">
                         <p className="mb-3"><strong className="text-green-300">Function:</strong> Compiles comprehensive final report</p>
                         {getAgentState('report').output && (
                           <div className="bg-gray-900/30 p-3 rounded-lg border border-white/10">
@@ -1366,6 +1219,10 @@ export default function Page() {
           </div>
         </div>
         </div>
+        </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

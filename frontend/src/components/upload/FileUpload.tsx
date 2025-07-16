@@ -10,11 +10,9 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import fileService, { FileUploadProgress } from '@/lib/api/fileService';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { InfoIcon } from '@/components/icons/InfoIcon';
 import { PreviewIcon } from '@/components/icons/PreviewIcon';
 import { CloseIcon } from '@/components/icons/CloseIcon';
-import { UploadFolderIcon } from '@/components/icons/UploadFolderIcon';
 
 // Simple toast notification function
 const toast = (props: { type: string; title: string; message: string }) => {
@@ -208,16 +206,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   });
   
   return (
-    <GlassCard size="md" variant="elevated" blurIntensity="strong" className="glass-card">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 rounded-xl bg-gray-800/30 text-gray-300 text-lg">
-          <UploadFolderIcon size={36} className="icon" />
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold text-white">Upload your Data</h2>
-        </div>
-      </div>
-      
+    <div>
       {(() => {
         if (!currentFile && !isUploading) {
           return (
@@ -295,7 +284,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           <InfoIcon className="icon text-gray-400" /> CSV, XLSX, JSON files supported
         </p>
       </div>
-    </GlassCard>
+    </div>
   );
 };
 

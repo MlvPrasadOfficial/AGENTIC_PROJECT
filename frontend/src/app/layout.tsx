@@ -65,14 +65,14 @@ export default function RootLayout({
         data-hydration-safe="true"
       >
         {/* Main application structure */}
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col w-full max-w-none">
           {/* Navigation will be included in page components for better control */}
           <main 
             id="main-content"
-            className="relative focus:outline-none flex-1"
+            className="relative focus:outline-none flex-1 w-full max-w-none"
             tabIndex={-1}
           >
-            <div className="relative min-h-full">
+            <div className="relative min-h-full w-full max-w-none">
               {/* Background pattern overlay */}
               <div 
                 className="absolute inset-0 bg-gradient-to-br from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none"
@@ -80,7 +80,7 @@ export default function RootLayout({
               />
               
               {/* Content wrapper */}
-              <div className="relative z-10">
+              <div className="relative z-10 w-full max-w-none">
                 {children}
               </div>
             </div>

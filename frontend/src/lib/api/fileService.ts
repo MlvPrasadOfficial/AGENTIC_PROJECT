@@ -140,13 +140,13 @@ class FileService {
       });
 
       return {
-        fileId: response.file_id || response.fileId,
-        filename: response.filename || file.name,
-        size: response.size || file.size,
-        mimeType: response.mime_type || file.type,
-        uploadStatus: response.status || 'completed',
-        createdAt: response.created_at || new Date().toISOString(),
-        processingInfo: response.processing_info
+        fileId: response.data.file_id || response.data.fileId,
+        filename: response.data.filename || file.name,
+        size: response.data.size || file.size,
+        mimeType: response.data.mime_type || file.type,
+        uploadStatus: response.data.status || 'completed',
+        createdAt: response.data.created_at || new Date().toISOString(),
+        processingInfo: response.data.processing_info
       };
     } catch (error: any) {
       // Enhanced error handling
@@ -248,7 +248,7 @@ class FileService {
    * @param columns - Specific columns to include
    * @returns Promise resolving to the sample data
    */
-  async getSampleData(fileId: string, rows = 10, columns?: string[]): Promise<SampleData> {
+  async getSampleData(_fileId: string, rows = 10, _columns?: string[]): Promise<SampleData> {
     // For demo purposes, return mock data directly since we don't have a backend
     // This simulates the data preview functionality
     

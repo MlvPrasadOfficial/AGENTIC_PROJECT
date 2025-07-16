@@ -29,7 +29,7 @@ module.exports = {
           200: '#bfdbfe',
           300: '#93c5fd',
           400: '#60a5fa',
-          500: '#3b82f6',  // Main brand blue
+          500: '#2563eb',  // Main brand blue - darker shade
           600: '#2563eb',
           700: '#1d4ed8',
           800: '#1e40af',
@@ -37,16 +37,16 @@ module.exports = {
           950: '#172554',
         },
         
-        // Accent colors for agents
+        // Accent colors for agents - darker shades
         accent: {
-          purple: '#8b5cf6',
-          emerald: '#10b981',
-          amber: '#f59e0b',
-          red: '#ef4444',
-          cyan: '#06b6d4',
-          pink: '#ec4899',
-          indigo: '#6366f1',
-          teal: '#14b8a6',
+          purple: '#7c3aed',
+          emerald: '#059669',
+          amber: '#d97706',
+          red: '#dc2626',
+          cyan: '#0891b2',
+          pink: '#db2777',
+          indigo: '#4f46e5',
+          teal: '#0d9488',
         },
         
         // Glass effect colors
@@ -61,10 +61,10 @@ module.exports = {
         },
         
         // Semantic colors
-        success: '#10b981',
-        warning: '#f59e0b',
-        error: '#ef4444',
-        info: '#3b82f6',
+        success: '#059669',
+        warning: '#d97706',
+        error: '#dc2626',
+        info: '#2563eb',
       },
       
       // Custom typography
@@ -211,13 +211,13 @@ module.exports = {
           '@apply glass-card px-6 py-3 cursor-pointer': {},
           '@apply text-white font-medium tracking-wide': {},
           '@apply hover:scale-105 active:scale-95': {},
-          '@apply focus:outline-none focus:ring-2 focus:ring-primary-500/50': {},
+          '@apply focus:outline-none focus:ring-2 focus:ring-primary-600/50': {},
         },
         '.glass-input': {
           '@apply glass-card px-4 py-3': {},
           '@apply text-white placeholder:text-gray-400': {},
-          '@apply focus:outline-none focus:ring-2 focus:ring-primary-500/50': {},
-          '@apply focus:border-primary-500/50': {},
+          '@apply focus:outline-none focus:ring-2 focus:ring-primary-600/50': {},
+          '@apply focus:border-primary-600/50': {},
         },
         '.glass-modal': {
           '@apply glass-card p-8': {},
@@ -248,7 +248,7 @@ module.exports = {
     function({ addUtilities }) {
       addUtilities({
         '.text-gradient': {
-          'background': 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+          'background': 'linear-gradient(135deg, #2563eb, #7c3aed)',
           '-webkit-background-clip': 'text',
           'background-clip': 'text',
           '-webkit-text-fill-color': 'transparent',

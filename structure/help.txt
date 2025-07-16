@@ -1,4 +1,11 @@
-Always follow the standards in notes below and accomplish all the below tasks in sequence
+ ADD HOME UI 2 USE FULL WIDTH
+
+
+
+
+ shell: Next.js Development Server
+
+ Always follow the standards in notes below and accomplish the below tasks in sequence
 
 
 Note-01: Always use a semicolon (;) instead of && when running multiple commands.
@@ -6,13 +13,12 @@ Note-02: Always run commands in the foreground. If a server is running, monitor 
 Note-03: Log all changes in a timestamped file: changelogs/YYYY-MM-DD-HHMMSS_description.md.
 Note-04: Solve all tasks sequentially..and mention your strategy before solving tasks
 
-complete all the tasks:
+Tasks:
 
-Task-01: 1. the changes you have made , hasnt changed it,  the the right column uses vibrant colors, use  same theme like left column 
-         2. read the code for left column theme and make changes in right column 
+Task-01: 1. The 2 column is layout is back..great..,but the right column is overflowing to the screen instead of padding to the screen
+         2. read the code first to understand the issue, understand the root cause first and then do changes
 
-
-Task-03: After completing above tasks go to the files created or edited for above tasks,
+Task-02: After completing above tasks go to the files created or edited for above tasks,
               1.Remove any unused imports, variables, or code blocks
               2.Add detailed docstrings to all functions and components
               3.Add comprehensive line-by-line comments

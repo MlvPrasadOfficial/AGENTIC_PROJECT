@@ -131,31 +131,31 @@ export function AgentCard({
 }: AgentCardProps) {
   const [expanded, setExpanded] = useState(false);
 
-  // Status-based styling
+  // Status-based styling - muted theme to match left column
   const statusClasses = {
-    idle: 'border-gray-500/30 bg-gray-500/5',
-    waiting: 'border-yellow-500/30 bg-yellow-500/5',
-    running: 'border-blue-500/50 bg-blue-500/10 ring-2 ring-blue-500/20',
-    completed: 'border-green-500/50 bg-green-500/10 ring-2 ring-green-500/20',
-    error: 'border-red-500/50 bg-red-500/10 ring-2 ring-red-500/20'
+    idle: 'border-white/10 bg-white/5',
+    waiting: 'border-white/15 bg-white/5',
+    running: 'border-white/15 bg-white/5',
+    completed: 'border-white/15 bg-white/5',
+    error: 'border-white/15 bg-white/5'
   };
 
-  // Status indicator colors
+  // Status indicator colors - muted theme to match left column
   const statusIndicators = {
     idle: 'bg-gray-500',
-    waiting: 'bg-yellow-500',
-    running: 'bg-blue-500 animate-pulse',
-    completed: 'bg-green-500',
-    error: 'bg-red-500'
+    waiting: 'bg-gray-400',
+    running: 'bg-gray-300 animate-pulse',
+    completed: 'bg-gray-300',
+    error: 'bg-red-400'
   };
 
-  // Progress bar colors
+  // Progress bar colors - muted theme to match left column
   const progressColors = {
     idle: 'bg-gray-500',
-    waiting: 'bg-yellow-500',
-    running: 'bg-blue-500',
-    completed: 'bg-green-500',
-    error: 'bg-red-500'
+    waiting: 'bg-gray-400',
+    running: 'bg-gray-300',
+    completed: 'bg-gray-300',
+    error: 'bg-red-400'
   };
 
   return (
@@ -251,7 +251,7 @@ export function AgentCard({
             {status === 'idle' && onStart && (
               <button
                 onClick={() => onStart(id)}
-                className="px-3 py-1 text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors"
+                className="px-3 py-1 text-xs bg-white/10 text-gray-300 border border-white/20 rounded-lg hover:bg-white/15 transition-colors"
               >
                 Start
               </button>
@@ -260,7 +260,7 @@ export function AgentCard({
             {status === 'running' && onStop && (
               <button
                 onClick={() => onStop(id)}
-                className="px-3 py-1 text-xs bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors"
+                className="px-3 py-1 text-xs bg-white/10 text-gray-300 border border-white/20 rounded-lg hover:bg-white/15 transition-colors"
               >
                 Stop
               </button>
@@ -269,7 +269,7 @@ export function AgentCard({
             {(status === 'completed' || status === 'error') && onReset && (
               <button
                 onClick={() => onReset(id)}
-                className="px-3 py-1 text-xs bg-gray-500/20 text-gray-400 border border-gray-500/30 rounded-lg hover:bg-gray-500/30 transition-colors"
+                className="px-3 py-1 text-xs bg-white/10 text-gray-300 border border-white/20 rounded-lg hover:bg-white/15 transition-colors"
               >
                 Reset
               </button>

@@ -10,8 +10,8 @@
   --bg-card: rgba(30, 31, 48, 0.7);
   --bg-card-hover: rgba(40, 42, 58, 0.7);
   --bg-input: rgba(20, 21, 35, 0.7);
-  --bg-button-primary: #5753ff;
-  --bg-button-hover: #6e6bff;
+  --bg-button-primary: #4338ca;
+  --bg-button-hover: #5b21b6;
   
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-input: rgba(255, 255, 255, 0.1);
@@ -123,35 +123,35 @@ body {
 }
 
 .planning-icon {
-  background: #5753ff;
+  background: #4338ca;
 }
 
 .sql-icon {
-  background: #9254de;
+  background: #7c2d92;
 }
 
 .insight-icon {
-  background: #2b7ae3;
+  background: #1e40af;
 }
 
 .query-icon {
-  background: #d88024;
+  background: #b45309;
 }
 
 .cleaner-icon {
-  background: #16a3b8;
+  background: #0e7490;
 }
 
 .narrative-icon {
-  background: #52c41a;
+  background: #15803d;
 }
 
 .upload-icon {
-  background: #5753ff;
+  background: #4338ca;
 }
 
 .visualization-icon {
-  background: #ff4d4f;
+  background: #dc2626;
 }
 
 /* Typography */
@@ -275,7 +275,7 @@ p {
 
 .upload-area:hover {
   border-color: var(--bg-button-primary);
-  background: rgba(87, 83, 255, 0.05);
+  background: rgba(67, 56, 202, 0.05);
 }
 
 /* Example Queries */
@@ -289,7 +289,7 @@ p {
 }
 
 .example-query:hover {
-  background: rgba(87, 83, 255, 0.1);
+  background: rgba(67, 56, 202, 0.1);
 }
 
 /* Visualization Area */

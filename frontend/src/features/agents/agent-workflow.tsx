@@ -155,25 +155,25 @@ export function AgentWorkflow({
   const [pipelineStatus, setPipelineStatus] = useState<'idle' | 'processing' | 'completed' | 'error'>('idle');
   const [pipelineStartTime, setPipelineStartTime] = useState<Date | null>(null);
 
-  // Get agent status color
+  // Get agent status color - muted theme to match left column
   const getStatusColor = (status: Agent['status']) => {
     switch (status) {
       case 'idle': return 'text-gray-400';
-      case 'processing': return 'text-blue-400';
-      case 'completed': return 'text-green-400';
-      case 'error': return 'text-red-400';
+      case 'processing': return 'text-gray-300';
+      case 'completed': return 'text-gray-300';
+      case 'error': return 'text-red-300';
       default: return 'text-gray-400';
     }
   };
 
-  // Get agent status background
+  // Get agent status background - muted glass theme to match left column
   const getStatusBackground = (status: Agent['status']) => {
     switch (status) {
-      case 'idle': return 'bg-gray-700/20 border-gray-600/50';
-      case 'processing': return 'bg-blue-500/20 border-blue-500/50';
-      case 'completed': return 'bg-green-500/20 border-green-500/50';
-      case 'error': return 'bg-red-500/20 border-red-500/50';
-      default: return 'bg-gray-700/20 border-gray-600/50';
+      case 'idle': return 'bg-white/5 border-white/10';
+      case 'processing': return 'bg-white/5 border-white/15';
+      case 'completed': return 'bg-white/5 border-white/15';
+      case 'error': return 'bg-white/5 border-white/15';
+      default: return 'bg-white/5 border-white/10';
     }
   };
 
@@ -376,7 +376,7 @@ export function AgentWorkflow({
           </div>
           <div>
             <p className="text-gray-400">Success Rate</p>
-            <p className="font-medium text-green-400">{getSuccessRate().toFixed(1)}%</p>
+            <p className="font-medium text-gray-300">{getSuccessRate().toFixed(1)}%</p>
           </div>
           <div>
             <p className="text-gray-400">Duration</p>
@@ -418,7 +418,7 @@ export function AgentWorkflow({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {/* Agent Icon */}
-                  <div className="w-10 h-10 bg-gray-700/30 rounded-lg flex items-center justify-center text-lg">
+                  <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center text-lg">
                     {agent.icon === 'file-upload' && <FileUploadAgentIcon size={24} />}
                     {agent.icon === 'data-profile' && <DataProfileAgentIcon size={24} />}
                     {agent.icon === 'planning' && <PlanningAgentIcon size={24} />}
@@ -509,7 +509,7 @@ export function AgentWorkflow({
                               key={depId}
                               className={cn(
                                 'px-2 py-1 rounded text-xs',
-                                depAgent?.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-gray-700/50 text-gray-400'
+                                depAgent?.status === 'completed' ? 'bg-white/10 text-gray-300' : 'bg-white/5 text-gray-400'
                               )}
                             >
                               {depAgent?.name} {depAgent?.status === 'completed' ? '✅' : '⏳'}

@@ -3,3 +3,9 @@ cd c:\JUL7PROJECT\frontend ; npm run dev
 
 cd c:\JUL7PROJECT\backend ; python main.py
 
+cd c:\JUL7PROJECT\frontend ; npm run build
+
+
+git add .
+git commit -m "fixed ui but still issue in agent order in right column"
+git push origin main

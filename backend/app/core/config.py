@@ -14,10 +14,13 @@ class Settings(BaseSettings):
     PROJECT_DESCRIPTION: str = "AI-powered data analysis and insights platform with multi-agent workflow"
     APP_NAME: str = "Agentic Copilot"
     APP_VERSION: str = "1.0.0"
+    VERSION: str = "1.0.0"
     DEBUG: bool = True
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "DEBUG"
     API_PREFIX: str = "/api/v1"
+    API_V1_STR: str = "/api/v1"
+    API_V1_PREFIX: str = "/api/v1"
     
     # Server settings
     HOST: str = "127.0.0.1"
@@ -26,7 +29,7 @@ class Settings(BaseSettings):
     WORKERS: int = 1
     
     # CORS settings
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000", "https://localhost:3000"]
+    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000", "https://localhost:3000"]
     CORS_CREDENTIALS: bool = True
     CORS_METHODS: List[str] = ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
     CORS_HEADERS: List[str] = ["*"]
@@ -70,7 +73,6 @@ class Settings(BaseSettings):
     ENABLE_CACHING: bool = True
     
     # Security settings
-    SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

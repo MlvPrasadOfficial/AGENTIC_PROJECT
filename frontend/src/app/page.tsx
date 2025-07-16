@@ -852,16 +852,76 @@ export default function Page() {
               )}
             </div>
             
-            {/* CARD 2: Chat Interface Section */}
+            {/* CARD 2: Enhanced Chat Interface Section */}
             <div className="glass-card p-6">
-              <h2 className="text-2xl font-semibold text-white mb-4">Ask Copilot</h2>
-              <textarea 
-                className="glass-input text-white p-4 w-full mb-4"
-                placeholder="Type your analytics query..."
-                rows={3}
-              ></textarea>
-              <div className="flex justify-end">
-                <button className="glass-button text-white px-6 py-3">Send</button>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-semibold text-white">Ask Copilot</h2>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-green-300">AI Ready</span>
+                </div>
+              </div>
+              
+              {/* Enhanced Input Section */}
+              <div className="space-y-4">
+                <div className="relative">
+                  <textarea 
+                    className="glass-input text-white p-4 w-full pr-12 min-h-[100px] resize-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
+                    placeholder="Type your analytics query... (e.g., 'What are the main trends in the data?')"
+                    rows={3}
+                  ></textarea>
+                  
+                  {/* Voice Input Button */}
+                  <button 
+                    className="absolute bottom-3 right-3 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10"
+                    title="Voice input"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Quick Query Suggestions */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-400">💡 Quick suggestions:</div>
+                  <div className="flex flex-wrap gap-2">
+                    <button className="text-xs px-3 py-1 bg-blue-500/10 text-blue-300 rounded-full hover:bg-blue-500/20 transition-colors">
+                      📊 Show data overview
+                    </button>
+                    <button className="text-xs px-3 py-1 bg-green-500/10 text-green-300 rounded-full hover:bg-green-500/20 transition-colors">
+                      📈 Find trends
+                    </button>
+                    <button className="text-xs px-3 py-1 bg-purple-500/10 text-purple-300 rounded-full hover:bg-purple-500/20 transition-colors">
+                      🔍 Analyze patterns
+                    </button>
+                    <button className="text-xs px-3 py-1 bg-orange-500/10 text-orange-300 rounded-full hover:bg-orange-500/20 transition-colors">
+                      📋 Generate report
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Send Button with Keyboard Shortcut */}
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-400">
+                    <kbd className="px-2 py-1 bg-gray-800/30 rounded text-gray-300">Ctrl</kbd> + 
+                    <kbd className="px-2 py-1 bg-gray-800/30 rounded text-gray-300">Enter</kbd> to send
+                  </div>
+                  <button className="glass-button text-white px-8 py-3 flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300 focus:ring-2 focus:ring-blue-400/50">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                    Send
+                  </button>
+                </div>
+              </div>
+              
+              {/* Chat History Preview */}
+              <div className="mt-6 p-4 bg-gray-800/10 rounded-lg border border-gray-600/10">
+                <div className="text-sm text-gray-400 mb-2">Recent conversations</div>
+                <div className="space-y-2">
+                  <div className="text-xs text-gray-500">No recent chats - start a conversation above!</div>
+                </div>
               </div>
             </div>
           </div>
@@ -882,30 +942,126 @@ export default function Page() {
                   </div>
                 </div>
                 
+                {/* Enhanced Workflow Status Panel */}
+                <div className="mb-6 p-4 bg-gradient-to-r from-gray-800/20 to-gray-900/20 rounded-lg border border-white/10">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-white">Pipeline Status</h3>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-green-300">Active</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 gap-4 text-xs text-gray-400">
+                    <div className="text-center">
+                      <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-green-400 to-green-500 w-full"></div>
+                      </div>
+                      <span>Upload: 100%</span>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-blue-400 to-blue-500 w-3/4 animate-pulse"></div>
+                      </div>
+                      <span>Profile: 75%</span>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-gray-400 to-gray-500 w-0"></div>
+                      </div>
+                      <span>Planning: 0%</span>
+                    </div>
+                    <div className="text-center">
+                      <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-gray-400 to-gray-500 w-0"></div>
+                      </div>
+                      <span>Overall: 25%</span>
+                    </div>
+                  </div>
+                </div>
+                
                 {/* G3: Accent Glass Container - Agent Cards Container (Level 3) */}
                 <div className="glass-card h-full p-4 rounded-xl border border-white/10 backdrop-blur-md overflow-y-auto">
                   <div className="space-y-4">
                 {/* G4: Individual Agent Cards - File Upload Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('file-upload')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/file-upload-agent-icon-black.svg" alt="File Upload Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-blue-400/30 transition-all duration-200">
+                          <Image src="/icons/file-upload-agent-icon-black.svg" alt="File Upload Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('file-upload').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-blue-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('file-upload').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">📁 File Upload Agent</span>
-                        <p className="text-sm text-gray-400">Validates and processes uploaded files</p>
+                        <span className="text-base font-semibold text-white group-hover:text-blue-300 transition-colors">📁 File Upload Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Validates and processes uploaded files</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('file-upload').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('file-upload').status === 'processing' ? 'from-blue-400 to-blue-500 w-1/2 animate-pulse' :
+                              getAgentState('file-upload').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-green-400 to-green-500 w-full'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('file-upload').status === 'waiting' ? '0%' :
+                             getAgentState('file-upload').status === 'processing' ? '50%' :
+                             getAgentState('file-upload').status === 'completed' ? '100%' : '100%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('file-upload').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('file-upload').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('file-upload').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      {getAgentState('file-upload').status === 'ready' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">🟢 Ready</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('file-upload').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('file-upload').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('file-upload').status === 'processing' && (
+                        <span className="text-blue-300 text-sm bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('file-upload').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('file-upload').status === 'ready' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            Ready
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('file-upload').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>
@@ -927,25 +1083,77 @@ export default function Page() {
                 </div>
 
                 {/* G4: Individual Agent Cards - Data Profile Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('data-profile')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/data-profile-agent-icon-black.svg" alt="Data Profile Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-purple-400/30 transition-all duration-200">
+                          <Image src="/icons/data-profile-agent-icon-black.svg" alt="Data Profile Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('data-profile').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-purple-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('data-profile').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">📊 Data Profile Agent</span>
-                        <p className="text-sm text-gray-400">Analyzes data structure and quality</p>
+                        <span className="text-base font-semibold text-white group-hover:text-purple-300 transition-colors">📊 Data Profile Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Analyzes data structure and quality</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('data-profile').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('data-profile').status === 'processing' ? 'from-purple-400 to-purple-500 w-3/4 animate-pulse' :
+                              getAgentState('data-profile').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-gray-400 to-gray-500 w-0'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('data-profile').status === 'waiting' ? '0%' :
+                             getAgentState('data-profile').status === 'processing' ? '75%' :
+                             getAgentState('data-profile').status === 'completed' ? '100%' : '0%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('data-profile').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('data-profile').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('data-profile').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('data-profile').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('data-profile').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('data-profile').status === 'processing' && (
+                        <span className="text-purple-300 text-sm bg-purple-500/20 px-3 py-1 rounded-full border border-purple-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-purple-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('data-profile').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('data-profile').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>
@@ -967,25 +1175,77 @@ export default function Page() {
                 </div>
 
                 {/* G4: Individual Agent Cards - Planning Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('planning')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/planning-agent-icon-black.svg" alt="Planning Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-orange-400/30 transition-all duration-200">
+                          <Image src="/icons/planning-agent-icon-black.svg" alt="Planning Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('planning').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-orange-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('planning').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">🎯 Planning Agent</span>
-                        <p className="text-sm text-gray-400">Creates analysis strategy and execution plan</p>
+                        <span className="text-base font-semibold text-white group-hover:text-orange-300 transition-colors">🎯 Planning Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Creates analysis strategy and execution plan</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('planning').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('planning').status === 'processing' ? 'from-orange-400 to-orange-500 w-1/3 animate-pulse' :
+                              getAgentState('planning').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-gray-400 to-gray-500 w-0'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('planning').status === 'waiting' ? '0%' :
+                             getAgentState('planning').status === 'processing' ? '33%' :
+                             getAgentState('planning').status === 'completed' ? '100%' : '0%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('planning').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('planning').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('planning').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('planning').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('planning').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('planning').status === 'processing' && (
+                        <span className="text-orange-300 text-sm bg-orange-500/20 px-3 py-1 rounded-full border border-orange-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-orange-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('planning').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('planning').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>
@@ -1007,25 +1267,77 @@ export default function Page() {
                 </div>
 
                 {/* G4: Individual Agent Cards - Insight Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('insight')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/insight-agent-icon-black.svg" alt="Insight Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-yellow-400/30 transition-all duration-200">
+                          <Image src="/icons/insight-agent-icon-black.svg" alt="Insight Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('insight').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-yellow-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('insight').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">💡 Insight Agent</span>
-                        <p className="text-sm text-gray-400">Discovers patterns and actionable insights</p>
+                        <span className="text-base font-semibold text-white group-hover:text-yellow-300 transition-colors">💡 Insight Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Discovers patterns and actionable insights</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('insight').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('insight').status === 'processing' ? 'from-yellow-400 to-yellow-500 w-1/4 animate-pulse' :
+                              getAgentState('insight').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-gray-400 to-gray-500 w-0'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('insight').status === 'waiting' ? '0%' :
+                             getAgentState('insight').status === 'processing' ? '25%' :
+                             getAgentState('insight').status === 'completed' ? '100%' : '0%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('insight').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('insight').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('insight').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('insight').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('insight').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('insight').status === 'processing' && (
+                        <span className="text-yellow-300 text-sm bg-yellow-500/20 px-3 py-1 rounded-full border border-yellow-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('insight').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('insight').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>
@@ -1047,25 +1359,77 @@ export default function Page() {
                 </div>
 
                 {/* G4: Individual Agent Cards - Viz Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('viz')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/viz-agent-icon-black.svg" alt="Viz Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-cyan-400/30 transition-all duration-200">
+                          <Image src="/icons/viz-agent-icon-black.svg" alt="Viz Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('viz').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-cyan-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-cyan-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('viz').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">📈 Viz Agent</span>
-                        <p className="text-sm text-gray-400">Creates interactive visualizations</p>
+                        <span className="text-base font-semibold text-white group-hover:text-cyan-300 transition-colors">📈 Viz Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Creates interactive visualizations</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('viz').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('viz').status === 'processing' ? 'from-cyan-400 to-cyan-500 w-1/5 animate-pulse' :
+                              getAgentState('viz').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-gray-400 to-gray-500 w-0'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('viz').status === 'waiting' ? '0%' :
+                             getAgentState('viz').status === 'processing' ? '20%' :
+                             getAgentState('viz').status === 'completed' ? '100%' : '0%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('viz').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('viz').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('viz').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('viz').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('viz').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('viz').status === 'processing' && (
+                        <span className="text-cyan-300 text-sm bg-cyan-500/20 px-3 py-1 rounded-full border border-cyan-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('viz').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('viz').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>
@@ -1087,25 +1451,77 @@ export default function Page() {
                 </div>
 
                 {/* G4: Individual Agent Cards - Critique Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('critique')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/critique-agent-icon-black.svg" alt="Critique Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-red-400/30 transition-all duration-200">
+                          <Image src="/icons/critique-agent-icon-black.svg" alt="Critique Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('critique').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-red-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('critique').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">🔍 Critique Agent</span>
-                        <p className="text-sm text-gray-400">Reviews and validates analysis quality</p>
+                        <span className="text-base font-semibold text-white group-hover:text-red-300 transition-colors">🔍 Critique Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Reviews and validates analysis quality</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('critique').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('critique').status === 'processing' ? 'from-red-400 to-red-500 w-1/6 animate-pulse' :
+                              getAgentState('critique').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-gray-400 to-gray-500 w-0'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('critique').status === 'waiting' ? '0%' :
+                             getAgentState('critique').status === 'processing' ? '17%' :
+                             getAgentState('critique').status === 'completed' ? '100%' : '0%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('critique').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('critique').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('critique').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('critique').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('critique').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('critique').status === 'processing' && (
+                        <span className="text-red-300 text-sm bg-red-500/20 px-3 py-1 rounded-full border border-red-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-red-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('critique').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('critique').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>
@@ -1127,25 +1543,77 @@ export default function Page() {
                 </div>
 
                 {/* G4: Individual Agent Cards - Debate Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('debate')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/debate-agent-icon-black.svg" alt="Debate Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500/20 to-indigo-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-indigo-400/30 transition-all duration-200">
+                          <Image src="/icons/debate-agent-icon-black.svg" alt="Debate Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('debate').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-indigo-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('debate').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">💬 Debate Agent</span>
-                        <p className="text-sm text-gray-400">Explores alternative perspectives</p>
+                        <span className="text-base font-semibold text-white group-hover:text-indigo-300 transition-colors">🗣️ Debate Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Generates comprehensive final report</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('debate').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('debate').status === 'processing' ? 'from-indigo-400 to-indigo-500 w-1/8 animate-pulse' :
+                              getAgentState('debate').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-gray-400 to-gray-500 w-0'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('debate').status === 'waiting' ? '0%' :
+                             getAgentState('debate').status === 'processing' ? '12%' :
+                             getAgentState('debate').status === 'completed' ? '100%' : '0%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('debate').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('debate').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('debate').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('debate').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('debate').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('debate').status === 'processing' && (
+                        <span className="text-indigo-300 text-sm bg-indigo-500/20 px-3 py-1 rounded-full border border-indigo-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('debate').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('debate').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>
@@ -1167,25 +1635,77 @@ export default function Page() {
                 </div>
 
                 {/* G4: Individual Agent Cards - Report Agent (Level 4) */}
-                <div className="glass-card">
+                <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
                   <div 
-                    className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition-colors duration-200"
+                    className="flex justify-between items-center p-5 cursor-pointer"
                     onClick={() => toggleAgent('report')}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-gray-600/30 to-gray-700/30 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Image src="/icons/report-agent-icon-black.svg" alt="Report Agent" width={20} height={20} />
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20 group-hover:border-green-400/30 transition-all duration-200">
+                          <Image src="/icons/report-agent-icon-black.svg" alt="Report Agent" width={22} height={22} />
+                        </div>
+                        {getAgentState('report').status === 'processing' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse">
+                            <div className="absolute inset-0 bg-green-500 rounded-full animate-ping"></div>
+                          </div>
+                        )}
+                        {getAgentState('report').status === 'completed' && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="white">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <span className="text-base font-semibold text-white">📋 Report Agent</span>
-                        <p className="text-sm text-gray-400">Compiles comprehensive final report</p>
+                        <span className="text-base font-semibold text-white group-hover:text-green-300 transition-colors">📋 Report Agent</span>
+                        <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">Compiles comprehensive final report</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r transition-all duration-500 ${
+                              getAgentState('report').status === 'waiting' ? 'from-gray-400 to-gray-500 w-0' :
+                              getAgentState('report').status === 'processing' ? 'from-green-400 to-green-500 w-1/10 animate-pulse' :
+                              getAgentState('report').status === 'completed' ? 'from-green-400 to-green-500 w-full' :
+                              'from-gray-400 to-gray-500 w-0'
+                            }`}></div>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {getAgentState('report').status === 'waiting' ? '0%' :
+                             getAgentState('report').status === 'processing' ? '10%' :
+                             getAgentState('report').status === 'completed' ? '100%' : '0%'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {getAgentState('report').status === 'waiting' && <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full">⏸️ Waiting</span>}
-                      {getAgentState('report').status === 'processing' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full animate-pulse">🔄 Processing</span>}
-                      {getAgentState('report').status === 'completed' && <span className="text-gray-300 text-sm bg-white/15 px-3 py-1 rounded-full">✅ Complete</span>}
-                      <div className={`transform transition-transform duration-300 text-white/60 ${getAgentState('report').isExpanded ? 'rotate-180' : ''}`}>
+                      {getAgentState('report').status === 'waiting' && (
+                        <span className="text-gray-400 text-sm bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            Waiting
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('report').status === 'processing' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30 animate-pulse">
+                          <span className="inline-flex items-center gap-1">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-spin"></div>
+                            Processing
+                          </span>
+                        </span>
+                      )}
+                      {getAgentState('report').status === 'completed' && (
+                        <span className="text-green-300 text-sm bg-green-500/20 px-3 py-1 rounded-full border border-green-400/30">
+                          <span className="inline-flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Complete
+                          </span>
+                        </span>
+                      )}
+                      <div className={`transform transition-transform duration-300 text-white/60 group-hover:text-white/80 ${getAgentState('report').isExpanded ? 'rotate-180' : ''}`}>
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
                           <path d="M8 11L3 6h10l-5 5z"/>
                         </svg>

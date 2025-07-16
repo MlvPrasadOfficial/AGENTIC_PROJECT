@@ -73,12 +73,110 @@ class InsightToolKit:
 
 class InsightAgent(BaseAgent):
     """
-    LangChain-powered Insight Agent for generating statistical insights and business intelligence.
-    Alternative route from Planning Agent alongside Visualization Agent.
+    💡 INSIGHT AGENT - The Pattern Discovery & Business Intelligence Engine
+    
+    COMPREHENSIVE AGENT EXPLANATION:
+    ================================
+    
+    PURPOSE & ROLE:
+    The Insight Agent is one of two specialized analysis agents (alongside Visualization Agent) 
+    that can be activated by the Planning Agent. It serves as the narrative intelligence engine, 
+    transforming raw data into actionable business insights through advanced pattern recognition 
+    and statistical analysis.
+    
+    CORE RESPONSIBILITIES:
+    1. PATTERN DISCOVERY:
+       - Statistical trend identification (seasonal, cyclical, linear)
+       - Anomaly detection and outlier analysis
+       - Correlation and causation relationship mapping
+       - Clustering and segmentation analysis
+       - Time series pattern recognition
+    
+    2. BUSINESS INTELLIGENCE GENERATION:
+       - Key performance indicator (KPI) analysis
+       - Business metric trend interpretation
+       - Competitive analysis insights
+       - Risk assessment and opportunity identification
+       - Performance benchmarking
+    
+    3. NARRATIVE INSIGHT CREATION:
+       - Natural language insight generation
+       - Story-driven data interpretation
+       - Executive summary creation
+       - Actionable recommendation formulation
+       - Impact assessment and prioritization
+    
+    4. ADVANCED ANALYTICS:
+       - Predictive modeling insights
+       - Regression analysis interpretation
+       - Statistical significance testing
+       - Confidence interval analysis
+       - Hypothesis testing and validation
+    
+    5. CONTEXTUAL ANALYSIS:
+       - Domain-specific insight generation
+       - Industry benchmark comparisons
+       - Historical trend contextualization
+       - Seasonal adjustment and normalization
+       - External factor impact analysis
+    
+    ANALYTICAL CAPABILITIES:
+    - Descriptive Analytics: What happened?
+    - Diagnostic Analytics: Why did it happen?
+    - Predictive Analytics: What will happen?
+    - Prescriptive Analytics: What should we do?
+    
+    INTEGRATION POINTS:
+    - Input: Analysis plan from Planning Agent + RAG context
+    - Output: Structured insights + recommendations
+    - Next Agent: Critique Agent (for quality validation)
+    - Storage: Insight history + knowledge base
+    
+    TECHNICAL ARCHITECTURE:
+    - Base Class: BaseAgent (LangChain-powered)
+    - Analytics Engine: Advanced statistical methods
+    - NLP Generator: Natural language insight creation
+    - Knowledge Base: RAG-powered context integration
+    - Pattern Recognition: ML-based discovery algorithms
+    
+    ADVANCED FEATURES:
+    - Multi-dimensional analysis across various data types
+    - Confidence scoring for insights
+    - Insight relationship mapping
+    - Automated hypothesis generation
+    - Cross-domain knowledge integration
+    
+    ANALYTICAL METHODOLOGIES:
+    - Statistical inference and hypothesis testing
+    - Machine learning pattern recognition
+    - Time series analysis and forecasting
+    - Multivariate analysis techniques
+    - Bayesian inference and uncertainty quantification
+    
+    ERROR HANDLING:
+    - Insufficient data → Qualified insights with caveats
+    - Contradictory patterns → Alternative explanations
+    - Statistical insignificance → Confidence intervals
+    - Missing context → External knowledge integration
+    
+    PERFORMANCE OPTIMIZATION:
+    - Parallel analysis for multiple dimensions
+    - Incremental learning from previous insights
+    - Caching of computational results
+    - Progressive insight refinement
+    
+    QUALITY ASSURANCE:
+    - Statistical validation of findings
+    - Peer review through critique process
+    - Confidence scoring and uncertainty quantification
+    - Bias detection and correction
+    
+    This agent specializes in transforming complex data into clear, actionable insights 
+    that drive informed decision-making and strategic planning.
     """
     
     def __init__(self):
-        """Initialize the LangChain Insight Agent"""
+        """Initialize the Insight Agent with comprehensive analytical capabilities"""
         self.file_service = FileService()
         self.toolkit = InsightToolKit(self.file_service)
         

@@ -4,15 +4,21 @@ Always follow the standards in notes below and accomplish all the below tasks in
 Note-01: Always use a semicolon (;) instead of && when running multiple commands.
 Note-02: Always run commands in the foreground. If a server is running, monitor it in the terminal.
 Note-03: Log all changes in a timestamped file: changelogs/YYYY-MM-DD-HHMMSS_description.md.
-Note-04: Solve all tasks sequentially..and mention your strategy before solving tasks
+Note-04: Solve all tasks sequentially..and always mention your strategy before solving tasks
 
 complete all the tasks:
 
-Task-01: 1. add code comments g1 g2 g3 g4 wise in page.tsx
-          2.check the inconsistencies in the righht column duplicate agent panels
+Task-01: 1. DO :
+              git add .
+              git commit -m "JUL17 2025 USE BASE -- 2.1-2.5 COMPLETED SUCCESS"
+              git push origin main
 
 
-Task-03: After completing above tasks go to the files created or edited for above tasks,
+        2. create a shell task for backend just like fronted shell task for quick development
+           - cd c:\JUL7PROJECT\backend ; python main.py
+        3. make the hover animation for g1 g2 card in right column just minimal hover animation
+
+Task-02: After completing above tasks go to the files created or edited for above tasks,
               1.Remove any unused imports, variables, or code blocks
               2.Add detailed docstrings to all functions and components
               3.Add comprehensive line-by-line comments

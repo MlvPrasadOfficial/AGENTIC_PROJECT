@@ -23,8 +23,78 @@ from langchain.prompts import PromptTemplate
 
 class VizAgent(BaseAgent):
     """
-    Visualization Agent responsible for creating data visualizations.
-    This is the fifth agent in the Enterprise Insights Copilot pipeline.
+    📊 VISUALIZATION AGENT
+    
+    The Visualization Agent is the fifth agent in the Enterprise Insights Copilot pipeline,
+    responsible for transforming data insights into compelling visual representations.
+    
+    🎯 CORE CAPABILITIES:
+    - Dynamic chart generation from data insights
+    - Multi-format visualization support (plots, charts, graphs)
+    - Interactive visualization creation
+    - Statistical visualization rendering
+    - Custom styling and theming
+    - Export format optimization
+    
+    📈 VISUALIZATION TYPES:
+    - Line Charts: Trend analysis and time series data
+    - Bar Charts: Categorical comparisons and distributions
+    - Scatter Plots: Correlation and relationship analysis
+    - Heatmaps: Matrix data and correlation visualization
+    - Box Plots: Statistical distribution analysis
+    - Histograms: Frequency distribution visualization
+    - Pie Charts: Proportional data representation
+    - Area Charts: Cumulative data visualization
+    
+    🔧 TECHNICAL STACK:
+    - Matplotlib: Core plotting library for chart generation
+    - Seaborn: Statistical data visualization and styling
+    - Plotly: Interactive visualization capabilities
+    - Pandas: Data manipulation and preparation
+    - NumPy: Numerical computations and array operations
+    - PIL/Pillow: Image processing and format conversion
+    
+    🎨 VISUAL DESIGN:
+    - Glassmorphism UI integration
+    - Responsive design principles
+    - Color theory application
+    - Typography optimization
+    - Accessibility compliance
+    - Brand consistency maintenance
+    
+    🚀 PROCESSING WORKFLOW:
+    1. Data Insight Analysis: Parse insights from previous agents
+    2. Visualization Selection: Choose optimal chart types
+    3. Data Preparation: Clean and format data for visualization
+    4. Chart Generation: Create high-quality visualizations
+    5. Styling Application: Apply consistent visual themes
+    6. Format Optimization: Export in multiple formats
+    7. Interactive Enhancement: Add interactivity features
+    8. Quality Validation: Ensure visual accuracy and clarity
+    
+    🔄 INTEGRATION POINTS:
+    - Insight Agent: Receives pattern discoveries for visualization
+    - Data Profile Agent: Uses statistical summaries for chart context
+    - Planning Agent: Follows visualization strategies from analysis plan
+    - Critique Agent: Provides visualizations for quality assessment
+    - Report Agent: Supplies charts for final report generation
+    
+    📊 OUTPUT FORMATS:
+    - PNG: High-resolution static images
+    - SVG: Scalable vector graphics
+    - PDF: Print-ready visualizations
+    - HTML: Interactive web-based charts
+    - JSON: Chart configuration and data
+    
+    🎯 BUSINESS VALUE:
+    - Transforms complex data into understandable visuals
+    - Enhances decision-making through clear data presentation
+    - Improves stakeholder communication effectiveness
+    - Accelerates insight comprehension and action
+    - Supports data-driven storytelling
+    
+    This agent is the visual communication engine of the Enterprise Insights Copilot,
+    turning raw data insights into compelling visual narratives that drive business decisions.
     """
     
     def __init__(self):

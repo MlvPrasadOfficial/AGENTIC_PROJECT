@@ -20,12 +20,78 @@ from langchain.prompts import PromptTemplate
 
 class FileUploadAgent(BaseAgent):
     """
-    File Upload Agent responsible for validating and processing uploaded files.
-    This is the first agent in the Enterprise Insights Copilot pipeline.
+    📁 FILE UPLOAD AGENT - The Gateway to Data Processing
+    
+    COMPREHENSIVE AGENT EXPLANATION:
+    ================================
+    
+    PURPOSE & ROLE:
+    The File Upload Agent serves as the entry point for the Enterprise Insights Copilot 
+    system. It acts as the first validator and processor in the 8-agent pipeline, ensuring 
+    that uploaded files meet system requirements before proceeding to analysis.
+    
+    CORE RESPONSIBILITIES:
+    1. FILE VALIDATION:
+       - Validates file formats (CSV, XLSX, JSON, TXT, PDF)
+       - Checks file size limits (up to 100MB)
+       - Verifies file integrity and structure
+       - Ensures proper encoding detection
+    
+    2. FILE PROCESSING:
+       - Extracts metadata (filename, size, type, creation date)
+       - Performs initial content analysis
+       - Generates unique file IDs for tracking
+       - Creates file summaries for downstream agents
+    
+    3. SECURITY & SAFETY:
+       - Scans for malicious content
+       - Validates file headers and signatures
+       - Implements virus scanning (configurable)
+       - Prevents directory traversal attacks
+    
+    4. PREPROCESSING:
+       - Converts files to standardized formats
+       - Handles character encoding normalization
+       - Extracts text content from complex formats
+       - Generates initial data quality metrics
+    
+    INTEGRATION POINTS:
+    - Input: Raw file uploads from frontend
+    - Output: Validated file metadata + processed content
+    - Next Agent: Data Profile Agent (for structure analysis)
+    - Storage: Local file system + database metadata
+    
+    TECHNICAL ARCHITECTURE:
+    - Base Class: BaseAgent (LangChain-powered)
+    - File Service: Handles physical file operations
+    - Validation Engine: Multi-layer security checks
+    - Format Converters: Standardize various file types
+    - Metadata Extractor: Generates comprehensive file info
+    
+    ERROR HANDLING:
+    - Unsupported formats → Clear error messages
+    - Oversized files → Graceful rejection with alternatives
+    - Corrupted files → Partial recovery attempts
+    - Permission issues → Fallback storage options
+    
+    PERFORMANCE FEATURES:
+    - Async processing for large files
+    - Progress tracking for user feedback
+    - Chunked processing for memory efficiency
+    - Caching for repeated uploads
+    
+    MONITORING & LOGGING:
+    - Real-time upload progress
+    - Detailed error logging
+    - Performance metrics collection
+    - Security event tracking
+    
+    This agent is critical for system reliability as it prevents invalid data from 
+    entering the processing pipeline and ensures consistent data quality standards.
     """
     
     def __init__(self):
-        """Initialize the File Upload Agent"""
+        """Initialize the File Upload Agent with comprehensive configuration"""
         super().__init__(
             name="File Upload Agent",
             agent_type="file_upload"

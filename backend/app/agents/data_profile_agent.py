@@ -21,12 +21,97 @@ from langchain.prompts import PromptTemplate
 
 class DataProfileAgent(BaseAgent):
     """
-    Data Profile Agent responsible for analyzing data structure and generating
-    statistical profiles. This is the second agent in the Enterprise Insights Copilot pipeline.
+    📊 DATA PROFILE AGENT - The Data Structure Analyzer
+    
+    COMPREHENSIVE AGENT EXPLANATION:
+    ================================
+    
+    PURPOSE & ROLE:
+    The Data Profile Agent is the second agent in the Enterprise Insights Copilot 
+    pipeline, responsible for deep analysis of data structure, quality, and 
+    statistical properties. It transforms raw data into comprehensive profiles 
+    that guide all subsequent analysis steps.
+    
+    CORE RESPONSIBILITIES:
+    1. STRUCTURAL ANALYSIS:
+       - Column detection and type inference
+       - Row count and dimension analysis
+       - Data schema generation
+       - Relationship mapping between columns
+       - Index and key identification
+    
+    2. STATISTICAL PROFILING:
+       - Descriptive statistics (mean, median, std, percentiles)
+       - Distribution analysis and skewness detection
+       - Correlation matrix generation
+       - Outlier identification and quantification
+       - Missing value pattern analysis
+    
+    3. DATA QUALITY ASSESSMENT:
+       - Completeness scoring (missing data percentage)
+       - Consistency checks (format validation)
+       - Accuracy estimation (data type mismatches)
+       - Uniqueness analysis (duplicate detection)
+       - Data freshness and timeliness evaluation
+    
+    4. CONTENT CATEGORIZATION:
+       - Categorical vs numerical classification
+       - Text content analysis (length, patterns)
+       - Date/time format detection
+       - Geographic data identification
+       - Personal information detection (PII)
+    
+    5. BUSINESS INTELLIGENCE PREPARATION:
+       - Key performance indicator (KPI) identification
+       - Dimension and measure classification
+       - Hierarchical relationship detection
+       - Aggregation potential assessment
+       - Visualization recommendation preparation
+    
+    INTEGRATION POINTS:
+    - Input: Validated file metadata from File Upload Agent
+    - Output: Comprehensive data profile + quality metrics
+    - Next Agent: Planning Agent (for analysis strategy)
+    - Storage: Profile cache + metadata database
+    
+    TECHNICAL ARCHITECTURE:
+    - Base Class: BaseAgent (LangChain-powered)
+    - Data Engine: Pandas/NumPy for statistical analysis
+    - Profiling Algorithms: Custom statistical methods
+    - Quality Metrics: Multi-dimensional scoring system
+    - Schema Inference: Advanced type detection
+    
+    ADVANCED FEATURES:
+    - Automatic data type inference with confidence scores
+    - Pattern recognition for dates, emails, phone numbers
+    - Statistical anomaly detection
+    - Data lineage tracking
+    - Performance profiling for large datasets
+    
+    ERROR HANDLING:
+    - Corrupted data → Partial analysis with warnings
+    - Memory constraints → Chunked processing
+    - Format issues → Fallback parsing strategies
+    - Performance limits → Sampling techniques
+    
+    PERFORMANCE OPTIMIZATIONS:
+    - Intelligent sampling for large datasets
+    - Parallel processing for multiple columns
+    - Caching of expensive computations
+    - Progressive analysis with early stopping
+    
+    MONITORING & INSIGHTS:
+    - Processing time tracking
+    - Memory usage optimization
+    - Data quality trend analysis
+    - Profile comparison capabilities
+    
+    This agent is crucial for understanding data characteristics and ensuring 
+    downstream agents have the context needed for accurate analysis and insights.
     """
     
     def __init__(self):
-        """Initialize the Data Profile Agent"""
+        """Initialize the Data Profile Agent with comprehensive analytical capabilities"""
         super().__init__(
             name="Data Profile Agent",
             agent_type="data_profile"

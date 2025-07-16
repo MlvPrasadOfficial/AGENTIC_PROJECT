@@ -78,8 +78,81 @@ class DebateToolKit:
 
 class DebateAgent(BaseAgent):
     """
-    LangChain-powered Debate Agent for exploring multiple perspectives.
-    Sixth agent in the pipeline after Critique Agent.
+    ⚔️ DEBATE AGENT
+    
+    The Debate Agent is the seventh agent in the Enterprise Insights Copilot pipeline,
+    serving as the adversarial testing engine that challenges analysis through
+    constructive debate and alternative perspective exploration.
+    
+    🎯 CORE CAPABILITIES:
+    - Assumption challenging and validation
+    - Alternative interpretation generation
+    - Counterargument construction and analysis
+    - Devil's advocate perspective provision
+    - Bias detection through adversarial testing
+    - Multi-perspective synthesis and integration
+    
+    🔍 DEBATE DIMENSIONS:
+    - Methodological Challenges: Question analytical approaches
+    - Data Interpretation: Explore alternative explanations
+    - Assumption Testing: Challenge underlying premises
+    - Perspective Diversity: Consider multiple viewpoints
+    - Evidence Evaluation: Assess supporting and opposing evidence
+    - Conclusion Robustness: Test finding stability
+    
+    🛠️ TECHNICAL FRAMEWORK:
+    - LangChain Tools: Custom debate toolkit integration
+    - Adversarial Testing: Systematic challenge generation
+    - Perspective Modeling: Multiple viewpoint simulation
+    - Argument Mapping: Logical structure analysis
+    - Evidence Weighing: Supporting vs. opposing evaluation
+    - Synthesis Algorithms: Multi-perspective integration
+    
+    💭 DEBATE STRATEGIES:
+    - Socratic Questioning: Systematic inquiry method
+    - Devil's Advocate: Opposing viewpoint generation
+    - Steelman Arguments: Strongest opposing positions
+    - Perspective Taking: Multiple stakeholder views
+    - Evidence Evaluation: Supporting vs. contradicting
+    - Synthesis Building: Balanced conclusion formation
+    
+    🚀 DEBATE WORKFLOW:
+    1. Analysis Reception: Receive validated outputs from critique
+    2. Assumption Identification: Extract underlying premises
+    3. Challenge Generation: Create systematic challenges
+    4. Alternative Perspectives: Develop opposing viewpoints
+    5. Evidence Evaluation: Assess supporting and contradicting data
+    6. Counterargument Construction: Build strongest opposing cases
+    7. Perspective Synthesis: Integrate multiple viewpoints
+    8. Balanced Conclusions: Generate nuanced final positions
+    
+    🔄 INTEGRATION POINTS:
+    - Critique Agent: Receives quality-validated analysis for challenge
+    - Insight Agent: Challenges pattern interpretations and findings
+    - Visualization Agent: Questions visual representation choices
+    - Data Profile Agent: Challenges statistical assumptions
+    - Planning Agent: Questions analytical strategy decisions
+    - Report Agent: Provides balanced perspectives for documentation
+    
+    📊 DEBATE METRICS:
+    - Challenge Quality: Constructiveness of opposing arguments
+    - Perspective Diversity: Number of viewpoints considered
+    - Evidence Balance: Supporting vs. opposing evidence ratio
+    - Synthesis Quality: Integration of multiple perspectives
+    - Conclusion Robustness: Stability under adversarial testing
+    - Bias Mitigation: Reduction of systematic errors
+    
+    🎯 BUSINESS VALUE:
+    - Reduces confirmation bias in analytical conclusions
+    - Strengthens decision-making through adversarial testing
+    - Improves analytical rigor through systematic challenge
+    - Enhances stakeholder confidence through balanced perspectives
+    - Prevents costly errors from unchallenged assumptions
+    - Supports regulatory compliance through thorough validation
+    
+    This agent is the intellectual sparring partner of the Enterprise Insights Copilot,
+    ensuring that every conclusion survives rigorous adversarial testing and
+    represents a truly balanced, well-reasoned analytical position.
     """
 
     def __init__(self):

@@ -73,8 +73,83 @@ class ReportToolKit:
 
 class ReportAgent(BaseAgent):
     """
-    LangChain-powered Report Agent for generating comprehensive analysis reports.
-    Final agent in the pipeline after Debate Agent.
+    📊 REPORT AGENT
+    
+    The Report Agent is the eighth and final agent in the Enterprise Insights Copilot pipeline,
+    serving as the comprehensive documentation and communication engine that transforms
+    the entire analytical journey into professional, actionable business reports.
+    
+    🎯 CORE CAPABILITIES:
+    - Executive summary compilation and synthesis
+    - Professional report structure generation
+    - Multi-format document export (PDF, HTML, Word)
+    - Stakeholder-tailored communication
+    - Actionable recommendation formulation
+    - Visual integration and layout optimization
+    
+    📑 REPORT COMPONENTS:
+    - Executive Summary: High-level findings and recommendations
+    - Data Overview: Source description and quality assessment
+    - Methodology: Analytical approach and validation
+    - Key Findings: Primary insights and patterns
+    - Visualizations: Charts, graphs, and supporting visuals
+    - Recommendations: Actionable business guidance
+    - Appendix: Technical details and supporting evidence
+    
+    🛠️ TECHNICAL FRAMEWORK:
+    - LangChain Tools: Custom report generation toolkit
+    - Document Generation: Multi-format export capabilities
+    - Template System: Professional report layouts
+    - Visual Integration: Chart and graph embedding
+    - Styling Engine: Corporate branding and formatting
+    - Version Control: Document revision management
+    
+    📋 REPORT FORMATS:
+    - Executive Reports: C-suite focused summaries
+    - Technical Reports: Detailed analytical documentation
+    - Presentation Slides: Stakeholder meeting materials
+    - Dashboard Reports: Interactive online summaries
+    - Compliance Reports: Regulatory requirement documentation
+    - Ad-hoc Reports: Custom stakeholder communications
+    
+    🚀 REPORT WORKFLOW:
+    1. Content Aggregation: Collect outputs from all 7 previous agents
+    2. Audience Analysis: Identify target stakeholders and requirements
+    3. Structure Planning: Design optimal report organization
+    4. Content Synthesis: Integrate findings into coherent narrative
+    5. Executive Summary: Create high-level business overview
+    6. Visual Integration: Embed charts and supporting graphics
+    7. Recommendation Formation: Develop actionable guidance
+    8. Quality Assurance: Validate accuracy and completeness
+    
+    🔄 INTEGRATION POINTS:
+    - File Upload Agent: References original data sources
+    - Data Profile Agent: Incorporates statistical summaries
+    - Planning Agent: Follows analytical strategy documentation
+    - Insight Agent: Highlights key pattern discoveries
+    - Visualization Agent: Embeds charts and visual elements
+    - Critique Agent: Includes quality assessments and limitations
+    - Debate Agent: Presents balanced perspectives and considerations
+    
+    📊 REPORT QUALITY METRICS:
+    - Clarity Score: Readability and comprehension level
+    - Completeness: Coverage of all analytical components
+    - Actionability: Practical implementation guidance
+    - Professional Standards: Corporate formatting compliance
+    - Stakeholder Alignment: Audience-appropriate communication
+    - Evidence Support: Backing for all claims and recommendations
+    
+    🎯 BUSINESS VALUE:
+    - Transforms complex analysis into actionable insights
+    - Enables informed decision-making at all organizational levels
+    - Provides professional documentation for stakeholder communication
+    - Supports regulatory compliance and audit requirements
+    - Facilitates knowledge transfer and organizational learning
+    - Accelerates insight implementation through clear guidance
+    
+    This agent is the final synthesizer of the Enterprise Insights Copilot,
+    transforming the entire analytical journey into professional, actionable
+    business intelligence that drives organizational success.
     """
 
     def __init__(self):

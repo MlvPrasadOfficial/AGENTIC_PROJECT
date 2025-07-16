@@ -75,6 +75,109 @@ class PlanningToolKit:
 
 class PlanningAgent(BaseAgent):
     """
+    🎯 PLANNING AGENT - The Strategic Analysis Orchestrator
+    
+    COMPREHENSIVE AGENT EXPLANATION:
+    ================================
+    
+    PURPOSE & ROLE:
+    The Planning Agent serves as the strategic brain of the Enterprise Insights Copilot 
+    system, acting as the third agent in the pipeline. It analyzes user queries and 
+    data profiles to create comprehensive analysis plans that guide all subsequent 
+    processing steps.
+    
+    CORE RESPONSIBILITIES:
+    1. QUERY INTERPRETATION:
+       - Natural language processing of user requests
+       - Intent classification (exploratory vs targeted analysis)
+       - Entity extraction (metrics, dimensions, time periods)
+       - Ambiguity resolution through context analysis
+       - Priority scoring of analysis objectives
+    
+    2. STRATEGIC PLANNING:
+       - Multi-step analysis workflow creation
+       - Resource allocation and timeline estimation
+       - Risk assessment and mitigation strategies
+       - Alternative approach identification
+       - Success criteria definition
+    
+    3. ROUTE DECISION MAKING:
+       - Insight vs Visualization pathway selection
+       - Complexity assessment and tool selection
+       - Processing order optimization
+       - Parallel vs sequential execution planning
+       - Fallback strategy development
+    
+    4. ANALYSIS BLUEPRINT CREATION:
+       - Detailed step-by-step analysis plans
+       - Required visualization specifications
+       - Key metrics and KPI identification
+       - Statistical method recommendations
+       - Expected output format definition
+    
+    5. CONTEXT INTEGRATION:
+       - Data profile analysis incorporation
+       - Historical analysis pattern recognition
+       - User preference learning and adaptation
+       - Domain expertise integration
+       - Regulatory compliance considerations
+    
+    DECISION LOGIC:
+    - Exploratory queries → Insight Agent pathway
+    - Visualization requests → Viz Agent pathway
+    - Complex analysis → Multi-agent orchestration
+    - Simple queries → Direct processing
+    - Ambiguous requests → Clarification protocols
+    
+    INTEGRATION POINTS:
+    - Input: User queries + Data Profile Agent results
+    - Output: Comprehensive analysis plan + routing decisions
+    - Next Agents: Insight Agent OR Visualization Agent
+    - Storage: Plan cache + decision history
+    
+    TECHNICAL ARCHITECTURE:
+    - Base Class: BaseAgent (LangChain-powered)
+    - NLP Engine: Advanced query understanding
+    - Planning Algorithms: Multi-criteria decision making
+    - Route Optimizer: Intelligent agent selection
+    - Context Manager: Historical knowledge integration
+    
+    ADVANCED FEATURES:
+    - Adaptive planning based on data characteristics
+    - Multi-objective optimization
+    - Uncertainty quantification and risk assessment
+    - Dynamic plan adjustment during execution
+    - Learning from previous analysis outcomes
+    
+    PLANNING METHODOLOGIES:
+    - Hierarchical task decomposition
+    - Resource-aware scheduling
+    - Constraint satisfaction planning
+    - Probabilistic reasoning
+    - Multi-agent coordination protocols
+    
+    ERROR HANDLING:
+    - Unclear queries → Clarification requests
+    - Impossible requests → Alternative suggestions
+    - Resource constraints → Scaled-down approaches
+    - Time limitations → Priority-based planning
+    
+    PERFORMANCE OPTIMIZATION:
+    - Plan caching for similar queries
+    - Parallel planning for complex requests
+    - Early termination for infeasible plans
+    - Incremental plan refinement
+    
+    MONITORING & ADAPTATION:
+    - Plan execution tracking
+    - Success rate analysis
+    - Performance bottleneck identification
+    - Continuous improvement through feedback
+    
+    This agent is the strategic coordinator that ensures efficient resource utilization 
+    and optimal analysis outcomes by creating intelligent, data-driven analysis plans.
+    """
+    """
     LangChain-powered Planning Agent for creating analysis plans.
     Routes to either Insight Agent or Visualization Agent based on query intent.
     """

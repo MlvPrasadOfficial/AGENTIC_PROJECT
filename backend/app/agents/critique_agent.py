@@ -65,8 +65,80 @@ class CritiqueToolKit:
 
 class CritiqueAgent(BaseAgent):
     """
-    LangChain-powered Critique Agent for quality control and analysis validation.
-    Fifth agent in the pipeline after Insight/Visualization agents.
+    🔍 CRITIQUE AGENT
+    
+    The Critique Agent is the sixth agent in the Enterprise Insights Copilot pipeline,
+    serving as the quality control and validation engine for all analysis outputs.
+    
+    🎯 CORE CAPABILITIES:
+    - Analysis quality assessment and validation
+    - Statistical methodology verification
+    - Bias detection and mitigation strategies
+    - Interpretive accuracy evaluation
+    - Reliability scoring and confidence intervals
+    - Methodological soundness validation
+    
+    🔬 QUALITY DIMENSIONS:
+    - Statistical Validity: Hypothesis testing, significance levels, effect sizes
+    - Data Completeness: Missing data assessment, sampling adequacy
+    - Methodology Soundness: Analytical approach validation
+    - Interpretive Accuracy: Conclusion validity, causal inference
+    - Reproducibility: Method documentation, replication potential
+    - Generalizability: External validity, population applicability
+    
+    🛠️ TECHNICAL FRAMEWORK:
+    - LangChain Tools: Custom critique toolkit integration
+    - Statistical Validation: Hypothesis testing, confidence intervals
+    - Bias Detection: Systematic error identification
+    - Quality Metrics: Quantitative assessment frameworks
+    - Peer Review: Automated quality control processes
+    - Best Practices: Industry-standard validation protocols
+    
+    📊 VALIDATION METHODS:
+    - Cross-validation: Model performance assessment
+    - Sensitivity Analysis: Robustness testing
+    - Assumption Checking: Model prerequisite validation
+    - Outlier Detection: Anomaly identification
+    - Correlation Analysis: Relationship verification
+    - Significance Testing: Statistical hypothesis evaluation
+    
+    🚀 CRITIQUE WORKFLOW:
+    1. Analysis Reception: Receive outputs from previous agents
+    2. Quality Assessment: Evaluate statistical and methodological soundness
+    3. Bias Detection: Identify potential sources of systematic error
+    4. Validation Testing: Apply rigorous quality control measures
+    5. Limitation Identification: Document constraints and assumptions
+    6. Improvement Recommendations: Suggest enhancement strategies
+    7. Confidence Scoring: Assign reliability ratings
+    8. Quality Report: Generate comprehensive critique documentation
+    
+    🔄 INTEGRATION POINTS:
+    - Insight Agent: Validates pattern discoveries and business insights
+    - Visualization Agent: Critiques visual representation accuracy
+    - Data Profile Agent: Verifies statistical summaries and distributions
+    - Planning Agent: Evaluates analytical strategy effectiveness
+    - Debate Agent: Provides validated inputs for adversarial testing
+    - Report Agent: Supplies quality assessments for final documentation
+    
+    📈 QUALITY METRICS:
+    - Statistical Validity Score: 0-100 scale
+    - Data Completeness: Percentage of missing data
+    - Methodology Soundness: Validated/Needs Review
+    - Confidence Level: Statistical significance thresholds
+    - Bias Risk Assessment: Low/Medium/High categories
+    - Reproducibility Index: Replication success probability
+    
+    🎯 BUSINESS VALUE:
+    - Ensures analytical reliability and trustworthiness
+    - Prevents costly decision errors from flawed analysis
+    - Maintains enterprise-grade quality standards
+    - Builds stakeholder confidence in insights
+    - Supports regulatory compliance requirements
+    - Enables continuous improvement of analytical processes
+    
+    This agent is the quality assurance backbone of the Enterprise Insights Copilot,
+    ensuring that every insight and recommendation meets the highest standards of
+    statistical rigor and methodological excellence.
     """
     
     def __init__(self):

@@ -3,6 +3,11 @@
 
 
 
+
+ 1.git add . ; git commit -m "jul17 77.15am --inc suc --file upload agent cide" ; git push origin main
+
+ 
+
  shell: Next.js Development Server
 
  Always follow the standards in notes below and accomplish the below tasks in sequence

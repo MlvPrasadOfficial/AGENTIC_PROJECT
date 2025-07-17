@@ -77,8 +77,9 @@ export function UploadSection({
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Get file type display name
+  // Get file type display name for user-friendly presentation
   const getFileTypeDisplay = (type: string): string => {
+    // Map MIME types to user-friendly display names
     const typeMap: Record<string, string> = {
       'text/csv': 'CSV',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
@@ -86,11 +87,13 @@ export function UploadSection({
       'application/json': 'JSON',
       'text/plain': 'TXT',
     };
+    // Return mapped type or extract from MIME type or fallback to UNKNOWN
     return typeMap[type] || type?.split('/')[1]?.toUpperCase() || 'UNKNOWN';
   };
   
-  // Validate file
+  // Validate file against size and type constraints
   const validateFile = useCallback((file: File): { valid: boolean; error?: string } => {
+    // Check file size constraint
     if (file.size > maxFileSize) {
       return {
         valid: false,
@@ -98,6 +101,7 @@ export function UploadSection({
       };
     }
     
+    // Check file type constraint
     if (!allowedTypes.includes(file.type)) {
       return {
         valid: false,
@@ -105,27 +109,36 @@ export function UploadSection({
       };
     }
     
+    // All validations passed
     return { valid: true };
   }, [maxFileSize, allowedTypes]);
   
-  // Process uploaded files
+  // Process uploaded files with validation and preview generation
   const processFiles = useCallback(async (files: FileList | File[]) => {
+    // Convert FileList to Array for easier manipulation
     const fileArray = Array.from(files);
     
-    // Check file limit
+    // Check if adding these files would exceed the maximum file limit
     if (uploadedFiles.length + fileArray.length > maxFiles) {
       alert(`Maximum ${maxFiles} files allowed. You can upload ${maxFiles - uploadedFiles.length} more files.`);
       return;
     }
     
+    // Set uploading state to show progress indicators
     setIsUploading(true);
     
+    // Initialize array to store processed file objects
     const newFiles: UploadedFile[] = [];
     
+    // Process each file individually
     for (const file of fileArray) {
+      // Generate unique ID for this file
       const id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Validate file against size and type constraints
       const validation = validateFile(file);
       
+      // If validation fails, add file with error status
       if (!validation.valid) {
         newFiles.push({
           id,
@@ -137,17 +150,19 @@ export function UploadSection({
         continue;
       }
       
-      // Create preview for certain file types
+      // Generate preview for text-based files
       let preview: string | undefined;
       if (file.type.startsWith('text/') || file.type === 'application/json') {
         try {
           const text = await file.text();
+          // Limit preview to 200 characters to prevent UI overflow
           preview = text.slice(0, 200) + (text.length > 200 ? '...' : '');
         } catch (error) {
           console.warn('Failed to create preview:', error);
         }
       }
       
+      // Create new file object with uploading status
       const newFile: UploadedFile = {
         id,
         file,
@@ -155,23 +170,27 @@ export function UploadSection({
         progress: 0,
       };
       
+      // Add preview if generated successfully
       if (preview) {
         newFile.preview = preview;
       }
       
+      // Add file to processing array
       newFiles.push(newFile);
     }
     
+    // Add all new files to the uploaded files state
     setUploadedFiles(prev => [...prev, ...newFiles]);
     
-    // Simulate upload progress
+    // Start upload simulation for files that passed validation
     for (const uploadFile of newFiles.filter(f => f.status === 'uploading')) {
       simulateUpload(uploadFile.id);
     }
     
+    // Reset uploading state
     setIsUploading(false);
     
-    // Call callback with valid files
+    // Notify parent component of successfully uploaded files
     const validFiles = newFiles.filter(f => f.status !== 'error').map(f => f.file);
     if (validFiles.length > 0 && onFilesUploaded) {
       onFilesUploaded(validFiles);

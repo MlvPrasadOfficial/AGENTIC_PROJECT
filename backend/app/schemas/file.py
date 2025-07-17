@@ -37,7 +37,41 @@ class FileResponse(BaseModel):
     )
 
 class FileMetadata(BaseModel):
-    """File metadata including processing status and profile info"""
+    """
+    Comprehensive metadata schema for uploaded files with processing status.
+    
+    This schema represents the complete lifecycle of a file within the
+    Enterprise Insights Copilot system, from initial upload through
+    processing completion, including detailed profiling information.
+    
+    Lifecycle Stages:
+        1. Upload: Basic file information captured
+        2. Processing: File analysis and validation in progress
+        3. Complete: Full processing and profiling finished
+        4. Error: Processing failed with error details
+        
+    Fields:
+        file_id: Unique system identifier for the file
+        filename: Original filename as provided by user
+        upload_time: Timestamp when file was uploaded
+        size_bytes: File size in bytes for storage tracking
+        file_type: Detected MIME type or file extension
+        status: Current processing status (processing, complete, error)
+        processing_time: Time taken for processing in seconds
+        row_count: Number of data rows (for structured data)
+        column_count: Number of data columns (for structured data)
+        profile: Detailed data profiling results (if available)
+        error: Error message if processing failed
+        
+    Status Values:
+        - "processing": File is currently being analyzed
+        - "complete": Processing finished successfully
+        - "error": Processing failed with error details
+        
+    Usage:
+        This schema is used across the API for file status reporting,
+        metadata retrieval, and processing progress tracking.
+    """
     file_id: str
     filename: str
     upload_time: datetime
@@ -51,7 +85,39 @@ class FileMetadata(BaseModel):
     error: Optional[str] = None
     
 class ColumnProfile(BaseModel):
-    """Profile information for a single column"""
+    """
+    Detailed profiling information for a single data column.
+    
+    This schema captures comprehensive statistical and structural information
+    about individual columns within uploaded data files, enabling detailed
+    data quality assessment and analysis planning.
+    
+    Statistical Metrics:
+        - Basic counts (total, missing, unique values)
+        - Descriptive statistics (mean, median, standard deviation)
+        - Distribution analysis (min, max, histogram)
+        - Data quality metrics (missing percentage, uniqueness)
+        
+    Fields:
+        name: Column name as it appears in the source data
+        dtype: Data type (string, integer, float, datetime, etc.)
+        count: Total number of non-null values
+        missing: Number of missing/null values
+        missing_percentage: Percentage of missing values (0-100)
+        unique: Number of unique values in the column
+        unique_percentage: Percentage of unique values (0-100)
+        min: Minimum value (for numeric/date columns)
+        max: Maximum value (for numeric/date columns)
+        mean: Arithmetic mean (for numeric columns)
+        std: Standard deviation (for numeric columns)
+        median: Median value (for numeric columns)
+        histogram: Frequency distribution bins
+        histogram_bins: Bin boundaries for histogram
+        
+    Usage:
+        This schema is used within DataProfile to provide detailed
+        column-level analysis for data profiling and quality assessment.
+    """
     name: str
     dtype: str
     count: int
@@ -68,7 +134,45 @@ class ColumnProfile(BaseModel):
     histogram_bins: Optional[List[Any]] = None
     
 class DataProfile(BaseModel):
-    """Complete data profile"""
+    """
+    Comprehensive data profile schema for complete dataset analysis.
+    
+    This schema provides a complete statistical and structural overview
+    of uploaded datasets, enabling data scientists and analysts to
+    understand data quality, distribution, and characteristics.
+    
+    Dataset Overview:
+        - Dimensional information (rows, columns)
+        - Memory usage and storage requirements
+        - Data quality metrics (duplicates, completeness)
+        - Sample data for preview and validation
+        
+    Advanced Analytics:
+        - Column-level profiling with detailed statistics
+        - Correlation analysis between numeric columns
+        - Data distribution patterns and outliers
+        - Relationship mapping and dependencies
+        
+    Fields:
+        row_count: Total number of rows in the dataset
+        column_count: Total number of columns in the dataset
+        memory_usage: Dataset memory footprint in bytes
+        duplicated_rows: Number of duplicate rows found
+        duplicated_percentage: Percentage of duplicate rows (0-100)
+        columns: Dictionary of column profiles keyed by column name
+        correlation_matrix: Correlation coefficients between numeric columns
+        sample_data: Representative sample of actual data rows
+        
+    Usage:
+        This schema is used for comprehensive data profiling results,
+        data quality assessment, and analysis planning within the
+        Enterprise Insights Copilot system.
+        
+    Performance Considerations:
+        - Sample data is limited to prevent large response payloads
+        - Correlation matrix is computed only for numeric columns
+        - Memory usage helps with resource planning
+    """
     row_count: int
     column_count: int
     memory_usage: int

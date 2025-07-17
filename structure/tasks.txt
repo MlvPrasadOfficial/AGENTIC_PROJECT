@@ -6,7 +6,7 @@ Note-02: Always run commands in the foreground. If a server is running, monitor 
 Note-03: Log all changes in a timestamped file: changelogs/YYYY-MM-DD-HHMMSS_description.md.
 Note-04: Solve all tasks sequentially..and always mention your strategy before solving tasks
 Note-05: check frontend working at shell task : 'Next.js Development Server' and backend at shell task : 'Backend Development Server'
-
+note-06: dont push to github, unless i told you to do as a task below
 
 complete all the tasks:
 
@@ -17,7 +17,7 @@ Task-01 : 1. do remove g1,g2,g3,g4 cards hover animation in order as below
               remove all hover animation and elevation animations
               2.3 before making any changes,read the code of page,tsx of relevant entirely as it has many  opening and closes , 
               incorrect edit can corrupt the code
-              2.4 check continously in the sheell task : 'Next.js Development Server' for any compilation and move forward in every step
+              2.4 check continously in the shell task : 'Next.js Development Server' for any compilation and move forward in every step
 
         3. read the task carefully and proceed accordingly 
 Task-02: After completing above tasks go to the files created or edited for above tasks,

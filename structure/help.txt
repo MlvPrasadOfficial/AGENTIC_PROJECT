@@ -1,10 +1,10 @@
- ADD HOME UI 2 USE FULL WIDTH
 
 
 
 
-
- 1.git add . ; git commit -m "jul17 77.15am --inc suc --file upload agent cide" ; git push origin main
+git add . ;
+git commit -m "jul 17 17.05 pm succ - use as base --removed hover animation and elevation for both lleft and right column" ; 
+git push origin main
 
  
 

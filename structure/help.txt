@@ -8,6 +8,8 @@
 
  
 
+
+
  shell: Next.js Development Server
 
  Always follow the standards in notes below and accomplish the below tasks in sequence

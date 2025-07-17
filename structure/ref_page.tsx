@@ -776,113 +776,35 @@ export default function Page() {
     });
   };
   
-  // ============================================================================
-  // MAIN COMPONENT RENDER - Full Viewport Width Layout
-  // ============================================================================
-  
-  /**
-   * Main component render method that returns the complete dashboard UI
-   * Implements full viewport width layout with sophisticated 2-column design
-   * 
-   * LAYOUT STRUCTURE:
-   * 1. Main container with full viewport width and dark background
-   * 2. Subtle texture overlays for aesthetic depth and visual interest
-   * 3. Navigation bar component for user navigation and branding
-   * 4. 2-column layout container for responsive design
-   * 5. Left column (40%) containing upload and chat sections
-   * 6. Right column (60%) containing agent workflow visualization
-   * 7. Full-width visualization panel for data charts and graphs
-   * 
-   * RESPONSIVE DESIGN:
-   * - Desktop: 2-column layout with 40%/60% split
-   * - Mobile: Stacked layout with full-width components
-   * - Tablet: Responsive adjustments based on screen size
-   * 
-   * ACCESSIBILITY FEATURES:
-   * - Proper semantic HTML structure
-   * - ARIA labels for screen readers
-   * - Keyboard navigation support
-   * - Color contrast compliance
-   * 
-   * PERFORMANCE OPTIMIZATIONS:
-   * - Efficient CSS classes for fast rendering
-   * - Optimized image loading with Next.js Image component
-   * - Minimal DOM manipulation for smooth interactions
-   * 
-   * @returns {JSX.Element} Complete dashboard interface with 2-column layout
-   */
+  // Main component render with full viewport width layout
   return (
     <div className="min-h-screen bg-black relative w-full max-w-none">
-      {/* ================================================================== */}
-      {/* BACKGROUND TEXTURE OVERLAYS - Aesthetic Depth and Visual Interest */}
-      {/* ================================================================== */}
-      
-      {/* Primary radial gradient overlay for subtle background texture */}
+      {/* Subtle texture overlay for aesthetic depth */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.005)_0%,transparent_70%)]" />
-      
-      {/* Secondary linear gradient overlay for geometric texture pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.003)_25%,transparent_25%),linear-gradient(-45deg,rgba(255,255,255,0.003)_25%,transparent_25%),linear-gradient(45deg,transparent_75%,rgba(255,255,255,0.003)_75%),linear-gradient(-45deg,transparent_75%,rgba(255,255,255,0.003)_75%)] bg-[length:20px_20px]" />
       
-      {/* ================================================================== */}
-      {/* MAIN CONTENT CONTAINER - Full Viewport Width with Z-Index Control */}
-      {/* ================================================================== */}
-      
       <div className="relative z-10 w-full max-w-none">
-        {/* ================================================================ */}
-        {/* NAVIGATION BAR - Top-Level Application Navigation */}
-        {/* ================================================================ */}
-        
-        {/* Top navigation bar component with branding and user controls */}
+        {/* Top navigation bar component */}
         <Navbar />
         
-        {/* ================================================================ */}
-        {/* MAIN CONTENT WRAPPER - Full Viewport Width Container */}
-        {/* ================================================================ */}
-        
-        {/* Main content container with full viewport width and no max-width constraints */}
+        {/* Main content container with full viewport width */}
         <div className="w-full max-w-none">
-        
-        {/* ================================================================ */}
-        {/* MAIN 2-COLUMN LAYOUT CONTAINER - Enhanced Spacing and Padding */}
-        {/* ================================================================ */}
         
         {/* Main 2-Column Layout Container - Enhanced spacing and padding */}
         <div className="main-container">
           
-          {/* ============================================================== */}
-          {/* LEFT COLUMN (40%) - File Upload and Chat Vertically Stacked */}
-          {/* ============================================================== */}
-          
           {/* Left Column (40%) - File Upload and Chat vertically stacked */}
           <div className="left-column">
             
-            {/* ========================================================== */}
-            {/* CARD 1: FILE UPLOAD AND DATA PREVIEW SECTION */}
-            {/* ========================================================== */}
-            
             {/* CARD 1: File Upload and Data Preview Section */}
             <div className="glass-card p-6 space-y-4">
-              {/* ====================================================== */}
-              {/* FILE UPLOAD SECTION HEADER */}
-              {/* ====================================================== */}
-              
-              {/* Section header with descriptive title for file upload functionality */}
               <h2 className="text-2xl font-semibold text-white mb-4">Upload your Data</h2>
-              
-              {/* ====================================================== */}
-              {/* FILE UPLOAD COMPONENT - Drag & Drop with Backend Integration */}
-              {/* ====================================================== */}
-              
               {/* File Upload Component - Drag & drop with backend integration */}
               <FileUpload
                 onFileUploaded={handleFileUploaded}
                 onFileDeleted={handleFileDeleted}
                 onError={(error) => setPreviewError(error.message)}
               />
-              
-              {/* ====================================================== */}
-              {/* CSV PREVIEW LOADING STATE - Loading Indicator */}
-              {/* ====================================================== */}
               
               {/* CSV Preview Loading State - Shows while fetching sample data */}
               {isPreviewLoading && (
@@ -891,10 +813,6 @@ export default function Page() {
                 </div>
               )}
               
-              {/* ====================================================== */}
-              {/* ERROR DISPLAY - Upload and Processing Error Messages */}
-              {/* ====================================================== */}
-              
               {/* Error Display - Shows upload or processing errors */}
               {previewError && (
                 <div className="glass-card p-4 bg-red-500/20 border border-red-400/30">
@@ -902,52 +820,26 @@ export default function Page() {
                 </div>
               )}
               
-              {/* ====================================================== */}
-              {/* CSV PREVIEW TABLE - First 10 Rows Data Display */}
-              {/* ====================================================== */}
-              
               {/* CSV Preview Table - Shows first 10 rows of uploaded data */}
               {previewData && !isPreviewLoading && (
                 <div className="glass-card p-4">
-                  {/* Table header with preview title */}
                   <h3 className="text-lg font-medium text-white mb-3">CSV Preview</h3>
-                  
-                  {/* Scrollable table container for responsive design */}
                   <div className="overflow-x-auto">
-                    {/* Data table with column headers and row data */}
-                    <table className="w-full text-sm text-left text-gray-200">
-                      {/* ============================================== */}
-                      {/* TABLE HEADER - Column Names and Data Types */}
-                      {/* ============================================== */}
-                      
-                      {/* Table header with column names and data types */}
-                      <thead className="text-xs uppercase bg-gray-800/30 text-gray-100">
+                    <table className="w-full text-sm text-left text-gray-200">                        <thead className="text-xs uppercase bg-gray-800/30 text-gray-100">
                         <tr>
-                          {/* Dynamic column headers generated from data structure */}
                           {previewData.columns.map((column) => (
                             <th key={column.name} className="px-4 py-2">
-                              {/* Column name displayed as header */}
                               {column.name}
-                              {/* Column data type displayed as subtitle */}
                               <div className="text-gray-400 text-xs font-normal">{column.type}</div>
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      
-                      {/* ============================================== */}
-                      {/* TABLE BODY - Data Rows with Hover Effects */}
-                      {/* ============================================== */}
-                      
-                      {/* Table body with data rows and hover effects */}
                       <tbody>
-                        {/* Dynamic row generation from preview data */}
                         {previewData.rows.map((row, idx) => (
                           <tr key={`row-${idx}-${Object.values(row).join('-')}`} className="border-b border-gray-700/30 bg-gray-800/10 hover:bg-gray-800/20">
-                            {/* Dynamic cell generation for each column */}
                             {previewData.columns.map((column) => (
                               <td key={`cell-${idx}-${column.name}`} className="px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis">
-                                {/* Cell content with null value handling */}
                                 {row[column.name] !== null ? String(row[column.name]) : <span className="text-gray-500">null</span>}
                               </td>
                             ))}
@@ -960,101 +852,62 @@ export default function Page() {
               )}
             </div>
             
-            {/* ========================================================== */}
-            {/* CARD 2: ENHANCED CHAT INTERFACE SECTION */}
-            {/* ========================================================== */}
-            
             {/* CARD 2: Enhanced Chat Interface Section */}
             <div className="glass-card p-6">
-              {/* ====================================================== */}
-              {/* CHAT INTERFACE HEADER - Title and AI Status Indicator */}
-              {/* ====================================================== */}
-              
-              {/* Chat interface header with title and AI status indicator */}
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-semibold text-white">Ask Copilot</h2>
                 <div className="flex items-center gap-2">
-                  {/* AI ready status indicator with pulsing animation */}
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                   <span className="text-sm text-green-300">AI Ready</span>
                 </div>
               </div>
               
-              {/* ====================================================== */}
-              {/* ENHANCED INPUT SECTION - Query Input and Voice Controls */}
-              {/* ====================================================== */}
-              
               {/* Enhanced Input Section */}
               <div className="space-y-4">
-                {/* Query input container with voice button */}
                 <div className="relative">
-                  {/* Multi-line text input for analytics queries */}
                   <textarea 
                     className="glass-input text-white p-4 w-full pr-12 min-h-[100px] resize-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
                     placeholder="Type your analytics query... (e.g., 'What are the main trends in the data?')"
                     rows={3}
                   ></textarea>
                   
-                  {/* Voice Input Button positioned in bottom-right corner */}
+                  {/* Voice Input Button */}
                   <button 
                     className="absolute bottom-3 right-3 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10"
                     title="Voice input"
                   >
-                    {/* Microphone icon for voice input functionality */}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
                   </button>
                 </div>
                 
-                {/* ================================================== */}
-                {/* QUICK QUERY SUGGESTIONS - Predefined Query Buttons */}
-                {/* ================================================== */}
-                
                 {/* Quick Query Suggestions */}
                 <div className="space-y-2">
-                  {/* Section label for quick suggestions */}
                   <div className="text-sm text-gray-400">💡 Quick suggestions:</div>
-                  
-                  {/* Flexbox container for suggestion buttons */}
                   <div className="flex flex-wrap gap-2">
-                    {/* Data overview suggestion button */}
                     <button className="text-xs px-3 py-1 bg-blue-500/10 text-blue-300 rounded-full hover:bg-blue-500/20 transition-colors">
                       📊 Show data overview
                     </button>
-                    
-                    {/* Trend analysis suggestion button */}
                     <button className="text-xs px-3 py-1 bg-green-500/10 text-green-300 rounded-full hover:bg-green-500/20 transition-colors">
                       📈 Find trends
                     </button>
-                    
-                    {/* Pattern analysis suggestion button */}
                     <button className="text-xs px-3 py-1 bg-purple-500/10 text-purple-300 rounded-full hover:bg-purple-500/20 transition-colors">
                       🔍 Analyze patterns
                     </button>
-                    
-                    {/* Report generation suggestion button */}
                     <button className="text-xs px-3 py-1 bg-orange-500/10 text-orange-300 rounded-full hover:bg-orange-500/20 transition-colors">
                       📋 Generate report
                     </button>
                   </div>
                 </div>
                 
-                {/* ================================================== */}
-                {/* SEND BUTTON WITH KEYBOARD SHORTCUT - Action Controls */}
-                {/* ================================================== */}
-                
                 {/* Send Button with Keyboard Shortcut */}
                 <div className="flex items-center justify-between">
-                  {/* Keyboard shortcut display */}
                   <div className="text-xs text-gray-400">
                     <kbd className="px-2 py-1 bg-gray-800/30 rounded text-gray-300">Ctrl</kbd> + 
                     <kbd className="px-2 py-1 bg-gray-800/30 rounded text-gray-300">Enter</kbd> to send
                   </div>
-                  
-                  {/* Send button with icon and hover effects */}
                   <button className="glass-button text-white px-8 py-3 flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300 focus:ring-2 focus:ring-blue-400/50">
-                    {/* Send icon */}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
@@ -1063,108 +916,60 @@ export default function Page() {
                 </div>
               </div>
               
-              {/* ====================================================== */}
-              {/* CHAT HISTORY PREVIEW - Conversation History Display */}
-              {/* ====================================================== */}
-              
               {/* Chat History Preview */}
               <div className="mt-6 p-4 bg-gray-800/10 rounded-lg border border-gray-600/10">
-                {/* History section header */}
                 <div className="text-sm text-gray-400 mb-2">Recent conversations</div>
-                
-                {/* History content area */}
                 <div className="space-y-2">
-                  {/* Empty state message */}
                   <div className="text-xs text-gray-500">No recent chats - start a conversation above!</div>
                 </div>
               </div>
             </div>
           </div>
           
-          {/* ============================================================== */}
-          {/* RIGHT COLUMN (60%) - Hierarchical Glass3D Agent Workflow */}
-          {/* ============================================================== */}
-          
           {/* Right Column (60%) - Hierarchical Glass3D Agent Workflow */}
           <div className="right-column">
-            {/* ========================================================== */}
-            {/* G1: MASTER GLASS CARD - Outer Container with 3D Effects (Level 1) */}
-            {/* ========================================================== */}
-            
             {/* G1: Master Glass Card - Outer Container with 3D Effects (Level 1) */}
             <div className="glass-card-primary h-full min-h-[600px] p-6 shadow-2xl">
-              {/* ======================================================== */}
-              {/* G2: SECONDARY GLASS CARD - Inner Container with Enhanced Blur (Level 2) */}
-              {/* ======================================================== */}
-              
               {/* G2: Secondary Glass Card - Inner Container with Enhanced Blur (Level 2) */}
               <div className="glass-card-secondary h-full p-6 backdrop-blur-xl border-2 border-white/20 rounded-2xl">
-                {/* ================================================== */}
-                {/* WORKFLOW HEADER - Title and Status Display */}
-                {/* ================================================== */}
-                
-                {/* Workflow header with title and status indicator */}
                 <div className="flex items-center justify-between mb-8">
                   <div>
-                    {/* Main workflow title */}
                     <h2 className="text-2xl font-semibold text-white mb-2">Agent Workflow</h2>
-                    {/* Workflow description */}
                     <p className="text-gray-400 text-sm">8-Agent Sequential Processing Pipeline</p>
                   </div>
-                  
-                  {/* Active status badge */}
                   <div className="px-4 py-2 bg-white/10 rounded-full border border-white/20">
                     <span className="text-gray-300 text-sm font-medium">🚀 Active</span>
                   </div>
                 </div>
                 
-                {/* ================================================== */}
-                {/* ENHANCED WORKFLOW STATUS PANEL - Pipeline Progress */}
-                {/* ================================================== */}
-                
                 {/* Enhanced Workflow Status Panel */}
                 <div className="mb-6 p-4 bg-gradient-to-r from-gray-800/20 to-gray-900/20 rounded-lg border border-white/10">
-                  {/* Status panel header */}
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-white">Pipeline Status</h3>
                     <div className="flex items-center gap-2">
-                      {/* Active status indicator with pulse animation */}
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                       <span className="text-sm text-green-300">Active</span>
                     </div>
                   </div>
-                  
-                  {/* ============================================== */}
-                  {/* PROGRESS BARS - Individual Agent Progress */}
-                  {/* ============================================== */}
-                  
-                  {/* Progress indicators grid for 4 main workflow stages */}
                   <div className="grid grid-cols-4 gap-4 text-xs text-gray-400">
-                    {/* Upload progress (100% complete) */}
                     <div className="text-center">
                       <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-green-400 to-green-500 w-full"></div>
                       </div>
                       <span>Upload: 100%</span>
                     </div>
-                    
-                    {/* Profile progress (75% complete with animation) */}
                     <div className="text-center">
                       <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-blue-400 to-blue-500 w-3/4 animate-pulse"></div>
                       </div>
                       <span>Profile: 75%</span>
                     </div>
-                    
-                    {/* Planning progress (0% - waiting) */}
                     <div className="text-center">
                       <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-gray-400 to-gray-500 w-0"></div>
                       </div>
                       <span>Planning: 0%</span>
                     </div>
-                    
-                    {/* Overall progress (25% complete) */}
                     <div className="text-center">
                       <div className="w-12 h-1 bg-white/10 rounded-full mb-1 overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-gray-400 to-gray-500 w-0"></div>
@@ -1174,13 +979,8 @@ export default function Page() {
                   </div>
                 </div>
                 
-                {/* ================================================== */}
-                {/* G3: ACCENT GLASS CONTAINER - Agent Cards Container (Level 3) */}
-                {/* ================================================== */}
-                
                 {/* G3: Accent Glass Container - Agent Cards Container (Level 3) */}
                 <div className="glass-card h-full p-4 rounded-xl border border-white/10 backdrop-blur-md overflow-y-auto">
-                  {/* Agent cards container with vertical spacing */}
                   <div className="space-y-4">
                 {/* G4: Individual Agent Cards - File Upload Agent (Level 4) */}
                 <div className="glass-card hover:bg-white/5 transition-all duration-200 group">
@@ -1945,4 +1745,3 @@ export default function Page() {
     </div>
   );
 }
-

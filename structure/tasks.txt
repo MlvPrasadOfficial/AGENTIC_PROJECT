@@ -5,14 +5,15 @@ Note-01: Always use a semicolon (;) instead of && when running multiple commands
 Note-02: Always run commands in the foreground. If a server is running, monitor it in the terminal.
 Note-03: Log all changes in a timestamped file: changelogs/YYYY-MM-DD-HHMMSS_description.md.
 Note-04: Solve all tasks sequentially..and always mention your strategy before solving tasks
+Note-05: check frontend working at shell task : 'Next.js Development Server' and backend at shell task : 'Backend Development Server'
+
 
 complete all the tasks:
 
 
-Task-01 : 1.git add . ; git commit -m "jul17 77.15am --inc suc --file upload agent cide" ; git push origin main
-          2 what is the purple color on perimeter of card in screenshot called ?   
-          3. update navbar with a beauftul frosted glass suiting the theme with name in the center of the navbar
-          3. read the code first to understand the issue, understand the root cause first and then do changes
+Task-01 : 1.in page.tsx from line 563 to the end of the file , both each block add detailed docstrings and code comments for each opening and closing and keep empty lines to differentiate blocks          2. read the code first to understand the issue, understand the root cause first and then do changes
+          2. read the code first to understand the issue, understand the root cause first and then do changes
+
 
 Task-02: After completing above tasks go to the files created or edited for above tasks,
               1.Remove any unused imports, variables, or code blocks

@@ -26,6 +26,9 @@ from app.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
+# Constants for repeated string literals
+PINECONE_NOT_INITIALIZED = "Pinecone not initialized"
+
 class VectorDocument(BaseModel):
     """Document model for vector storage"""
     id: str
@@ -112,7 +115,7 @@ class PineconeVectorStore:
             logger.error(f"Failed to initialize Pinecone: {e}")
             return False
     
-    async def generate_embedding(self, text: str) -> List[float]:
+    def generate_embedding(self, text: str) -> List[float]:
         """
         Generate embedding for text using mock embedding with proper distribution.
         
@@ -180,7 +183,7 @@ class PineconeVectorStore:
         """
         try:
             if not self.pc or not self.index_host:
-                logger.error("Pinecone not initialized")
+                logger.error(PINECONE_NOT_INITIALIZED)
                 return False
             
             # Prepare vectors for upsert
@@ -188,7 +191,7 @@ class PineconeVectorStore:
             for doc in documents:
                 # Generate embedding if not provided
                 if not doc.embedding:
-                    doc.embedding = await self.generate_embedding(doc.content)
+                    doc.embedding = self.generate_embedding(doc.content)
                 
                 # Add timestamp to metadata
                 metadata = doc.metadata.copy()
@@ -240,7 +243,7 @@ class PineconeVectorStore:
         """
         try:
             if not self.pc or not self.index_host:
-                logger.error("Pinecone not initialized")
+                logger.error(PINECONE_NOT_INITIALIZED)
                 return []
             
             if top_k is None:
@@ -291,7 +294,7 @@ class PineconeVectorStore:
         """
         try:
             if not self.pc or not self.index_host:
-                logger.error("Pinecone not initialized")
+                logger.error(PINECONE_NOT_INITIALIZED)
                 return False
             
             # Use async context manager for index operations
@@ -318,7 +321,7 @@ class PineconeVectorStore:
         """
         try:
             if not self.pc or not self.index_host:
-                logger.error("Pinecone not initialized")
+                logger.error(PINECONE_NOT_INITIALIZED)
                 return {}
             
             # Use async context manager for index operations

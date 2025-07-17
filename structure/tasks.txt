@@ -11,14 +11,13 @@ Note-05: check frontend working at shell task : 'Next.js Development Server' and
 complete all the tasks:
 
 
-Task-01 : 1. Git commit -m "jul17 16.18pm usee as base -- clean code with page.tsx detailed commenst" and push it
-          2. i have two screenshots of right column in home ui 
-              2.1 on statci screen shot
-              2.2 one expanding up animation when hovering on the right column
-              2.3 in the right column, g1,g2,g3,g4 cards, remove hovering animation for g1 cards..make it static 
-              2.4 before making any changes,read the code of page,tsx of relevant entirely as it has many  opening and closes , 
+Task-01 : 1. do remove g1,g2,g3,g4 cards hover animation in order as below
+              2.1 one expanding up animation when hovering on the right column
+              2.2 in the right column, g1,g2,g3,g4 cards, remove hovering animation for g1, g2, g3, g4  cards..make it static , 
+              remove all hover animation and elevation animations
+              2.3 before making any changes,read the code of page,tsx of relevant entirely as it has many  opening and closes , 
               incorrect edit can corrupt the code
-              2.5 check continously in the sheell task : 'Next.js Development Server' for any compilation and move forward in every step
+              2.4 check continously in the sheell task : 'Next.js Development Server' for any compilation and move forward in every step
 
         3. read the task carefully and proceed accordingly 
 Task-02: After completing above tasks go to the files created or edited for above tasks,

@@ -252,16 +252,10 @@ input::placeholder, textarea::placeholder {
   transition: all 0.3s ease-in-out;
 }
 
-/* G1 Card: Minimal hover animation with subtle elevation */
+/* G1 Card: Static card - no hover animation for minimal interaction */
 .glass-card-primary:hover {
-  /* Slightly enhanced background opacity on hover */
-  background: linear-gradient(120deg, rgba(30,31,48,0.45) 0%, rgba(20,25,35,0.5) 100%);
-  /* Increased border visibility for interaction feedback */
-  border-color: rgba(255,255,255,0.14);
-  /* Enhanced shadow depth for hover state */
-  box-shadow: 0 18px 60px rgba(0,0,0,0.35);
-  /* Minimal upward movement for interaction feedback */
-  transform: translateY(-2px);
+  /* G1 cards remain static with no hover effects */
+  /* All hover animations removed to maintain static appearance */
 }
 
 /* G2 Card: Secondary glass card styling with reduced depth */

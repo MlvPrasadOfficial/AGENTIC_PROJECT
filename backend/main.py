@@ -60,11 +60,34 @@ async def health_check():
     return {"status": "ok", "version": settings.APP_VERSION}
 
 if __name__ == "__main__":
+    """
+    Main entry point for the Enterprise Insights Copilot backend server.
+    
+    This function initializes and starts the FastAPI application server using uvicorn,
+    providing a 3-line timestamp design terminal log for professional startup presentation.
+    
+    Features:
+    - Professional startup logging with timestamp
+    - Uvicorn server configuration from settings
+    - Production-ready server initialization
+    """
     import uvicorn
+    from datetime import datetime
+    
+    # 3-line timestamp design terminal log for backend startup
+    # Creates a professional visual separator for server startup
+    print("=" * 60)
+    # Display server startup message with current timestamp
+    print(f"🚀 BACKEND SERVER STARTING | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    # Close the visual separator for clean presentation
+    print("=" * 60)
+    
+    # Initialize and start the FastAPI application server
+    # Uses configuration from settings for production-ready deployment
     uvicorn.run(
-        "main:app",
-        host=settings.HOST,
-        port=settings.PORT,
-        reload=settings.RELOAD,
-        workers=settings.WORKERS,
+        "main:app",  # Application instance reference
+        host=settings.HOST,  # Server host address from configuration
+        port=settings.PORT,  # Server port from configuration
+        reload=settings.RELOAD,  # Auto-reload for development
+        workers=settings.WORKERS,  # Number of worker processes
     )

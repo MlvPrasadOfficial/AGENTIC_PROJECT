@@ -14,6 +14,8 @@ from app.utils.logger import setup_logger
 from app.core.config import settings
 from app.services.file_service import process_file, get_file_metadata, list_files
 from app.schemas.file import FileResponse, FileMetadata
+from app.agents.file_upload_agent import FileUploadAgent
+from app.agents.base import BaseAgentRequest
 
 logger = setup_logger(__name__)
 router = APIRouter()
@@ -24,14 +26,24 @@ async def upload_file(
     file: UploadFile = File(...),
 ) -> FileResponse:
     """
-    Upload a file for analysis.
+    Upload a file for analysis with comprehensive Pinecone validation testing.
+    
+    This endpoint handles file uploads and runs the 6 Pinecone validation tests
+    to ensure system connectivity and functionality. The tests validate:
+    
+    1. Test 2.0: Pinecone Connection Test - API connection and authentication
+    2. Test 2.1: Fetch Index Details - Index configuration and connectivity  
+    3. Test 2.2: Vector Count Before Embedding - Baseline vector count
+    4. Test 2.3: CSV Filename Validation - CSV test data file validation
+    5. Test 2.4: Index Embedding Operation - Embedding with 3-second wait
+    6. Test 2.5: Vector Count After Embedding - Post-embedding validation
     
     Args:
         file: The file to upload
         background_tasks: FastAPI background tasks
         
     Returns:
-        FileResponse with file ID and metadata
+        FileResponse with file ID, metadata, and 6 Pinecone test results
         
     Raises:
         HTTPException if file format is not supported or other error occurs
@@ -60,13 +72,43 @@ async def upload_file(
         # Process file in background
         background_tasks.add_task(process_file, file_path, file_id)
         
-        # Return response
-        return FileResponse(
+        # Initialize FileUploadAgent and run the 6 Pinecone tests
+        file_upload_agent = FileUploadAgent()
+        
+        # Create agent request
+        agent_request = BaseAgentRequest(
+            query="Process uploaded file with Pinecone validation tests",
             file_id=file_id,
-            filename=file.filename,
-            status="uploaded",
-            message="File uploaded successfully and processing started",
+            context={"filename": file.filename, "file_path": file_path}
         )
+        
+        # Run the agent to get the 6 test results
+        try:
+            agent_response = await file_upload_agent.run(agent_request)
+            
+            # Extract the 6 test results from agent response
+            pinecone_tests = None
+            if agent_response.status == "success" and agent_response.result:
+                pinecone_tests = agent_response.result.get("pinecone_tests", {})
+            
+            # Return response with 6 test results
+            return FileResponse(
+                file_id=file_id,
+                filename=file.filename,
+                status="uploaded",
+                message="File uploaded successfully and processing started",
+                pinecone_tests=pinecone_tests,
+            )
+        
+        except Exception as agent_error:
+            logger.warning(f"FileUploadAgent failed: {str(agent_error)}")
+            # Return response without test results if agent fails
+            return FileResponse(
+                file_id=file_id,
+                filename=file.filename,
+                status="uploaded",
+                message="File uploaded successfully. Pinecone tests unavailable.",
+            )
     
     except Exception as e:
         logger.error(f"File upload failed: {str(e)}", exc_info=True)

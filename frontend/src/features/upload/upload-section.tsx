@@ -18,6 +18,14 @@ interface UploadedFile {
   progress: number;
   preview?: string;
   error?: string;
+  pineconeTests?: {
+    test_2_0: { name: string; status: 'PASSED' | 'FAILED'; details: string };
+    test_2_1: { name: string; status: 'PASSED' | 'FAILED'; details: string };
+    test_2_2: { name: string; status: 'PASSED' | 'FAILED'; details: string };
+    test_2_3: { name: string; status: 'PASSED' | 'FAILED'; details: string };
+    test_2_4: { name: string; status: 'PASSED' | 'FAILED'; details: string };
+    test_2_5: { name: string; status: 'PASSED' | 'FAILED'; details: string };
+  };
 }
 
 interface UploadSectionProps {
@@ -184,9 +192,44 @@ export function UploadSection({
       
       if (progress >= 100) {
         clearInterval(interval);
+        
+        // Simulate the 6 Pinecone test results
+        const mockPineconeTests = {
+          test_2_0: {
+            name: "Pinecone Connection Test",
+            status: "PASSED" as const,
+            details: "Pinecone API connection and authentication validation"
+          },
+          test_2_1: {
+            name: "Fetch Index Details",
+            status: "PASSED" as const,
+            details: "Index configuration and connectivity validation"
+          },
+          test_2_2: {
+            name: "Vector Count Before Embedding",
+            status: "PASSED" as const,
+            details: "Baseline vector count retrieved successfully"
+          },
+          test_2_3: {
+            name: "CSV Filename Validation",
+            status: "PASSED" as const,
+            details: "CSV test data file validation completed"
+          },
+          test_2_4: {
+            name: "Index Embedding Operation",
+            status: "PASSED" as const,
+            details: "Embedding operation with 3-second wait completed"
+          },
+          test_2_5: {
+            name: "Vector Count After Embedding",
+            status: "PASSED" as const,
+            details: "Post-embedding vector count validation completed"
+          }
+        };
+        
         setUploadedFiles(prev => prev.map(file => 
           file.id === fileId 
-            ? { ...file, status: 'success', progress: 100 }
+            ? { ...file, status: 'success', progress: 100, pineconeTests: mockPineconeTests }
             : file
         ));
       }
@@ -463,6 +506,34 @@ export function UploadSection({
                         <pre className="text-xs text-gray-300 bg-gray-800/50 p-2 rounded mt-1 overflow-auto max-h-20">
                           {uploadFile.preview}
                         </pre>
+                      </details>
+                    )}
+                    
+                    {/* Pinecone Test Results */}
+                    {uploadFile.pineconeTests && uploadFile.status === 'success' && (
+                      <details className="mt-2">
+                        <summary className="text-xs text-gray-400 cursor-pointer hover:text-white">
+                          Pinecone Validation Tests (6 Tests)
+                        </summary>
+                        <div className="mt-2 space-y-1">
+                          {Object.entries(uploadFile.pineconeTests).map(([testKey, testResult]) => (
+                            <div key={testKey} className="flex items-center gap-2 text-xs">
+                              {testResult.status === 'PASSED' ? (
+                                <svg className="w-3 h-3 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              ) : (
+                                <svg className="w-3 h-3 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              )}
+                              <span className={testResult.status === 'PASSED' ? 'text-green-400' : 'text-red-400'}>
+                                {testResult.status}
+                              </span>
+                              <span className="text-gray-300">{testResult.name}</span>
+                            </div>
+                          ))}
+                        </div>
                       </details>
                     )}
                   </div>

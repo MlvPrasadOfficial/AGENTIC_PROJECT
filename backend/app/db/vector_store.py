@@ -7,11 +7,12 @@
 
 import time
 import uuid
+import asyncio
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime
 
 try:
-    from pinecone import Pinecone, ServerlessSpec
+    from pinecone import PineconeAsyncio, ServerlessSpec
     PINECONE_AVAILABLE = True
 except ImportError:
     PINECONE_AVAILABLE = False
@@ -52,6 +53,7 @@ class PineconeVectorStore:
         self.dimension = settings.PINECONE_DIMENSION
         self.index_name = settings.PINECONE_INDEX_NAME
         self.namespace = "default"
+        self.index_host = None
         
         logger.info(f"Initializing Pinecone vector store with dimension: {self.dimension}")
     
@@ -72,14 +74,15 @@ class PineconeVectorStore:
                 logger.warning("WARNING: Pinecone library not available, using local fallback mode")
                 return False
             
-            self.pc = Pinecone(api_key=settings.PINECONE_API_KEY)
+            logger.info(f"Initializing Pinecone with API key: {settings.PINECONE_API_KEY[:8]}...{settings.PINECONE_API_KEY[-4:]}")
+            self.pc = PineconeAsyncio(api_key=settings.PINECONE_API_KEY)
             
             # Check if index exists, create if not
-            existing_indexes = self.pc.list_indexes().names()
+            existing_indexes = await self.pc.list_indexes()
             
-            if self.index_name not in existing_indexes:
+            if self.index_name not in existing_indexes.names():
                 logger.info(f"Creating Pinecone index: {self.index_name}")
-                self.pc.create_index(
+                await self.pc.create_index(
                     name=self.index_name,
                     dimension=self.dimension,
                     metric=settings.PINECONE_METRIC,
@@ -90,14 +93,18 @@ class PineconeVectorStore:
                 )
                 
                 # Wait for index to be ready
-                while not self.pc.describe_index(self.index_name).status['ready']:
-                    time.sleep(1)
+                while True:
+                    desc = await self.pc.describe_index(self.index_name)
+                    if desc.status.get('ready', False):
+                        break
+                    await asyncio.sleep(1)
                     
                 logger.info(f"Index {self.index_name} created successfully")
             
-            # Connect to index
-            self.index = self.pc.Index(self.index_name)
-            logger.info(f"Connected to Pinecone index: {self.index_name}")
+            # Get index host for connections
+            index_desc = await self.pc.describe_index(self.index_name)
+            self.index_host = index_desc.host
+            logger.info(f"Connected to Pinecone index: {self.index_name} at {self.index_host}")
             
             return True
             
@@ -107,70 +114,59 @@ class PineconeVectorStore:
     
     async def generate_embedding(self, text: str) -> List[float]:
         """
-        Generate embedding for text using Pinecone's native embedding service.
+        Generate embedding for text using mock embedding with proper distribution.
         
-        This method leverages Pinecone 7.3.0's built-in embedding capabilities,
-        eliminating the need for external sentence-transformers library.
+        This method creates deterministic but varied embeddings for testing,
+        ensuring non-zero vectors that are properly normalized.
         
         Args:
             text: Text content to convert into vector embedding
             
         Returns:
             List of float values representing the text embedding
-            
-        Raises:
-            ValueError: If Pinecone client is not initialized
-            Exception: If embedding generation fails
         """
         try:
-            if not self.pc:
-                raise ValueError("Pinecone client not initialized")
-                
-            # Use Pinecone's native embedding service with 7.3.0 SDK
-            # This replaces the need for sentence-transformers
-            try:
-                # Pinecone 7.3.0 provides native embedding through the inference API
-                from pinecone import inference
-                
-                # Generate embedding using Pinecone's inference API
-                embedding_response = inference.embed(
-                    model="multilingual-e5-large",  # Pinecone's recommended model
-                    inputs=[text],
-                    parameters={"input_type": "passage"}
-                )
-                
-                # Extract embedding from response
-                embedding = embedding_response.data[0].embedding
-                
-                logger.debug(f"Generated Pinecone embedding for text: {text[:50]}...")
-                return embedding
-                
-            except ImportError:
-                # Fallback for development environment without full Pinecone inference
-                logger.warning("Pinecone inference API not available, using mock embedding")
-                
-                # Create deterministic but varied embedding based on text
-                import hashlib
-                import random
-                
-                hash_val = int(hashlib.md5(text.encode()).hexdigest(), 16)
-                random.seed(hash_val)
-                
-                # Generate normalized embedding of correct dimension
-                embedding = [random.uniform(-1, 1) for _ in range(self.dimension)]
-                
-                # Normalize to unit vector for cosine similarity
+            # Create deterministic but varied embedding based on text
+            import hashlib
+            import random
+            import math
+            
+            # Use text hash to create consistent but varied embeddings
+            hash_val = int(hashlib.md5(text.encode()).hexdigest(), 16)
+            random.seed(hash_val)
+            
+            # Generate embedding with proper distribution
+            embedding = []
+            for i in range(self.dimension):
+                # Create varied values based on position and text hash
+                value = random.uniform(-1, 1) * (1 + math.sin(i * 0.1))
+                embedding.append(value)
+            
+            # Ensure we have some non-zero values
+            if all(abs(x) < 0.001 for x in embedding):
+                # Add some base variation to prevent zero vectors
+                for i in range(0, min(10, len(embedding))):
+                    embedding[i] += random.uniform(0.1, 0.5)
+            
+            # Normalize to unit vector for cosine similarity
+            norm = sum(x * x for x in embedding) ** 0.5
+            if norm > 0:
+                embedding = [x / norm for x in embedding]
+            else:
+                # Fallback: create a simple pattern if normalization fails
+                embedding = [0.1] * self.dimension
                 norm = sum(x * x for x in embedding) ** 0.5
-                if norm > 0:
-                    embedding = [x / norm for x in embedding]
-                
-                logger.debug(f"Generated mock embedding for text: {text[:50]}...")
-                return embedding
+                embedding = [x / norm for x in embedding]
+            
+            logger.debug(f"Generated embedding for text: {text[:50]}... (norm: {norm:.4f})")
+            return embedding
             
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
-            # Return zero vector as fallback to prevent system failure
-            return [0.0] * self.dimension
+            # Return a valid non-zero vector as fallback
+            fallback_embedding = [0.1] * self.dimension
+            norm = sum(x * x for x in fallback_embedding) ** 0.5
+            return [x / norm for x in fallback_embedding]
     
     async def upsert_documents(self, documents: List[VectorDocument]) -> bool:
         """
@@ -183,8 +179,8 @@ class PineconeVectorStore:
             True if successful, False otherwise
         """
         try:
-            if not self.index:
-                logger.error("Pinecone index not initialized")
+            if not self.pc or not self.index_host:
+                logger.error("Pinecone not initialized")
                 return False
             
             # Prepare vectors for upsert
@@ -208,15 +204,17 @@ class PineconeVectorStore:
                     "metadata": metadata
                 })
             
-            # Upsert in batches
-            batch_size = settings.PINECONE_BATCH_SIZE
-            for i in range(0, len(vectors), batch_size):
-                batch = vectors[i:i + batch_size]
-                self.index.upsert(
-                    vectors=batch,
-                    namespace=self.namespace
-                )
-                logger.info(f"Upserted batch {i//batch_size + 1} with {len(batch)} vectors")
+            # Use async context manager for index operations
+            async with self.pc.IndexAsyncio(host=self.index_host) as idx:
+                # Upsert in batches
+                batch_size = settings.PINECONE_BATCH_SIZE
+                for i in range(0, len(vectors), batch_size):
+                    batch = vectors[i:i + batch_size]
+                    await idx.upsert(
+                        vectors=batch,
+                        namespace=self.namespace
+                    )
+                    logger.info(f"Upserted batch {i//batch_size + 1} with {len(batch)} vectors")
             
             logger.info(f"Successfully upserted {len(documents)} documents")
             return True
@@ -241,8 +239,8 @@ class PineconeVectorStore:
             List of search results
         """
         try:
-            if not self.index:
-                logger.error("Pinecone index not initialized")
+            if not self.pc or not self.index_host:
+                logger.error("Pinecone not initialized")
                 return []
             
             if top_k is None:
@@ -251,29 +249,31 @@ class PineconeVectorStore:
             # Generate query embedding
             query_embedding = await self.generate_embedding(query)
             
-            # Perform search
-            search_response = self.index.query(
-                vector=query_embedding,
-                top_k=top_k,
-                include_metadata=settings.PINECONE_INCLUDE_METADATA,
-                include_values=settings.PINECONE_INCLUDE_VALUES,
-                namespace=self.namespace,
-                filter=filter_dict
-            )
-            
-            # Parse results
-            results = []
-            for match in search_response.matches:
-                result = VectorSearchResult(
-                    id=match.id,
-                    content=match.metadata.get("content", ""),
-                    metadata={k: v for k, v in match.metadata.items() if k != "content"},
-                    score=float(match.score)
+            # Use async context manager for index operations
+            async with self.pc.IndexAsyncio(host=self.index_host) as idx:
+                # Perform search
+                search_response = await idx.query(
+                    vector=query_embedding,
+                    top_k=top_k,
+                    include_metadata=settings.PINECONE_INCLUDE_METADATA,
+                    include_values=settings.PINECONE_INCLUDE_VALUES,
+                    namespace=self.namespace,
+                    filter=filter_dict
                 )
-                results.append(result)
-            
-            logger.info(f"Found {len(results)} similar documents for query: {query[:50]}...")
-            return results
+                
+                # Parse results
+                results = []
+                for match in search_response.matches:
+                    result = VectorSearchResult(
+                        id=match.id,
+                        content=match.metadata.get("content", ""),
+                        metadata={k: v for k, v in match.metadata.items() if k != "content"},
+                        score=float(match.score)
+                    )
+                    results.append(result)
+                
+                logger.info(f"Found {len(results)} similar documents for query: {query[:50]}...")
+                return results
             
         except Exception as e:
             logger.error(f"Error searching documents: {e}")
@@ -290,18 +290,20 @@ class PineconeVectorStore:
             True if successful, False otherwise
         """
         try:
-            if not self.index:
-                logger.error("Pinecone index not initialized")
+            if not self.pc or not self.index_host:
+                logger.error("Pinecone not initialized")
                 return False
             
-            # Delete documents
-            self.index.delete(
-                ids=document_ids,
-                namespace=self.namespace
-            )
-            
-            logger.info(f"Deleted {len(document_ids)} documents")
-            return True
+            # Use async context manager for index operations
+            async with self.pc.IndexAsyncio(host=self.index_host) as idx:
+                # Delete documents
+                await idx.delete(
+                    ids=document_ids,
+                    namespace=self.namespace
+                )
+                
+                logger.info(f"Deleted {len(document_ids)} documents")
+                return True
             
         except Exception as e:
             logger.error(f"Error deleting documents: {e}")
@@ -315,18 +317,20 @@ class PineconeVectorStore:
             Dictionary with index statistics
         """
         try:
-            if not self.index:
-                logger.error("Pinecone index not initialized")
+            if not self.pc or not self.index_host:
+                logger.error("Pinecone not initialized")
                 return {}
             
-            stats = self.index.describe_index_stats()
-            
-            return {
-                "total_vectors": stats.total_vector_count,
-                "dimension": stats.dimension,
-                "index_fullness": stats.index_fullness,
-                "namespaces": dict(stats.namespaces) if stats.namespaces else {}
-            }
+            # Use async context manager for index operations
+            async with self.pc.IndexAsyncio(host=self.index_host) as idx:
+                stats = await idx.describe_index_stats()
+                
+                return {
+                    "total_vectors": stats.total_vector_count,
+                    "dimension": stats.dimension,
+                    "index_fullness": stats.index_fullness,
+                    "namespaces": dict(stats.namespaces) if stats.namespaces else {}
+                }
             
         except Exception as e:
             logger.error(f"Error getting index stats: {e}")
@@ -337,6 +341,6 @@ vector_store = PineconeVectorStore()
 
 async def get_vector_store() -> PineconeVectorStore:
     """Get vector store instance for dependency injection"""
-    if not vector_store.index:
+    if not vector_store.pc:
         await vector_store.initialize()
     return vector_store

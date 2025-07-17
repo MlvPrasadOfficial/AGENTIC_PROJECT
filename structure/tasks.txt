@@ -8,15 +8,11 @@ Note-04: Solve all tasks sequentially..and always mention your strategy before s
 
 complete all the tasks:
 
-Task-01: 1. DO :
-              git add .
-              git commit -m "JUL17 2025 USE BASE -- 2.1-2.5 COMPLETED SUCCESS"
-              git push origin main
-
-
-        2. create a shell task for backend just like fronted shell task for quick development
-           - cd c:\JUL7PROJECT\backend ; python main.py
-        3. make the hover animation for g1 g2 card in right column just minimal hover animation
+Task-01 : 1.the 6 things is what should be the o/p log of file upload agent, do changes to get this 6o/p in backend file upload agent and also
+          frontend home ui file upload agent log o/p
+          2. git commit -m "jul17 7am best success-use base case-- pinecone test success 
+   
+           3. read the code first to understand the issue, understand the root cause first and then do changes
 
 Task-02: After completing above tasks go to the files created or edited for above tasks,
               1.Remove any unused imports, variables, or code blocks

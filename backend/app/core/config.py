@@ -123,7 +123,7 @@ class Settings(BaseSettings):
     RAG_CHUNK_OVERLAP: int = 200
     RAG_TOP_K: int = 5
     RAG_SIMILARITY_THRESHOLD: float = 0.7
-    RAG_EMBEDDING_DIM: int = 384
+    RAG_EMBEDDING_DIM: int = 1024
     RAG_INDEX_DIR: str = "rag_index"
     RAG_ENABLE_RERANKING: bool = True
     
@@ -133,7 +133,10 @@ class Settings(BaseSettings):
     LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
     LANGCHAIN_API_KEY: Optional[str] = None
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+    model_config = SettingsConfigDict(
+        env_file=os.path.join(os.path.dirname(__file__), "..", "..", ".env"),
+        case_sensitive=True
+    )
 
 # Create settings instance - loads from .env file if present
 settings = Settings()

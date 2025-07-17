@@ -205,57 +205,107 @@ input::placeholder, textarea::placeholder {
 }
 
 /* Component Layer - Reusable Component Styles */
+/* Base glass card styling for all g1-g4 cards in the right column */
 .glass-card {
+  /* Semi-transparent background with dark blue tint for glassmorphism effect */
   background: rgba(30, 41, 59, 0.55) !important;
+  /* Subtle white border for glass-like appearance */
   border: 2.5px solid rgba(255,255,255,0.18);
+  /* Layered shadow: deep shadow + accent shadow for depth */
   box-shadow: 0 16px 56px 0 rgba(31,38,135,0.22), 0 2px 12px 0 rgba(59,130,246,0.10);
+  /* Backdrop blur for glass effect with saturation boost */
   backdrop-filter: blur(36px) saturate(1.5) !important;
+  /* Webkit prefix for cross-browser compatibility */
   -webkit-backdrop-filter: blur(36px) saturate(1.5) !important;
+  /* White text for contrast against glass background */
   color: #fff;
+  /* Rounded corners for modern appearance */
   border-radius: 2rem;
+  /* Smooth transitions for hover effects */
   transition: box-shadow 0.3s, background 0.3s, border 0.3s;
 }
+
+/* Basic glass card hover animation for all g1-g4 cards */
 .glass-card:hover {
-  background: rgba(37,99,235,0.12);
-  box-shadow: 0 20px 64px 0 rgba(37,99,235,0.35);
-  border-color: rgba(37,99,235,0.25);
-  transform: translateY(-4px) scale(1.01);
+  /* Subtle blue background tint on hover */
+  background: rgba(37,99,235,0.08);
+  /* Enhanced shadow with blue accent for interactivity */
+  box-shadow: 0 18px 48px 0 rgba(37,99,235,0.2);
+  /* Blue border highlight for hover feedback */
+  border-color: rgba(37,99,235,0.18);
+  /* Minimal upward movement for hover elevation */
+  transform: translateY(-2px);
 }
+/* G1 Card: Primary glass card styling with enhanced glassmorphism effects */
 .glass-card-primary {
+  /* Base gradient background with layered glassmorphism effect */
   background: linear-gradient(120deg, rgba(30,31,48,0.4) 0%, rgba(20,25,35,0.45) 100%), rgba(30,41,59,0.55) !important;
+  /* Left accent border for visual hierarchy */
   border-left: 4px solid rgba(255,255,255,0.1);
+  /* Primary text color for readability */
   color: #fff;
+  /* Subtle border with glass transparency */
   border: 2px solid rgba(255,255,255,0.12);
+  /* Deep shadow for depth perception */
   box-shadow: 0 16px 56px rgba(0,0,0,0.3);
+  /* Smooth transition for all hover effects */
+  transition: all 0.3s ease-in-out;
 }
+
+/* G1 Card: Minimal hover animation with subtle elevation */
 .glass-card-primary:hover {
-  background: linear-gradient(120deg, rgba(30,31,48,0.5) 0%, rgba(20,25,35,0.55) 100%);
-  border-color: rgba(255,255,255,0.15);
-  box-shadow: 0 20px 64px rgba(0,0,0,0.4);
+  /* Slightly enhanced background opacity on hover */
+  background: linear-gradient(120deg, rgba(30,31,48,0.45) 0%, rgba(20,25,35,0.5) 100%);
+  /* Increased border visibility for interaction feedback */
+  border-color: rgba(255,255,255,0.14);
+  /* Enhanced shadow depth for hover state */
+  box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+  /* Minimal upward movement for interaction feedback */
+  transform: translateY(-2px);
 }
+
+/* G2 Card: Secondary glass card styling with reduced depth */
 .glass-card-secondary {
+  /* Base gradient background matching primary card */
   background: linear-gradient(120deg, rgba(30,31,48,0.4) 0%, rgba(20,25,35,0.45) 100%), rgba(30,41,59,0.55) !important;
+  /* Left accent border for visual consistency */
   border-left: 4px solid rgba(255,255,255,0.1);
+  /* Primary text color for readability */
   color: #fff;
+  /* Subtle border with glass transparency */
   border: 2px solid rgba(255,255,255,0.12);
+  /* Moderate shadow for secondary hierarchy */
   box-shadow: 0 14px 44px rgba(0,0,0,0.25);
+  /* Smooth transition for all hover effects */
+  transition: all 0.3s ease-in-out;
 }
+
+/* G2 Card: Minimal hover animation with subtle elevation */
 .glass-card-secondary:hover {
-  background: linear-gradient(120deg, rgba(30,31,48,0.5) 0%, rgba(20,25,35,0.55) 100%);
-  border-color: rgba(255,255,255,0.15);
-  box-shadow: 0 18px 52px rgba(0,0,0,0.35);
+  /* Slightly enhanced background opacity on hover */
+  background: linear-gradient(120deg, rgba(30,31,48,0.45) 0%, rgba(20,25,35,0.5) 100%);
+  /* Increased border visibility for interaction feedback */
+  border-color: rgba(255,255,255,0.14);
+  /* Enhanced shadow depth for hover state */
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+  /* Minimal upward movement for interaction feedback */
+  transform: translateY(-1px);
 }
+/* G3 Card: Accent glass container styling */
 .glass-card-accent {
   background: linear-gradient(120deg, rgba(30,31,48,0.4) 0%, rgba(20,25,35,0.45) 100%), rgba(30,41,59,0.55) !important;
   border-left: 4px solid rgba(255,255,255,0.1);
   color: #fff;
   border: 2px solid rgba(255,255,255,0.12);
   box-shadow: 0 14px 44px rgba(0,0,0,0.25);
+  transition: all 0.3s ease-in-out;
 }
+/* G3 Card: Basic hover animation for accent glass container */
 .glass-card-accent:hover {
-  background: linear-gradient(120deg, rgba(30,31,48,0.5) 0%, rgba(20,25,35,0.55) 100%);
-  border-color: rgba(255,255,255,0.15);
-  box-shadow: 0 18px 52px rgba(0,0,0,0.35);
+  background: linear-gradient(120deg, rgba(30,31,48,0.45) 0%, rgba(20,25,35,0.5) 100%);
+  border-color: rgba(255,255,255,0.14);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
 }
 .glass-card-dashboard {
   background: linear-gradient(120deg, rgba(59,130,246,0.12) 0%, rgba(139,92,246,0.10) 100%), rgba(30,41,59,0.55) !important;

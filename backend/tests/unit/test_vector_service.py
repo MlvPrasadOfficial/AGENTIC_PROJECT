@@ -265,7 +265,7 @@ class TestVectorService:
         """Test successful store statistics retrieval"""
         mock_stats = {
             "total_vectors": 1000,
-            "dimension": 384,
+            "dimension": 1024,
             "index_fullness": 0.1
         }
         mock_store.get_index_stats = AsyncMock(return_value=mock_stats)

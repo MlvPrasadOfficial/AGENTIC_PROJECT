@@ -191,7 +191,7 @@ class TestPineconeVectorStore:
         
         mock_stats = Mock()
         mock_stats.total_vector_count = 100
-        mock_stats.dimension = 384
+        mock_stats.dimension = 1024
         mock_stats.index_fullness = 0.1
         mock_stats.namespaces = {}
         
@@ -200,7 +200,7 @@ class TestPineconeVectorStore:
         stats = await vector_store.get_index_stats()
         
         assert stats["total_vectors"] == 100
-        assert stats["dimension"] == 384
+        assert stats["dimension"] == 1024
         assert stats["index_fullness"] == 0.1
 
 # Test configuration

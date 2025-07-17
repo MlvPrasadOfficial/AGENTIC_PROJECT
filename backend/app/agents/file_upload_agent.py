@@ -163,6 +163,9 @@ class FileUploadAgent(BaseAgent):
             if settings.GENERATE_FILE_SUMMARY:
                 file_summary = await self._generate_file_summary(file_metadata, file_structure)
             
+            # Run the 6 Pinecone validation tests
+            pinecone_test_results = await self._run_pinecone_validation_tests()
+            
             result = {
                 "file_id": file_id,
                 "filename": file_metadata.filename,
@@ -170,6 +173,7 @@ class FileUploadAgent(BaseAgent):
                 "size_bytes": file_metadata.size_bytes,
                 "structure": file_structure,
                 "summary": file_summary,
+                "pinecone_tests": pinecone_test_results,
                 "is_ready_for_profiling": True
             }
             
@@ -274,6 +278,178 @@ class FileUploadAgent(BaseAgent):
         except Exception as e:
             self.logger.error(f"Error generating file summary: {str(e)}")
             return "Unable to generate file summary due to an error."
+    
+    async def _run_pinecone_validation_tests(self) -> Dict[str, Any]:
+        """
+        Run the 6 Pinecone validation tests to verify system connectivity and functionality.
+        
+        This method executes the comprehensive Pinecone test suite that validates:
+        1. Pinecone connection and authentication
+        2. Index details and configuration
+        3. Vector count before operations
+        4. CSV filename validation
+        5. Embedding operations
+        6. Vector count after operations
+        
+        Returns:
+            Dict containing the 6 test results with pass/fail status and details
+            
+        The 6 Test Results Format:
+        {
+            "test_2_0": {
+                "name": "Pinecone Connection Test",
+                "status": "PASSED" | "FAILED",
+                "details": "Connection validation details"
+            },
+            "test_2_1": {
+                "name": "Fetch Index Details", 
+                "status": "PASSED" | "FAILED",
+                "details": "Index configuration details"
+            },
+            "test_2_2": {
+                "name": "Vector Count Before Embedding",
+                "status": "PASSED" | "FAILED", 
+                "details": "Baseline vector count"
+            },
+            "test_2_3": {
+                "name": "CSV Filename Validation",
+                "status": "PASSED" | "FAILED",
+                "details": "CSV file validation results"
+            },
+            "test_2_4": {
+                "name": "Index Embedding Operation",
+                "status": "PASSED" | "FAILED",
+                "details": "Embedding operation results"
+            },
+            "test_2_5": {
+                "name": "Vector Count After Embedding",
+                "status": "PASSED" | "FAILED",
+                "details": "Post-embedding vector count validation"
+            }
+        }
+        """
+        try:
+            # Import the test module
+            import sys
+            from pathlib import Path
+            
+            # Add testfiles directory to path
+            testfiles_path = Path(__file__).parent.parent.parent / "testfiles"
+            sys.path.insert(0, str(testfiles_path))
+            
+            # Import and run the Pinecone test suite
+            from test_samplepinecone import TestSamplePinecone
+            
+            # Create test instance
+            test_instance = TestSamplePinecone()
+            await test_instance.setup()
+            
+            # Run each test and collect results
+            results = {}
+            
+            # Test 2.0: Pinecone Connection Test
+            try:
+                test_result = await test_instance.test_pinecone_connection()
+                results["test_2_0"] = {
+                    "name": "Pinecone Connection Test",
+                    "status": "PASSED" if test_result else "FAILED",
+                    "details": "Pinecone API connection and authentication validation"
+                }
+            except Exception as e:
+                results["test_2_0"] = {
+                    "name": "Pinecone Connection Test",
+                    "status": "FAILED",
+                    "details": f"Connection test failed: {str(e)}"
+                }
+            
+            # Test 2.1: Fetch Index Details
+            try:
+                test_result = await test_instance.test_fetch_index_details()
+                results["test_2_1"] = {
+                    "name": "Fetch Index Details",
+                    "status": "PASSED" if test_result else "FAILED",
+                    "details": "Index configuration and connectivity validation"
+                }
+            except Exception as e:
+                results["test_2_1"] = {
+                    "name": "Fetch Index Details",
+                    "status": "FAILED",
+                    "details": f"Index details test failed: {str(e)}"
+                }
+            
+            # Test 2.2: Vector Count Before Embedding
+            try:
+                test_result = await test_instance.test_fetch_vector_count_before_embedding()
+                results["test_2_2"] = {
+                    "name": "Vector Count Before Embedding",
+                    "status": "PASSED" if test_result else "FAILED",
+                    "details": "Baseline vector count retrieved successfully"
+                }
+            except Exception as e:
+                results["test_2_2"] = {
+                    "name": "Vector Count Before Embedding",
+                    "status": "FAILED",
+                    "details": f"Vector count before test failed: {str(e)}"
+                }
+            
+            # Test 2.3: CSV Filename Validation
+            try:
+                test_result = test_instance.test_csv_filename_validation()
+                results["test_2_3"] = {
+                    "name": "CSV Filename Validation",
+                    "status": "PASSED" if test_result else "FAILED",
+                    "details": "CSV test data file validation completed"
+                }
+            except Exception as e:
+                results["test_2_3"] = {
+                    "name": "CSV Filename Validation",
+                    "status": "FAILED",
+                    "details": f"CSV validation test failed: {str(e)}"
+                }
+            
+            # Test 2.4: Index Embedding Operation
+            try:
+                test_result = await test_instance.test_index_embedding_operation()
+                results["test_2_4"] = {
+                    "name": "Index Embedding Operation",
+                    "status": "PASSED" if test_result else "FAILED",
+                    "details": "Embedding operation with 3-second wait completed"
+                }
+            except Exception as e:
+                results["test_2_4"] = {
+                    "name": "Index Embedding Operation",
+                    "status": "FAILED",
+                    "details": f"Embedding operation test failed: {str(e)}"
+                }
+            
+            # Test 2.5: Vector Count After Embedding
+            try:
+                test_result = await test_instance.test_vector_count_after_embedding()
+                results["test_2_5"] = {
+                    "name": "Vector Count After Embedding",
+                    "status": "PASSED" if test_result else "FAILED",
+                    "details": "Post-embedding vector count validation completed"
+                }
+            except Exception as e:
+                results["test_2_5"] = {
+                    "name": "Vector Count After Embedding",
+                    "status": "FAILED",
+                    "details": f"Vector count after test failed: {str(e)}"
+                }
+            
+            return results
+            
+        except Exception as e:
+            self.logger.error(f"Error running Pinecone validation tests: {str(e)}")
+            # Return failed results for all tests
+            return {
+                "test_2_0": {"name": "Pinecone Connection Test", "status": "FAILED", "details": f"Test suite error: {str(e)}"},
+                "test_2_1": {"name": "Fetch Index Details", "status": "FAILED", "details": f"Test suite error: {str(e)}"},
+                "test_2_2": {"name": "Vector Count Before Embedding", "status": "FAILED", "details": f"Test suite error: {str(e)}"},
+                "test_2_3": {"name": "CSV Filename Validation", "status": "FAILED", "details": f"Test suite error: {str(e)}"},
+                "test_2_4": {"name": "Index Embedding Operation", "status": "FAILED", "details": f"Test suite error: {str(e)}"},
+                "test_2_5": {"name": "Vector Count After Embedding", "status": "FAILED", "details": f"Test suite error: {str(e)}"}
+            }
     
     def _get_tools(self) -> List:
         """Get the tools for this agent"""

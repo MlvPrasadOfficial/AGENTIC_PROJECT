@@ -1,0 +1,31 @@
+id,name,category,price,description,brand,stock_quantity
+1,Wireless Headphones,Electronics,299.99,Premium noise-cancelling wireless headphones with 30-hour battery life,AudioTech,45
+2,Cotton T-Shirt,Clothing,24.99,Comfortable 100% organic cotton t-shirt in multiple colors,ComfortWear,120
+3,Mystery Novel,Books,16.99,Bestselling thriller novel with unexpected plot twists,BookHouse,85
+4,LED Desk Lamp,Home,89.99,Adjustable LED desk lamp with touch controls and USB charging,LightPro,30
+5,Basketball,Sports,129.99,Professional grade basketball suitable for indoor and outdoor play,SportsMaster,22
+6,Smartphone Case,Electronics,19.99,Protective silicone case with anti-drop technology,TechGuard,200
+7,Yoga Mat,Sports,49.99,Non-slip yoga mat with extra cushioning for comfort,FitLife,75
+8,Coffee Mug,Home,12.99,Ceramic coffee mug with ergonomic handle and heat retention,KitchenPlus,95
+9,Laptop Stand,Electronics,79.99,Adjustable aluminum laptop stand with cooling ventilation,TechBase,40
+10,Running Shoes,Sports,159.99,Lightweight running shoes with advanced cushioning technology,RunFast,60
+11,Wireless Mouse,Electronics,39.99,Ergonomic wireless mouse with precision tracking,ComputerPro,110
+12,Notebook,Books,8.99,Lined notebook with premium paper and durable binding,WriteWell,150
+13,Water Bottle,Sports,29.99,Stainless steel water bottle with temperature retention,HydroMax,80
+14,Bluetooth Speaker,Electronics,149.99,Portable Bluetooth speaker with 360-degree sound,SoundWave,35
+15,Desk Chair,Home,249.99,Ergonomic office chair with lumbar support and adjustable height,ComfortSeat,25
+16,Fitness Tracker,Electronics,199.99,Advanced fitness tracker with heart rate monitoring,HealthTech,55
+17,Cooking Pan,Home,69.99,Non-stick cooking pan with ceramic coating and heat distribution,ChefPro,45
+18,Gaming Keyboard,Electronics,129.99,Mechanical gaming keyboard with RGB backlighting,GameTech,30
+19,Backpack,Clothing,89.99,Durable travel backpack with multiple compartments and laptop sleeve,TravelGear,70
+20,Protein Powder,Sports,59.99,Whey protein powder with natural flavors and added vitamins,FitNutrition,90
+21,Wireless Charger,Electronics,49.99,Fast wireless charging pad compatible with multiple devices,PowerTech,85
+22,Reading Glasses,Clothing,34.99,Stylish reading glasses with blue light filtering,VisionCare,65
+23,Plant Pot,Home,19.99,Decorative ceramic plant pot with drainage system,GreenLife,100
+24,Tennis Racket,Sports,179.99,Professional tennis racket with carbon fiber construction,TennisAce,20
+25,Tablet Stand,Electronics,29.99,Adjustable tablet stand with 360-degree rotation,TechSupport,75
+26,Hoodie,Clothing,54.99,Comfortable hoodie with fleece lining and kangaroo pocket,StyleWear,90
+27,Cookbook,Books,24.99,Comprehensive cookbook with 500+ recipes and cooking tips,CulinaryArts,40
+28,Dumbbells,Sports,99.99,Set of adjustable dumbbells with rubber coating,StrengthPro,15
+29,Desk Organizer,Home,39.99,Multi-compartment desk organizer with pen holders and storage,OfficeMax,50
+30,Wireless Earbuds,Electronics,179.99,True wireless earbuds with noise cancellation and charging case,AudioPro,65

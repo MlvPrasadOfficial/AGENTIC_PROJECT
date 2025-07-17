@@ -32,7 +32,7 @@ def mock_settings():
     with patch('app.core.config.settings') as mock_settings:
         mock_settings.PINECONE_API_KEY = "test_api_key"
         mock_settings.PINECONE_INDEX_NAME = "test_index"
-        mock_settings.PINECONE_DIMENSION = 384
+        mock_settings.PINECONE_DIMENSION = 1024
         mock_settings.PINECONE_METRIC = "cosine"
         mock_settings.PINECONE_CLOUD = "aws"
         mock_settings.PINECONE_REGION = "us-east-1"
@@ -82,7 +82,7 @@ def mock_pinecone():
         # Mock stats
         mock_stats = Mock()
         mock_stats.total_vector_count = 100
-        mock_stats.dimension = 384
+        mock_stats.dimension = 1024
         mock_stats.index_fullness = 0.1
         mock_stats.namespaces = {}
         mock_index.describe_index_stats.return_value = mock_stats
@@ -108,8 +108,8 @@ def mock_sentence_transformer():
         mock_st_class.return_value = mock_st
         
         # Mock embedding generation
-        mock_st.encode.return_value = [0.1] * 384  # Mock 384-dimensional embedding
-        mock_st.get_sentence_embedding_dimension.return_value = 384
+        mock_st.encode.return_value = [0.1] * 1024  # Mock 1024-dimensional embedding
+        mock_st.get_sentence_embedding_dimension.return_value = 1024
         
         yield mock_st
 

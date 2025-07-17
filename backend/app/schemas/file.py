@@ -9,11 +9,32 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 class FileResponse(BaseModel):
-    """Response for file upload operations"""
+    """
+    Response for file upload operations with comprehensive Pinecone validation testing.
+    
+    This schema includes the results of the 6 Pinecone validation tests that verify:
+    1. Pinecone connection and authentication
+    2. Index details and configuration
+    3. Vector count before embedding operations
+    4. CSV test data file validation
+    5. Index embedding operations with required wait time
+    6. Vector count after embedding operations
+    
+    Fields:
+        file_id: Unique identifier for the uploaded file
+        filename: Original filename of the uploaded file
+        status: Current processing status (uploaded, processing, complete, error)
+        message: Human-readable status message
+        pinecone_tests: Optional dict containing the 6 test results with pass/fail status
+    """
     file_id: str
     filename: str
     status: str
     message: str
+    pinecone_tests: Optional[Dict[str, Dict[str, Any]]] = Field(
+        None, 
+        description="Results of the 6 Pinecone validation tests (test_2_0 through test_2_5)"
+    )
 
 class FileMetadata(BaseModel):
     """File metadata including processing status and profile info"""

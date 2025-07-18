@@ -3,23 +3,26 @@ Always follow the standards in notes below and accomplish all the below tasks in
 
 Note-01: Always use a semicolon (;) instead of && when running multiple commands.
 Note-02: Always run commands in the foreground. If a server is running, monitor it in the terminal.
-Note-03: Log all changes in a timestamped file: changelogs/YYYY-MM-DD-HHMMSS_description.md.
+note-03: log all the changes in the `changelogs` folder with `timestamp_workdone.md`
 Note-04: Solve all tasks sequentially..and always mention your strategy before solving tasks
-Note-05: check frontend working at shell task : 'Next.js Development Server' and backend at shell task : 'Backend Development Server'
-note-06: dont push to github, unless i told you to do as a task below
+Note-05: if required, you can check frontend working at shell task : 'Next.js Development Server' and backend at shell task : 'Backend Development Server'
 
 complete all the tasks:
 
 
-Task-01 : 1. do remove g1,g2,g3,g4 cards hover animation in order as below
-              2.1 one expanding up animation when hovering on the right column
-              2.2 in the right column, g1,g2,g3,g4 cards, remove hovering animation for g1, g2, g3, g4  cards..make it static , 
-              remove all hover animation and elevation animations
-              2.3 before making any changes,read the code of page,tsx of relevant entirely as it has many  opening and closes , 
-              incorrect edit can corrupt the code
-              2.4 check continously in the shell task : 'Next.js Development Server' for any compilation and move forward in every step
+Task-01 : 1. I have shared the screen shot of the upload you data card section, I want it to be minimal
+          2.1 I just want to keep headline 'Upload your Data' , keep the button 'browse files' and remove the excess text text on the card shared below
+          2.2 remove this ( added screen shot for reference )
+            2.2.1 "Upload your data file"
+            2.2.2 "Drag and drop a file here, or click to browse"
+            2.2.3 "📊CSV📈XLSX🔗JSON"
+            2.2.4 "Supported formats:"
+            2.2.5 "💡 Pro tip: Upload your data to start the AI analysis workflow"
+        
 
-        3. read the task carefully and proceed accordingly 
+          3. the code `page.tsx; is complex is sensitive and complex, so do incremental changes, 
+          after every changes , check for any compilation erros in terminal task : `Next.js Development Server`
+          4. read the entire page you want to edit, for deep understanding of the changes required to do 
 Task-02: After completing above tasks go to the files created or edited for above tasks,
               1.Remove any unused imports, variables, or code blocks
               2.Add detailed docstrings to all functions and components

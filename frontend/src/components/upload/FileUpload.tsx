@@ -246,6 +246,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
    * @type {React.MutableRefObject<AbortController|null>}
    * @default null
    */
+  const abortControllerRef = useRef<AbortController | null>(null);
   // ============================================================================
   // UPLOAD PROGRESS HANDLING - Real-time Upload Status Management
   // ============================================================================

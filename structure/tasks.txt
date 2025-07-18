@@ -1,7 +1,7 @@
 Always follow the standards in notes below and accomplish all the below tasks in sequence
 
 
-Note-01: Always use a semicolon (;) instead of && when running multiple commands.
+Note-01: Always use a semicolon (;) instead of && when running multiple commands.(powershell syntax only)
 Note-02: Always run commands in the foreground. If a server is running, monitor it in the terminal.
 note-03: log all the changes in the `changelogs` folder with `timestamp_workdone.md`
 Note-04: Solve all tasks sequentially..and always mention your strategy before solving tasks
@@ -10,18 +10,12 @@ Note-05: if required, you can check frontend working at shell task : 'Next.js De
 complete all the tasks:
 
 
-Task-01 : 1. I have shared the screen shot of the upload you data card section, I want it to be minimal
-          2.1 I just want to keep headline 'Upload your Data' , keep the button 'browse files' and remove the excess text text on the card shared below
-          2.2 remove this ( added screen shot for reference )
-            2.2.1 "Upload your data file"
-            2.2.2 "Drag and drop a file here, or click to browse"
-            2.2.3 "📊CSV📈XLSX🔗JSON"
-            2.2.4 "Supported formats:"
-            2.2.5 "💡 Pro tip: Upload your data to start the AI analysis workflow"
-        
+Task-01 : 1. now check the 'browse files' button has upload functionality and connected to the backend or not
 
-          3. the code `page.tsx; is complex is sensitive and complex, so do incremental changes, 
+          2. test the file upload functionality with different file types and sizes
+          3. the code `page.tsx; is complex is sensitive and complex, so do incremental changes,
           after every changes , check for any compilation erros in terminal task : `Next.js Development Server`
+          similarly check for backend errors in terminal task : `Backend Development Server`
           4. read the entire page you want to edit, for deep understanding of the changes required to do 
 Task-02: After completing above tasks go to the files created or edited for above tasks,
               1.Remove any unused imports, variables, or code blocks

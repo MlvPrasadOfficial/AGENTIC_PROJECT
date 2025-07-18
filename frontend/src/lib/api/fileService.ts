@@ -98,73 +98,160 @@ export interface SampleData {
  */
 class FileService {
   /**
-   * Upload a file to the server
+   * Upload a file to the server with comprehensive validation and progress tracking
    * 
-   * @param file - The file to upload
-   * @param options - Upload options
-   * @returns Promise resolving to the uploaded file metadata
+   * This method provides a robust file upload mechanism with the following features:
+   * - Pre-upload file validation (size, type, format)
+   * - Real-time progress tracking with callback support
+   * - Upload cancellation support via AbortSignal
+   * - Comprehensive error handling with user-friendly messages
+   * - Metadata attachment for additional file information
+   * 
+   * UPLOAD WORKFLOW:
+   * 1. Validates file against size and type restrictions
+   * 2. Creates FormData with file and optional metadata
+   * 3. Initiates upload with progress tracking
+   * 4. Handles success/failure scenarios with appropriate callbacks
+   * 5. Returns structured file metadata for further processing
+   * 
+   * ERROR HANDLING:
+   * - File validation errors (size, type, format)
+   * - Network connectivity issues (ECONNREFUSED, timeouts)
+   * - Server errors (413 - too large, 415 - unsupported type)
+   * - Cancellation via AbortSignal (graceful termination)
+   * 
+   * @param {File} file - The File object to upload (from HTML input or drag-drop)
+   * @param {FileUploadOptions} [options] - Optional configuration object
+   * @param {Record<string, any>} [options.metadata] - Additional metadata to attach
+   * @param {function} [options.onProgress] - Progress callback for UI updates
+   * @param {AbortSignal} [options.signal] - Signal for upload cancellation
+   * 
+   * @returns {Promise<FileMetadata>} Promise resolving to uploaded file metadata
+   * @throws {Error} File validation errors or upload failures
+   * 
+   * @example
+   * ```typescript
+   * // Basic file upload
+   * const fileData = await fileService.uploadFile(selectedFile);
+   * console.log('Uploaded:', fileData.filename);
+   * ```
+   * 
+   * @example
+   * ```typescript
+   * // Upload with progress tracking and cancellation
+   * const abortController = new AbortController();
+   * const fileData = await fileService.uploadFile(selectedFile, {
+   *   onProgress: (progress) => {
+   *     console.log(`Upload progress: ${progress.progress}%`);
+   *     setUploadProgress(progress.progress);
+   *   },
+   *   signal: abortController.signal,
+   *   metadata: { category: 'user-data', source: 'csv-import' }
+   * });
+   * ```
+   * 
+   * @since 1.0.0
+   * @version 1.4.0 - Enhanced error handling and AbortSignal support
+   * @author GitHub Copilot
+   * @category FileOperations
+   * @subcategory Upload
    */
   async uploadFile(file: File, options?: FileUploadOptions): Promise<FileMetadata> {
-    // Validate file before upload
+    // Pre-upload validation: Check file size, type, and format compliance
+    // This prevents unnecessary network requests for invalid files
     this.validateFile(file);
     
+    // Destructure upload options with safe defaults for undefined values
+    // Ensures consistent behavior when options are partially provided
     const { metadata = {}, onProgress, signal } = options || {};
     
     try {
-      // Create FormData for file upload
+      // Initialize FormData for multipart/form-data HTTP request
+      // Required format for file uploads with additional metadata support
       const formData = new FormData();
       formData.append('file', file);
       
-      // Add metadata as JSON string if provided
+      // Attach optional metadata as JSON string for server processing
+      // Allows additional context like file categories, tags, or user info
       if (Object.keys(metadata).length > 0) {
         formData.append('metadata', JSON.stringify(metadata));
       }
       
-      // Use real API endpoint
+      // Execute upload request with real-time progress tracking
+      // Uses configured API client with proper endpoint and error handling
       const response = await apiClient.uploadFile<any>(
-        '/api/v1/files/upload',
-        file,
-        (progress) => {
+        '/api/v1/files/upload',        // Backend upload endpoint
+        file,                          // File object for upload
+        (progress) => {                // Progress callback for UI updates
+          // Invoke progress callback with structured progress data
+          // Provides percentage and status for UI feedback components
           onProgress?.({
-            progress,
-            status: progress < 100 ? 'uploading' : 'processing'
+            progress,                  // Current upload percentage (0-100)
+            status: progress < 100 ? 'uploading' : 'processing'  // Status indicator
           });
         },
-        signal
+        undefined,                     // Additional form data (not needed for basic upload)
+        signal                         // AbortSignal for upload cancellation support
       );
       
-      // File upload successful
+      // Signal upload completion with final progress update
+      // Ensures UI shows 100% completion before transitioning to next state
       onProgress?.({
-        progress: 100,
-        status: 'completed'
+        progress: 100,                 // Complete upload progress
+        status: 'completed'            // Final status for UI state management
       });
-
+      
+      // Transform server response to standardized FileMetadata interface
+      // Handles potential differences in backend response field naming
       return {
+        // Use server-provided file ID or fallback to response.fileId for compatibility
         fileId: response.data.file_id || response.data.fileId,
+        
+        // Prefer server filename but fallback to original client filename
         filename: response.data.filename || file.name,
+        
+        // Use actual uploaded size or original file size for consistency
         size: response.data.size || file.size,
+        
+        // MIME type from server validation or original file type
         mimeType: response.data.mime_type || file.type,
+        
+        // Upload status from server or default to 'completed' for success cases
         uploadStatus: response.data.status || 'completed',
+        
+        // Server timestamp or current time for upload completion tracking
         createdAt: response.data.created_at || new Date().toISOString(),
+        
+        // Optional processing information from server (analysis results, etc.)
         processingInfo: response.data.processing_info
       };
     } catch (error: any) {
-      // Enhanced error handling
+      // Comprehensive error handling with user-friendly message generation
+      // Categorizes different error types for appropriate user feedback
       let errorMessage = 'File upload failed';
-      
+      // Network connectivity errors (server offline, connection refused)
       if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
         errorMessage = 'Backend server is not available. Please ensure the server is running.';
+        
+      // HTTP 413: Payload Too Large - file exceeds server size limits
       } else if (error.response?.status === 413) {
         errorMessage = 'File is too large. Please select a smaller file.';
+        
+      // HTTP 415: Unsupported Media Type - file format not allowed
       } else if (error.response?.status === 415) {
         errorMessage = 'File type not supported. Please select a different file.';
+        
+      // Server-provided error message (validation failures, processing errors)
       } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
+        
+      // Generic error message fallback for unexpected errors
       } else if (error.message) {
         errorMessage = error.message;
       }
       
-      // File upload failed
+      // Signal upload failure to UI components with error details
+      // Resets progress and provides error context for user feedback
       onProgress?.({
         progress: 0,
         status: 'failed',

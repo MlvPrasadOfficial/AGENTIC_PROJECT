@@ -247,37 +247,108 @@ class ApiClient {
   }
 
   /**
-   * Upload a file with progress tracking
+   * Upload a file with progress tracking and cancellation support
    * 
-   * @param url - The URL to upload to
-   * @param file - The file to upload
-   * @param onProgress - Progress callback
-   * @param additionalData - Additional form data
-   * @returns Promise resolving to the response data
+   * Handles multipart/form-data file uploads with real-time progress tracking,
+   * additional metadata attachment, and upload cancellation capabilities.
+   * 
+   * Features:
+   * - Progress tracking with percentage completion callbacks
+   * - AbortSignal support for upload cancellation
+   * - Additional form data attachment for metadata
+   * - Automatic multipart/form-data content type handling
+   * - Standardized ApiResponse wrapper for consistent error handling
+   * 
+   * @example
+   * ```typescript
+   * // Basic file upload
+   * const response = await apiClient.uploadFile('/files/upload', selectedFile);
+   * 
+   * // Upload with progress tracking
+   * const response = await apiClient.uploadFile(
+   *   '/files/upload', 
+   *   selectedFile,
+   *   (progress) => console.log(`Upload: ${progress}%`)
+   * );
+   * 
+   * // Upload with cancellation support
+   * const controller = new AbortController();
+   * const response = await apiClient.uploadFile(
+   *   '/files/upload', 
+   *   selectedFile,
+   *   undefined,
+   *   undefined,
+   *   controller.signal
+   * );
+   * // Cancel: controller.abort();
+   * 
+   * // Upload with additional metadata
+   * const response = await apiClient.uploadFile(
+   *   '/files/upload', 
+   *   selectedFile,
+   *   (progress) => updateUI(progress),
+   *   { category: 'documents', tags: ['important'] }
+   * );
+   * ```
+   * 
+   * @param url - The endpoint URL for file upload (relative to baseURL)
+   * @param file - The File object to upload (from input or drag-drop)
+   * @param onProgress - Optional callback for upload progress (0-100 percentage)
+   * @param additionalData - Optional metadata to include in the form submission
+   * @param signal - Optional AbortSignal for upload cancellation control
+   * @returns Promise resolving to standardized ApiResponse with upload result
+   * @throws {ApiError} When upload fails due to network, server, or validation errors
    */
   async uploadFile<T = any>(
     url: string, 
     file: File, 
     onProgress?: (progress: number) => void,
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, any>,
+    signal?: AbortSignal
   ): Promise<ApiResponse<T>> {
+    // Create FormData container for multipart upload
+    // Required for file uploads with proper MIME boundary handling
     const formData = new FormData();
+    
+    // Attach the primary file with standard 'file' field name
+    // Backend expects this specific field name for file processing
     formData.append('file', file);
     
-    // Add any additional data
+    // Process additional metadata if provided
+    // Converts objects to JSON strings for backend compatibility
     if (additionalData) {
       Object.entries(additionalData).forEach(([key, value]) => {
+        // Serialize complex objects to JSON for form data transmission
+        // Simple values are automatically stringified by FormData
         formData.append(key, JSON.stringify(value));
       });
     }
     
+    // Execute the upload request with specialized configuration
+    // multipart/form-data content type enables file upload handling
     return this.client.post<T, ApiResponse<T>>(url, formData, {
       headers: {
+        // Let browser set Content-Type with proper boundary for multipart data
+        // Manual setting would break boundary generation
         'Content-Type': 'multipart/form-data'
       },
+      
+      // Enable upload cancellation through AbortController
+      // Allows users to cancel long-running uploads
+      signal: signal,
+      
+      // Configure real-time progress tracking
+      // Calculates percentage completion for UI feedback
       onUploadProgress: (event) => {
+        // Ensure both progress callback and total size are available
+        // Prevents division by zero and callback errors
         if (onProgress && event.total) {
+          // Calculate percentage completion with rounding for clean UI display
+          // Math.round ensures integer percentages for consistent progress bars
           const progress = Math.round((event.loaded * 100) / event.total);
+          
+          // Invoke progress callback with current upload percentage
+          // UI can use this for progress bars, status messages, etc.
           onProgress(progress);
         }
       }

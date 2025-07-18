@@ -2,7 +2,10 @@
  * File: FileUpload.tsx
  * Author: GitHub Copilot
  * Date: 2025-07-16 (Updated)
- * Purpose: Advanced file upload component with drag-and-drop functionality and backend integration
+ * Purpose: Advanced FileUpload component with drag-and-drop functionality and backend integration
+
+/**
+ * FileUpload component with drag-and-drop functionality and backend integration
  * 
  * COMPONENT OVERVIEW:
  * This component provides a sophisticated file upload interface with:
@@ -102,18 +105,19 @@ const toast = (props: { type: string; title: string; message: string }) => {
 interface FileUploadProps {
   /** 
    * Callback function triggered when a file upload completes successfully
-   * Receives the unique file identifier for further processing
+   * Receives both the unique file identifier and original filename for processing
    * 
    * @param {string} fileId - Unique identifier for the uploaded file
+   * @param {string} filename - Original name of the uploaded file
    * @example
    * ```tsx
-   * const handleFileUploaded = (fileId: string) => {
-   *   console.log('File uploaded with ID:', fileId);
+   * const handleFileUploaded = (fileId: string, filename: string) => {
+   *   console.log('File uploaded:', filename, 'with ID:', fileId);
    *   // Process uploaded file...
    * };
    * ```
    */
-  onFileUploaded?: (fileId: string) => void;
+  onFileUploaded?: (fileId: string, filename: string) => void;
   
   /** 
    * Callback function triggered when a file is deleted by the user
@@ -407,8 +411,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         });
       }
       
-      // Notify parent
-      onFileUploaded?.(response.fileId);
+      // Notify parent with both fileId and filename
+      onFileUploaded?.(response.fileId, file.name);
     } catch (error) {
       console.error('File upload error:', error);
       

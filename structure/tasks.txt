@@ -6,17 +6,41 @@ Note-02: Always run commands in the foreground. If a server is running, monitor 
 note-03: log all the changes in the `changelogs` folder with `timestamp_workdone.md`
 Note-04: Solve all tasks sequentially..and always mention your strategy before solving tasks
 Note-05: if required, you can check frontend working at shell task : 'Next.js Development Server' and backend at shell task : 'Backend Development Server'
+Note-06: always use powershell syntax only
 
-complete all the tasks:
+complete all the tasks given below:
 
 
-Task-01 : 1. now check the 'browse files' button has upload functionality and connected to the backend or not
+Task-01 : 1. I tried to upload a file but it has 3 errors mentioned below :
+1.1 :
+Error: Upload error: "File upload failed"
+    at createConsoleError (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/errors/console-error.js:27:71)
+    at handleConsoleError (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/errors/use-error-handler.js:47:54)
+    at console.error (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:47:57)
+    at onError (webpack-internal:///(app-pages-browser)/./src/app/page.tsx:909:79)
+    at FileUpload.useCallback[handleProgress] (webpack-internal:///(app-pages-browser)/./src/components/upload/FileUpload.tsx:246:67)
+    at FileService.uploadFile (webpack-internal:///(app-pages-browser)/./src/lib/api/fileService.ts:76:69)
+    at async FileUpload.useCallback[onDrop] (webpack-internal:///(app-pages-browser)/./src/components/upload/FileUpload.tsx:330:34)
+1.2 :
+FileUploadError: File upload failed
+    at FileService.uploadFile (webpack-internal:///(app-pages-browser)/./src/lib/api/fileService.ts:82:35)
+    at async FileUpload.useCallback[onDrop] (webpack-internal:///(app-pages-browser)/./src/components/upload/FileUpload.tsx:330:34)
 
-          2. test the file upload functionality with different file types and sizes
-          3. the code `page.tsx; is complex is sensitive and complex, so do incremental changes,
+1.3 :Error: Upload error: "File upload failed"
+    at createConsoleError (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/errors/console-error.js:27:71)
+    at handleConsoleError (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/errors/use-error-handler.js:47:54)
+    at console.error (webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:47:57)
+    at onError (webpack-internal:///(app-pages-browser)/./src/app/page.tsx:909:79)
+    at FileUpload.useCallback[onDrop] (webpack-internal:///(app-pages-browser)/./src/components/upload/FileUpload.tsx:356:67)
+       
+          2 the code in backend is complex and sensitive, so do incremental changes,
+          after every changes , check for any compilation erros in terminal task :'Backend Development Server' (check screen shot)
+          3. the code `page.tsx; is complex is sensitive and complex, so do incremental changes,(frontend)
           after every changes , check for any compilation erros in terminal task : `Next.js Development Server`
           similarly check for backend errors in terminal task : `Backend Development Server`
+   
           4. read the entire page you want to edit, for deep understanding of the changes required to do 
+          5. also add to show file name after successful upload status : 
 Task-02: After completing above tasks go to the files created or edited for above tasks,
               1.Remove any unused imports, variables, or code blocks
               2.Add detailed docstrings to all functions and components

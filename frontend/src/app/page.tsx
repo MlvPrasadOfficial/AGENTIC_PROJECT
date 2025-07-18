@@ -588,14 +588,14 @@ export default function Page() {
    * @since 1.0.0
    * @version 1.3.0 - Added comprehensive error handling and performance optimizations
    */
-  const handleFileUploaded = async (fileId: string) => {
+  const handleFileUploaded = async (fileId: string, filename: string) => {
     // Update file upload agent to completed status with success message
     // This provides immediate visual feedback to the user about upload success
     setAgentStates(prev => ({
       ...prev,
       'file-upload': { 
         status: 'completed', 
-        output: 'File successfully uploaded and validated. Ready for processing.',
+        output: `File "${filename}" successfully uploaded and validated. Ready for processing.`,
         isExpanded: true  // Expand to show success message immediately
       }
     }));

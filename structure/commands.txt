@@ -7,5 +7,5 @@ cd c:\JUL7PROJECT\frontend ; npm run build
 
 
 git add .
-git commit -m "JUL17 8.30pm upload functionality incr imporved --use base "
+git commit -m "JUL17 1130pm - ok can use as base"
 git push origin main

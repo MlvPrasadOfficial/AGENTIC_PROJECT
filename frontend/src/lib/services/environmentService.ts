@@ -12,9 +12,11 @@
 export const environmentService = {
   /**
    * API base URL
+   * Note: This should not include the /api/v1 path suffix as it's added by the backend
+   * Fixed to avoid duplicate /api/v1/api/v1 paths in requests
    */
   get apiUrl(): string {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
   },
 
   /**

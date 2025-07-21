@@ -1,0 +1,21 @@
+EmployeeID,Name,Department,JobTitle,Gender,Age,Salary
+E001,Arjun Kumar,Finance,Financial Analyst,Male,29,52000
+E002,Meera Singh,HR,HR Manager,Female,34,68000
+E003,Rahul Dev,Engineering,Software Engineer,Male,27,74000
+E004,Sneha Reddy,Marketing,Marketing Lead,Female,31,67000
+E005,Amit Shah,Sales,Sales Executive,Male,25,45000
+E006,Ananya Roy,Finance,Accountant,Female,28,48000
+E007,Vikram Joshi,Engineering,DevOps Engineer,Male,32,79000
+E008,Priya Nair,HR,Recruiter,Female,26,43000
+E009,Rajesh Patel,Sales,Sales Manager,Male,36,73000
+E010,Isha Verma,Marketing,Content Writer,Female,24,41000
+E011,Nitin Bhatia,Engineering,Backend Developer,Male,30,78000
+E012,Divya Rao,Finance,Accounts Executive,Female,27,50000
+E013,Manoj Gupta,Sales,Account Manager,Male,33,69000
+E014,Neha Pillai,HR,Training Specialist,Female,29,54000
+E015,Shivam Sethi,Engineering,Frontend Developer,Male,26,72000
+E016,Shruti Menon,Marketing,Brand Manager,Female,35,76000
+E017,Karan Mehta,Finance,Auditor,Male,31,60000
+E018,Radha Srinivas,HR,HR Executive,Female,28,47000
+E019,Aditya Jain,Engineering,QA Engineer,Male,27,68000
+E020,Sunita Agarwal,Sales,Sales Associate,Female,25,46000

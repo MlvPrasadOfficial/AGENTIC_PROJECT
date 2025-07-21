@@ -52,6 +52,17 @@ Enterprise Insights Copilot/ (Production Ready Implementation)
 ├── backend/                     # FastAPI Python Server ✅ COMPLETE  
 │   ├── app/
 │   │   ├── api/                 # REST API endpoints for data processing
+│   │   │   └── v1/
+│   │   │       ├── endpoints/   # REST endpoints organized by resource
+│   │   │       │   ├── agents.py   # Agent operations and workflow control
+│   │   │       │   ├── auth.py     # Authentication and user management
+│   │   │       │   ├── chat.py     # Chat interface and query handling
+│   │   │       │   ├── files.py    # File upload and management
+│   │   │       │   ├── health.py   # Health checks and system status
+│   │   │       │   ├── preview.py  # Data preview and visualization
+│   │   │       │   ├── vector.py   # Vector database operations
+│   │   │       │   └── websocket.py # Real-time communication
+│   │   │       └── api.py         # Central router configuration
 │   │   ├── services/            # Business logic and file handling
 │   │   ├── agents/              # 8 AI agents implementation
 │   │   │   ├── file_upload/     # File validation and preprocessing
@@ -85,6 +96,31 @@ Enterprise Insights Copilot/ (Production Ready Implementation)
 - **Git**: Latest version
 - **Python**: 3.9+ with pip
 - **PostgreSQL**: 13+ (optional, for production deployments)
+
+### Backend API Endpoints
+
+The backend provides the following API endpoints:
+
+#### File Upload and Management
+- **POST `/api/files/upload`**: Upload a file for analysis
+  - Accepts: CSV, XLSX, JSON, TXT, PDF files
+  - Returns: File ID, metadata, and Pinecone test results
+- **GET `/api/files/list`**: List all uploaded files
+- **GET `/api/files/{file_id}`**: Get file metadata and status
+
+#### Agent Operations
+- **POST `/api/agents/{agent_type}/run`**: Run a specific agent
+  - Path parameter `agent_type`: Type of agent to run (e.g., `file_upload`)
+  - Body: `{ "query": "string", "file_id": "string", "context_data": {} }`
+- **POST `/api/agents/workflow/run`**: Run the complete agent workflow
+- **POST `/api/agents/pipeline/start`**: Start an agent pipeline
+- **GET `/api/agents/pipeline/{pipeline_id}/status`**: Check pipeline status
+- **WebSocket `/api/agents/pipeline/{pipeline_id}/ws`**: Real-time pipeline updates
+
+#### System Operations
+- **GET `/health`**: Check server health status
+- **GET `/api/docs`**: Interactive API documentation (if enabled)
+- **GET `/api/redoc`**: ReDoc API documentation (if enabled)
 
 ### Installation
 

@@ -7,5 +7,15 @@ cd c:\JUL7PROJECT\frontend ; npm run build
 
 
 git add .
-git commit -m "JUL17 1135pm - ok can use as base"
+git commit -m "JUL21 11pm - file preview succ - use as base"
 git push origin main
+
+
+1.5 now after resolving above all 4 issues, 
+1.5.1 create a test named 'test_upload' to check the upload success worflow,
+   1. it should check given a user uploads a file, the file is getting uploaded successfully, or not (success or failure) to backend
+   2. it should show frontend csv from frontend (success or failure)
+   3. make sure both are success , write the test to check in terminal for both of them as success
+
+
+I want have a clear understanding of the project with keen details 

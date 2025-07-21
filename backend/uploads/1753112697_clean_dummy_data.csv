@@ -1,0 +1,22 @@
+ID,Name,Age,Department,JoiningDate,Salary,Status
+1,Person_1,50,Marketing,2020-01-01,77065,Active
+2,Person_2,36,Sales,2020-01-31,72606,On Leave
+3,Person_3,29,HR,2020-03-01,51534,Resigned
+4,Person_4,42,Finance,2020-03-31,80397,On Leave
+5,Person_5,40,Sales,2020-04-30,41016,Active
+6,Person_6,44,Finance,2020-05-30,95591,Resigned
+7,Person_7,32,HR,2020-06-29,63247,Active
+8,Person_8,32,HR,2020-07-29,64300,On Leave
+9,Person_9,45,Sales,2020-08-28,114065,Active
+10,Person_10,57,HR,2020-09-27,49268,Resigned
+11,Person_11,45,Marketing,2020-10-27,52185,Resigned
+12,Person_12,24,HR,2020-11-26,103704,On Leave
+13,Person_13,43,Finance,2020-12-26,79099,Active
+14,Person_14,23,Finance,2021-01-25,48571,Resigned
+15,Person_15,45,Finance,2021-02-24,78044,On Leave
+16,Person_16,51,Finance,2021-03-26,91214,Resigned
+17,Person_17,59,Marketing,2021-04-25,101228,Resigned
+18,Person_18,23,IT,2021-05-25,88984,Active
+19,Person_19,42,Sales,2021-06-24,80774,Resigned
+20,Person_20,54,Finance,2021-07-24,42568,Active
+

@@ -138,15 +138,17 @@ def mock_httpx_client():
 @pytest.fixture(autouse=True)
 def reset_singletons():
     """Reset singleton instances between tests"""
-    # Reset vector store
-    with patch('app.db.vector_store.vector_store') as mock_vs:
+    # Use a combined context manager to avoid multiple yields
+    with patch('app.db.vector_store.vector_store') as mock_vs, \
+         patch('app.llm.llm_client.llm_client') as mock_llm:
+        # Reset vector store
         mock_vs.index = None
         mock_vs.pc = None
-        yield
-    
-    # Reset LLM client cache
-    with patch('app.llm.llm_client.llm_client') as mock_llm:
+        
+        # Reset LLM client cache
         mock_llm.cache = {}
+        
+        # Single yield for the fixture
         yield
 
 @pytest.fixture

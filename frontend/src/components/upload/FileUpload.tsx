@@ -611,14 +611,34 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             </div>
             
             <div className="flex items-center gap-2">
+              {/* Preview Button - Triggers data preview workflow
+                * FUNCTIONALITY: Initiates file preview by calling onFileUploaded callback
+                * PARAMETERS: Passes both fileId and filename for complete preview processing
+                * UI BEHAVIOR: Shows preview icon with blue hover effect and glassmorphism styling
+                * WORKFLOW: Triggers getSampleData API call and agent workflow simulation
+                * ERROR HANDLING: Parent component handles API errors and displays user feedback
+                * ACCESSIBILITY: Keyboard accessible with semantic button element
+                * PERFORMANCE: Optimized with transition animations for smooth user experience
+                */}
               <button 
                 onClick={() => {
-                  onFileUploaded?.(currentFile.id);
+                  // Call parent callback with complete file information for preview processing
+                  // fileId: Used for backend API calls to fetch sample data
+                  // filename: Used for user display and workflow notifications
+                  onFileUploaded?.(currentFile.id, currentFile.name);
                 }}
                 className="glass-button-secondary px-4 py-2 text-sm flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300"
               >
                 <PreviewIcon className="icon text-white" /> Preview
               </button>
+              
+              {/* Delete Button - Removes uploaded file from component state
+                * FUNCTIONALITY: Clears current file and resets component to initial state
+                * UI BEHAVIOR: Red hover effect with delete icon for clear user intent
+                * CONFIRMATION: Immediate deletion without confirmation dialog
+                * STATE MANAGEMENT: Resets all upload-related state variables
+                * ACCESSIBILITY: Proper title attribute for screen reader support
+                */}
               <button 
                 onClick={handleDeleteFile}
                 className="text-red-300 hover:text-red-200 transition-colors p-2 rounded-lg hover:bg-red-500/10"
@@ -630,10 +650,28 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           </div>
           
           {/* File Actions */}
+          {/* File Actions Section - Primary action buttons for file operations
+            * LAYOUT: Flex row layout with gap spacing for consistent button alignment
+            * RESPONSIVENESS: Flex-1 on primary button ensures proper space utilization
+            * INTERACTION: Two-button layout with primary and secondary actions
+            * ACCESSIBILITY: Keyboard navigation support with semantic button elements
+            */}
           <div className="flex gap-2">
+            {/* Primary Preview Button - Main call-to-action for data preview
+              * FUNCTIONALITY: Triggers comprehensive file preview workflow
+              * PARAMETERS: Passes complete file metadata (ID and name) to parent callback
+              * UI DESIGN: Full-width primary button with prominent styling
+              * WORKFLOW TRIGGER: Initiates getSampleData API call and 8-agent simulation
+              * USER EXPERIENCE: Clear action text and visual icon for intuitive interaction
+              * ERROR HANDLING: Parent component manages API errors and user notifications
+              * PERFORMANCE: Optimized transitions and hover effects for smooth interaction
+              */}
             <button 
               onClick={() => {
-                onFileUploaded?.(currentFile.id);
+                // Trigger file preview workflow with complete file information
+                // This initiates: 1) Backend API call for sample data, 2) Agent workflow simulation
+                // Parameters ensure proper data retrieval and user feedback display
+                onFileUploaded?.(currentFile.id, currentFile.name);
               }}
               className="glass-button flex-1 py-3 mt-2 flex items-center justify-center gap-2 hover:bg-blue-600/20 transition-all duration-300"
             >

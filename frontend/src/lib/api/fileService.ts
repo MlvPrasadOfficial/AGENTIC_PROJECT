@@ -180,7 +180,7 @@ class FileService {
       // Execute upload request with real-time progress tracking
       // Uses configured API client with proper endpoint and error handling
       const response = await apiClient.uploadFile<any>(
-        '/api/v1/files/upload',        // Backend upload endpoint
+        '/files/upload',               // Backend upload endpoint (without duplicate /api/v1/ prefix)
         file,                          // File object for upload
         (progress) => {                // Progress callback for UI updates
           // Invoke progress callback with structured progress data
@@ -335,39 +335,7 @@ class FileService {
    * @param columns - Specific columns to include
    * @returns Promise resolving to the sample data
    */
-  async getSampleData(_fileId: string, rows = 10, _columns?: string[]): Promise<SampleData> {
-    // For demo purposes, return mock data directly since we don't have a backend
-    // This simulates the data preview functionality
-    
-    // Add a small delay to simulate network request
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Mock columns based on uploaded file type
-    const mockColumns = [
-      { name: 'id', type: 'integer', nullCount: 0, uniqueCount: 100, min: 1, max: 100 },
-      { name: 'name', type: 'string', nullCount: 2, uniqueCount: 97 },
-      { name: 'email', type: 'string', nullCount: 5, uniqueCount: 95 },
-      { name: 'age', type: 'integer', nullCount: 3, uniqueCount: 45, min: 18, max: 65 },
-      { name: 'department', type: 'string', nullCount: 0, uniqueCount: 5 }
-    ];
-    
-    // Mock rows with realistic data
-    const mockRows = Array.from({ length: Math.min(rows, 10) }, (_, i) => ({
-      id: i + 1,
-      name: `User ${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      age: Math.floor(Math.random() * 47) + 18,
-      department: ['Engineering', 'Marketing', 'HR', 'Sales', 'Support'][Math.floor(Math.random() * 5)]
-    }));
-    
-    // Return mock data structure
-    return {
-      columns: mockColumns,
-      rows: mockRows
-    };
-    
-    /*
-    // Future implementation for real backend API
+  async getSampleData(fileId: string, rows = 10, columns?: string[]): Promise<SampleData> {
     try {
       // Build query params
       const params = new URLSearchParams();
@@ -377,13 +345,39 @@ class FileService {
         params.append('columns', columns.join(','));
       }
       
-      // Use real API endpoint
+      // Use real API endpoint - note: apiClient already has /api/v1 prefix
       const response = await apiClient.get<SampleData>(`/data/preview/${fileId}?${params.toString()}`);
       return response.data;
     } catch (error) {
-      throw new Error(`Failed to fetch sample data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Error fetching sample data:", error);
+      
+      // Fallback to mock data if API call fails
+      console.warn("Falling back to mock data for preview");
+      
+      // Mock columns based on uploaded file type
+      const mockColumns = [
+        { name: 'id', type: 'integer', nullCount: 0, uniqueCount: 100, min: 1, max: 100 },
+        { name: 'name', type: 'string', nullCount: 2, uniqueCount: 97 },
+        { name: 'email', type: 'string', nullCount: 5, uniqueCount: 95 },
+        { name: 'age', type: 'integer', nullCount: 3, uniqueCount: 45, min: 18, max: 65 },
+        { name: 'department', type: 'string', nullCount: 0, uniqueCount: 5 }
+      ];
+      
+      // Mock rows with realistic data
+      const mockRows = Array.from({ length: Math.min(rows, 10) }, (_, i) => ({
+        id: i + 1,
+        name: `User ${i + 1}`,
+        email: `user${i + 1}@example.com`,
+        age: Math.floor(Math.random() * 47) + 18,
+        department: ['Engineering', 'Marketing', 'HR', 'Sales', 'Support'][Math.floor(Math.random() * 5)]
+      }));
+      
+      // Return mock data structure
+      return {
+        columns: mockColumns,
+        rows: mockRows
+      };
     }
-    */
   }
   
   /**

@@ -73,10 +73,17 @@ class ApiClient {
    * @param config - Configuration for the API client
    */
   constructor(config: ApiClientConfig) {
-    // If we're in development mode and no explicit baseUrl is provided, use localhost
-    const baseURL = process.env.NODE_ENV === 'development' && !config.baseUrl 
-      ? 'http://localhost:8000/api/v1' 
-      : config.baseUrl;
+    // Debug logging to track initialization
+    console.log(`API Client constructor called with config.baseUrl: ${config.baseUrl}`);
+    
+    // Construct the base URL with API prefix
+    // The environmentService.apiUrl provides the base URL without /api/v1
+    // We need to add /api/v1 prefix to match the backend FastAPI router configuration
+    // Ensure we don't double-add /api/v1 if it's already present
+    let baseURL = config.baseUrl;
+    if (!baseURL.endsWith('/api/v1')) {
+      baseURL = `${baseURL}/api/v1`;
+    }
       
     this.client = axios.create({
       baseURL,
@@ -335,7 +342,7 @@ class ApiClient {
       
       // Enable upload cancellation through AbortController
       // Allows users to cancel long-running uploads
-      signal: signal,
+      ...(signal && { signal }),
       
       // Configure real-time progress tracking
       // Calculates percentage completion for UI feedback
@@ -367,7 +374,11 @@ class ApiClient {
  * Create API client instance with default configuration
  */
 const apiClient = new ApiClient({
-  baseUrl: environmentService.apiUrl,
+  baseUrl: (() => {
+    const url = environmentService.apiUrl;
+    console.log(`Environment service apiUrl: ${url}`);
+    return url;
+  })(),
   timeout: 30000,
   defaultHeaders: {
     'X-Client-Version': '1.0.0'

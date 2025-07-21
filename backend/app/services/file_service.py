@@ -202,79 +202,171 @@ class FileService:
     
     def get_file_preview(self, file_id: str, rows: int = 10, columns: Optional[List[str]] = None) -> Dict[str, Any]:
         """
-        Get preview data from a file.
+        Get preview data from a file for display in the frontend.
+        
+        This method handles two types of file storage scenarios:
+        1. Files saved through FileService.save_uploaded_file() with UUID-based IDs
+        2. Files saved directly by upload endpoints with timestamp-based IDs
+        
+        ENHANCED FUNCTIONALITY (Task-01 Fix):
+        - Supports timestamp-based file IDs created by the upload endpoint
+        - Handles files that exist on disk but aren't in the metadata store
+        - Automatically detects file types from extensions
+        - Provides fallback file type detection for complex naming patterns
         
         Args:
-            file_id: The ID of the file
-            rows: Number of rows to return
-            columns: Specific columns to include
+            file_id (str): The unique identifier for the file. Can be either:
+                         - UUID format (e.g., "123e4567-e89b-12d3-a456-426614174000")  
+                         - Timestamp format (e.g., "1753105630_filename.csv")
+            rows (int): Maximum number of sample rows to return. Default: 10
+                       Extra rows are read for more accurate column profiling
+            columns (Optional[List[str]]): Specific column names to include in preview.
+                                         If None, all columns are included
             
         Returns:
-            Dictionary with columns metadata and sample rows
-            
+            Dict[str, Any]: Dictionary containing preview data with structure:
+                {
+                    "columns": [
+                        {
+                            "name": str,        # Column name
+                            "type": str,        # pandas dtype as string
+                            "nullCount": int,   # Number of null/NaN values
+                            "uniqueCount": int, # Number of unique values
+                            "min": Optional[Union[int, float]], # Min value (numeric columns only)
+                            "max": Optional[Union[int, float]]  # Max value (numeric columns only)
+                        }
+                    ],
+                    "rows": [
+                        {
+                            "column_name": "value", # Sample data rows
+                            ...
+                        }
+                    ]
+                }
+                
         Raises:
-            FileNotFoundError: If file not found
-            Exception: For other errors during file reading
+            FileNotFoundError: If the specified file_id does not exist in either:
+                             - The metadata store (for UUID-based files)
+                             - The upload directory on disk (for timestamp-based files)
+            ValueError: If the file type is not supported for preview
+            Exception: For pandas reading errors, file corruption, or other processing issues
+            
+        Note:
+            This method was enhanced in Task-01 to resolve file preview issues by:
+            - Adding support for timestamp-based file IDs from the upload endpoint
+            - Implementing fallback file type detection
+            - Fixing pandas NaN handling for JSON serialization
+            - Ensuring compatibility with existing file upload workflows
         """
-        if file_id not in self.metadata_store:
-            raise FileNotFoundError(f"File {file_id} not found")
+        # Check if file exists in metadata store (UUID-based files from FileService)
+        if file_id in self.metadata_store:
+            # File was saved using FileService.save_uploaded_file() method
+            # Retrieve metadata and construct file path using UUID
+            metadata = self.metadata_store[file_id]
+            file_path = self.upload_dir / file_id
+            file_type = metadata["file_type"]
+        else:
+            # Handle files uploaded by the timestamp-based upload endpoint
+            # These files exist on disk but aren't in the metadata store
+            # This is a compatibility fix for the existing upload system
+            file_path = self.upload_dir / file_id
+            
+            # Verify the file actually exists on the filesystem
+            if not file_path.exists():
+                raise FileNotFoundError(f"File {file_id} not found")
+            
+            # Determine file type from file extension
+            # Extract extension and normalize it (remove dot, lowercase)
+            file_type = Path(file_id).suffix.lower().replace(".", "")
+            if not file_type:
+                # If no extension found directly, try to extract from the filename
+                # Handle timestamp-based names like "1753105630_filename.csv"
+                if "_" in file_id:
+                    # Split on first underscore to get original filename
+                    original_filename = file_id.split("_", 1)[1]
+                    file_type = Path(original_filename).suffix.lower().replace(".", "")
         
-        metadata = self.metadata_store[file_id]
-        file_path = self.upload_dir / file_id
-        file_type = metadata["file_type"]
-        
+        # Log the preview operation for debugging and monitoring
         logger.info(f"Getting preview for file: {file_id}, type: {file_type}")
         
         try:
-            # Read file based on type
+            # Read file based on detected file type using appropriate pandas method
             if file_type in ["csv", "txt"]:
-                df = pd.read_csv(file_path, nrows=rows*2)  # Read extra rows for more accurate column profiling
+                # Read CSV files with extra rows for better column analysis
+                # nrows=rows*2 ensures we have enough data for accurate profiling
+                df = pd.read_csv(file_path, nrows=rows*2)
             elif file_type in ["xlsx", "xls"]:
+                # Read Excel files (both .xlsx and legacy .xls formats)
+                # Extra rows help with column type detection and statistics
                 df = pd.read_excel(file_path, nrows=rows*2)
             elif file_type == "json":
+                # Read JSON files - note: no row limit as structure varies
+                # JSON files are typically smaller and need full read for structure detection
                 df = pd.read_json(file_path)
             else:
+                # Unsupported file type - raise descriptive error
                 raise ValueError(f"Unsupported file type for preview: {file_type}")
                 
-            # Filter columns if specified
+            # Apply column filtering if specific columns were requested
             if columns:
+                # Filter to only include columns that actually exist in the dataframe
+                # This prevents KeyError if client requests non-existent columns
                 existing_columns = [col for col in columns if col in df.columns]
                 if not existing_columns:
-                    # If none of the requested columns exist, use all columns
+                    # If none of the requested columns exist, log warning and use all columns
+                    # This ensures preview still works even with invalid column requests
                     logger.warning(f"None of the requested columns exist: {columns}")
                 else:
+                    # Filter dataframe to only include existing requested columns
                     df = df[existing_columns]
             
-            # Get column metadata
+            # Generate column metadata for frontend display
+            # This provides type information, statistics, and null value counts
             column_info = []
             for col_name, dtype in df.dtypes.items():
+                # Get column data for analysis
                 col_data = df[col_name]
+                # Count null/NaN values for data quality assessment
                 null_count = col_data.isna().sum()
                 
+                # Create base column information dictionary
                 col_info = {
-                    "name": col_name,
-                    "type": str(dtype),
-                    "nullCount": int(null_count),
-                    "uniqueCount": int(col_data.nunique())
+                    "name": col_name,                    # Column name as string
+                    "type": str(dtype),                  # pandas dtype converted to string
+                    "nullCount": int(null_count),        # Number of null values (int for JSON)
+                    "uniqueCount": int(col_data.nunique())  # Number of unique values
                 }
                 
-                # Add min/max for numeric columns
+                # Add statistical information for numeric columns only
+                # This provides min/max ranges useful for data analysis
                 if pd.api.types.is_numeric_dtype(dtype):
+                    # Calculate min/max values, handling empty columns gracefully
                     col_info["min"] = col_data.min() if not col_data.empty else None
                     col_info["max"] = col_data.max() if not col_data.empty else None
                 
+                # Add column info to the list
                 column_info.append(col_info)
             
-            # Convert sample rows to dictionary
-            sample_rows = df.head(rows).fillna(None).to_dict('records')
+            # Convert sample rows to dictionary format for JSON response
+            # Take only the requested number of rows for preview
+            sample_df = df.head(rows)
+            # Replace NaN values with empty strings for proper JSON serialization
+            # pandas NaN values cannot be serialized to JSON, so we convert them
+            # Using .where() with empty strings ensures consistent frontend display
+            sample_rows = sample_df.where(sample_df.notna(), '').to_dict('records')
             
+            # Return structured response with column metadata and sample data
             return {
-                "columns": column_info,
-                "rows": sample_rows
+                "columns": column_info,  # List of column metadata dictionaries
+                "rows": sample_rows      # List of sample row dictionaries
             }
             
         except Exception as e:
+            # Comprehensive error handling for file processing failures
+            # Log the full error with stack trace for debugging purposes
             logger.error(f"Error generating preview for file {file_id}: {str(e)}", exc_info=True)
+            # Re-raise the exception to be handled by the API endpoint
+            # This allows the endpoint to return appropriate HTTP status codes
             raise
     
     def _profile_dataframe(self, df: pd.DataFrame) -> Dict[str, Any]:

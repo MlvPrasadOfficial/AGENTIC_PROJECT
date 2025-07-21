@@ -2,7 +2,8 @@
  * File: FileUpload.tsx
  * Author: GitHub Copilot
  * Date: 2025-07-16 (Updated)
- * Purpose: Advanced FileUpload component with drag-and-drop functionality and backend integration
+ * Purpose: Advanced file upload component with drag-and-drop functionality and backend integration
+ */
 
 /**
  * FileUpload component with drag-and-drop functionality and backend integration
@@ -61,7 +62,7 @@
 
 import React, { useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
-import fileService, { FileUploadProgress } from '@/lib/api/fileService';
+import fileService, { FileUploadProgress, FileMetadata } from '@/lib/api/fileService';
 import { PreviewIcon } from '@/components/icons/PreviewIcon';
 import { CloseIcon } from '@/components/icons/CloseIcon';
 
@@ -105,19 +106,23 @@ const toast = (props: { type: string; title: string; message: string }) => {
 interface FileUploadProps {
   /** 
    * Callback function triggered when a file upload completes successfully
-   * Receives both the unique file identifier and original filename for processing
+   * Receives the file identifier, filename, and complete upload response including Pinecone test results
    * 
    * @param {string} fileId - Unique identifier for the uploaded file
    * @param {string} filename - Original name of the uploaded file
+   * @param {FileMetadata} [uploadResponse] - Complete upload response with Pinecone test results
    * @example
    * ```tsx
-   * const handleFileUploaded = (fileId: string, filename: string) => {
+   * const handleFileUploaded = (fileId: string, filename: string, uploadResponse?: FileMetadata) => {
    *   console.log('File uploaded:', filename, 'with ID:', fileId);
+   *   if (uploadResponse?.pineconeTests) {
+   *     console.log('Pinecone tests:', uploadResponse.pineconeTests);
+   *   }
    *   // Process uploaded file...
    * };
    * ```
    */
-  onFileUploaded?: (fileId: string, filename: string) => void;
+  onFileUploaded?: (fileId: string, filename: string, uploadResponse?: FileMetadata) => void;
   
   /** 
    * Callback function triggered when a file is deleted by the user
@@ -411,8 +416,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         });
       }
       
-      // Notify parent with both fileId and filename
-      onFileUploaded?.(response.fileId, file.name);
+      // Notify parent with fileId, filename, and complete upload response including Pinecone tests
+      onFileUploaded?.(response.fileId, file.name, response);
     } catch (error) {
       console.error('File upload error:', error);
       

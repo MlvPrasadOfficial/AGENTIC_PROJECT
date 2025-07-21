@@ -7,7 +7,7 @@ cd c:\JUL7PROJECT\frontend ; npm run build
 
 
 git add .
-git commit -m "JUL21 11pm - file preview succ - use as base"
+git commit -m "JUL22 1AM - file preview succ ++ inc best +++ - use as base"
 git push origin main
 
 

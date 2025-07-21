@@ -5,9 +5,16 @@ Note-03: always use powershell syntax only ( use ; instead of && )
 note-04 :always remember 4 notes and start with a strategical approach to solve the tasks
 
 Task-01 : 
-    1. Attached screen shot, when i uploaded a file, preview was not shown,after clicking on the preview button
-    1.2 fix the preview issue by ensuring the backend endpoint for fetching sample data is correctly implemented and accessible.
-    2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
+1. I have shared a screenshot of the frontend UI, which shows the file upload section and agent workflow.
+1.1 still the o/p logs are comming like a continous paragraph, i want it like a bullet list ( do changes)
+1.2 the pinecones tests 6 o/p are returned as passed , along with passed , i want o/p of each test.
+   1.2.1 pincone test 0 along with passed, what is connection url, 
+   1.2.2 pincone test 1 along with passed, what is index name,
+   1.2.3 pincone test 2 along with passed, what is vector count before embedding,
+   1.2.4 pincone test 3 along with passed, what is csv filename,
+   1.2.5 pincone test 4 along with passed, what is embedding operation status,
+   1.2.6 pincone test 5 along with passed, what is vector count after embedding,
+   2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
     After every change, check for compilation errors in terminal tasks: 'Backend Development Server' (port 8000) and 'Next.js Development Server' (port 3000)
     3. Read the entire page you want to edit, for deep understanding of the changes required to do
 

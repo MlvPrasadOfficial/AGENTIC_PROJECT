@@ -29,6 +29,15 @@ export interface FileMetadata {
   createdAt: string;
   /** User-provided metadata */
   metadata?: Record<string, any>;
+  /** Pinecone test results from backend (6 tests) */
+  pineconeTests?: {
+    test_2_0?: { name: string; status: string; details: string; };
+    test_2_1?: { name: string; status: string; details: string; };
+    test_2_2?: { name: string; status: string; details: string; };
+    test_2_3?: { name: string; status: string; details: string; };
+    test_2_4?: { name: string; status: string; details: string; };
+    test_2_5?: { name: string; status: string; details: string; };
+  };
   /** Processing information */
   processingInfo?: {
     /** Number of rows processed */
@@ -221,6 +230,9 @@ class FileService {
         
         // Server timestamp or current time for upload completion tracking
         createdAt: response.data.created_at || new Date().toISOString(),
+        
+        // Include Pinecone test results from backend if available
+        pineconeTests: response.data.pinecone_tests,
         
         // Optional processing information from server (analysis results, etc.)
         processingInfo: response.data.processing_info

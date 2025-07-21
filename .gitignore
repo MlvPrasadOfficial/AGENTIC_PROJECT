@@ -126,6 +126,10 @@ venv.bak/
 *.sqlite
 *.sqlite3
 
+# Backend uploads directory (contains user uploaded files)
+backend/uploads/
+uploads/
+
 # Backup files
 *.bak
 *.backup

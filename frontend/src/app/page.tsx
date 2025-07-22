@@ -1700,121 +1700,75 @@ Ready for user query to continue with planning agent.`,
             </div>
             
             {/* ========================================================== */}
-            {/* CARD 2: ENHANCED CHAT INTERFACE SECTION */}
+            {/* CARD 2: MINIMALIST CHAT INTERFACE SECTION */}
             {/* ========================================================== */}
             
-            {/* CARD 2: Enhanced Chat Interface Section */}
+            {/**
+             * Ask Copilot Chat Interface Component
+             * 
+             * A minimalist, elegant chat interface for interacting with the Enterprise Insights Copilot.
+             * This component has been simplified to remove UI clutter while maintaining full functionality.
+             * 
+             * Features:
+             * - Clean, distraction-free design
+             * - AI readiness indicator with real-time status
+             * - Spacious text area for complex analytical queries
+             * - Voice input support for hands-free operation
+             * - Prominent send button for query submission
+             */}
             <div className="glass-card p-6">
-              {/* ====================================================== */}
-              {/* CHAT INTERFACE HEADER - Title and AI Status Indicator */}
-              {/* ====================================================== */}
-              
-              {/* Chat interface header with title and AI status indicator */}
+              {/* Header section with title and AI status */}
               <div className="flex items-center justify-between mb-4">
+                {/* Main title */}
                 <h2 className="text-2xl font-semibold text-white">Ask Copilot</h2>
+                
+                {/* AI status indicator group */}
                 <div className="flex items-center gap-2">
-                  {/* AI ready status indicator with pulsing animation */}
+                  {/* Status indicator dot with pulse animation for visual feedback */}
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  {/* Status text */}
                   <span className="text-sm text-green-300">AI Ready</span>
                 </div>
               </div>
               
-              {/* ====================================================== */}
-              {/* ENHANCED INPUT SECTION - Query Input and Voice Controls */}
-              {/* ====================================================== */}
-              
-              {/* Enhanced Input Section */}
+              {/* Input and controls container */}
               <div className="space-y-4">
-                {/* Query input container with voice button */}
+                {/* Query input with voice control */}
                 <div className="relative">
-                  {/* Multi-line text input for analytics queries */}
+                  {/* Multi-line query input field */}
                   <textarea 
                     className="glass-input text-white p-4 w-full pr-12 min-h-[100px] resize-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
                     placeholder="Type your analytics query... (e.g., 'What are the main trends in the data?')"
                     rows={3}
+                    aria-label="Analytics query input"
                   ></textarea>
                   
-                  {/* Voice Input Button positioned in bottom-right corner */}
+                  {/* Voice input accessibility button */}
                   <button 
                     className="absolute bottom-3 right-3 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10"
                     title="Voice input"
+                    aria-label="Toggle voice input"
                   >
-                    {/* Microphone icon for voice input functionality */}
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {/* Microphone icon */}
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
                   </button>
                 </div>
                 
-                {/* ================================================== */}
-                {/* QUICK QUERY SUGGESTIONS - Predefined Query Buttons */}
-                {/* ================================================== */}
-                
-                {/* Quick Query Suggestions */}
-                <div className="space-y-2">
-                  {/* Section label for quick suggestions */}
-                  <div className="text-sm text-gray-400">💡 Quick suggestions:</div>
-                  
-                  {/* Flexbox container for suggestion buttons */}
-                  <div className="flex flex-wrap gap-2">
-                    {/* Data overview suggestion button */}
-                    <button className="text-xs px-3 py-1 bg-blue-500/10 text-blue-300 rounded-full hover:bg-blue-500/20 transition-colors">
-                      📊 Show data overview
-                    </button>
-                    
-                    {/* Trend analysis suggestion button */}
-                    <button className="text-xs px-3 py-1 bg-green-500/10 text-green-300 rounded-full hover:bg-green-500/20 transition-colors">
-                      📈 Find trends
-                    </button>
-                    
-                    {/* Pattern analysis suggestion button */}
-                    <button className="text-xs px-3 py-1 bg-purple-500/10 text-purple-300 rounded-full hover:bg-purple-500/20 transition-colors">
-                      🔍 Analyze patterns
-                    </button>
-                    
-                    {/* Report generation suggestion button */}
-                    <button className="text-xs px-3 py-1 bg-orange-500/10 text-orange-300 rounded-full hover:bg-orange-500/20 transition-colors">
-                      📋 Generate report
-                    </button>
-                  </div>
-                </div>
-                
-                {/* ================================================== */}
-                {/* SEND BUTTON WITH KEYBOARD SHORTCUT - Action Controls */}
-                {/* ================================================== */}
-                
-                {/* Send Button with Keyboard Shortcut */}
-                <div className="flex items-center justify-between">
-                  {/* Keyboard shortcut display */}
-                  <div className="text-xs text-gray-400">
-                    <kbd className="px-2 py-1 bg-gray-800/30 rounded text-gray-300">Ctrl</kbd> + 
-                    <kbd className="px-2 py-1 bg-gray-800/30 rounded text-gray-300">Enter</kbd> to send
-                  </div>
-                  
-                  {/* Send button with icon and hover effects */}
-                  <button className="glass-button text-white px-8 py-3 flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300 focus:ring-2 focus:ring-blue-400/50">
-                    {/* Send icon */}
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {/* Send button container - right aligned for clean UI */}
+                <div className="flex items-center justify-end">
+                  {/* Submit button with icon */}
+                  <button 
+                    className="glass-button text-white px-8 py-3 flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300 focus:ring-2 focus:ring-blue-400/50"
+                    aria-label="Send query"
+                  >
+                    {/* Paper airplane icon */}
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
                     Send
                   </button>
-                </div>
-              </div>
-              
-              {/* ====================================================== */}
-              {/* CHAT HISTORY PREVIEW - Conversation History Display */}
-              {/* ====================================================== */}
-              
-              {/* Chat History Preview */}
-              <div className="mt-6 p-4 bg-gray-800/10 rounded-lg border border-gray-600/10">
-                {/* History section header */}
-                <div className="text-sm text-gray-400 mb-2">Recent conversations</div>
-                
-                {/* History content area */}
-                <div className="space-y-2">
-                  {/* Empty state message */}
-                  <div className="text-xs text-gray-500">No recent chats - start a conversation above!</div>
                 </div>
               </div>
             </div>

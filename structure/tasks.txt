@@ -5,10 +5,8 @@ Note-03: always use powershell syntax only ( use ; instead of && )
 note-04 :always remember 4 notes and start with a strategical approach to solve the tasks
 
 Task-01 : 
-1. i uploadeda file and there is success of file preview and file upload agent and profile agent
-1.1 now i shared a query in in the chat card,  when i click on send ..its not working ..check the issues
-1.2 drop the text "AI Ready" and improve the voice input button to be modern and suitable to ui 
-1.3 do minimal beauty enhancements to the chat card
+1. add [placeholder] and [real] tags for outputs to planning agent, insight agent m viz agent , critique agent , debate agent and report agent 
+
 2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
     After every change, check for compilation errors in terminal tasks: 'Backend Development Server' (port 8000) and 'Next.js Development Server' (port 3000)
 3. Read the entire page you want to edit, for deep understanding of the changes required to do

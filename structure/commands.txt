@@ -7,7 +7,7 @@ cd c:\JUL7PROJECT\frontend ; npm run build
 
 
 git add .
-git commit -m "JUL22 11pm - fdata profile agent success test- best - use base case  improvements"
+git commit -m "JUL23 1am - fdata profile agent success test- best - use base case  improvements"
 git push origin main
 
 

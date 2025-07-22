@@ -312,10 +312,29 @@ Question: {input}
                 plan=analysis_plan.dict()
             )
             
+            # Add placeholder and real tags to the response
+            # The placeholder provides a generic description of what the output contains
+            # The real tag provides specific details about the actual generated content
+            tagged_result = {
+                # Preserve the original result keys
+                "file_id": result["file_id"],
+                "filename": result["filename"],
+                "query": result["query"],
+                "analysis_plan": result["analysis_plan"],
+                "is_ready_for_insight_and_viz": result["is_ready_for_insight_and_viz"],
+                # Add output tags for UI display
+                "output": {
+                    # Generic description for loading state or preview
+                    "placeholder": "[placeholder] This is a comprehensive analysis plan based on your data profile and query. It includes statistical methods, visualization strategies, and key metrics to focus on.",
+                    # Specific details about the actual content generated
+                    "real": f"[real] Analysis plan created for {file_metadata.filename} with {len(result['analysis_plan']['steps'])} steps, {len(result['analysis_plan']['required_visualizations'])} visualizations, and {len(result['analysis_plan']['metrics'])} metrics."
+                }
+            }
+            
             return self._create_response(
                 status="success",
                 message=f"Successfully created analysis plan for query: '{query}'",
-                result=result,
+                result=tagged_result,
                 processing_time=processing_time
             )
             

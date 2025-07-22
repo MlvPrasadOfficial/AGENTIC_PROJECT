@@ -202,10 +202,36 @@ class VizAgent(BaseAgent):
                 visualizations=visualizations
             )
             
+            # Add placeholder and real tags to the response
+            # The placeholder provides generic content for loading states
+            # The real tag provides specific details about the actual visualizations created
+            
+            # Extract chart types for the real tag description
+            chart_types = list(set([v.get('chart_type', 'chart') for v in result['visualizations']]))
+            chart_type_summary = ', '.join(chart_types[:3])
+            if len(chart_types) > 3:
+                chart_type_summary += ' and more'
+            
+            tagged_result = {
+                # Preserve all original keys from the result
+                "file_id": result["file_id"],
+                "filename": result["filename"],
+                "visualizations": result["visualizations"],
+                "query": result["query"],
+                "is_ready_for_critique": result["is_ready_for_critique"],
+                # Add output tags for UI display with both placeholder and real content
+                "output": {
+                    # Generic placeholder description for loading states
+                    "placeholder": "[placeholder] These visualizations illustrate the key patterns in your data. Charts and graphs have been created to represent relationships, distributions, and trends.",
+                    # Specific details about the actual visualizations created
+                    "real": f"[real] Created {len(result['visualizations'])} visualizations for {file_metadata.filename}, including {chart_type_summary}."
+                }
+            }
+            
             return self._create_response(
                 status="success",
                 message=f"Successfully created visualizations for {file_metadata.filename}",
-                result=result,
+                result=tagged_result,
                 processing_time=processing_time
             )
             

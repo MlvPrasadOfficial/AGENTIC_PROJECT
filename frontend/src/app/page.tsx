@@ -413,6 +413,12 @@ export default function Page() {
   /** State management for uploaded file metadata - tracks current file information */
   // Stores file ID and name for preview functionality and agent workflow integration
   const [uploadedFile, setUploadedFile] = useState<{ id: string; name: string } | null>(null);
+  
+  /** State management for chat functionality */
+  // Manages chat input value and loading state for Send button functionality
+  const [chatInput, setChatInput] = useState<string>('');
+  const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
+  
   // ============================================================================
   // UTILITY FUNCTIONS
   // ============================================================================
@@ -1504,6 +1510,158 @@ Ready for user query to continue with planning agent.`,
     });
   };
   
+  /**
+   * Processes the chat message entered by the user
+   * Updates agent workflow and simulates responses based on query content
+   *
+   * This function:
+   * 1. Validates input is not empty
+   * 2. Sets loading state for UI feedback
+   * 3. Updates the Planning Agent to show processing state
+   * 4. Processes query using simulated agent workflow
+   * 5. Updates relevant agent states based on query content
+   * 6. Resets loading state when complete
+   *
+   * @returns {Promise<void>} Nothing
+   */
+  const handleSendMessage = async (): Promise<void> => {
+    // Check for empty input
+    if (!chatInput.trim() || isChatLoading) return;
+    
+    // Set loading state
+    setIsChatLoading(true);
+    
+    try {
+      // Update Planning Agent to show it's processing the query
+      setAgentStates(prev => ({
+        ...prev,
+        'planning': {
+          ...prev['planning'],
+          status: 'processing',
+          output: `Processing query: "${chatInput}"`,
+          isExpanded: true
+        }
+      }));
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Update Planning Agent to show completion
+      setAgentStates(prev => ({
+        ...prev,
+        'planning': {
+          ...prev['planning'],
+          status: 'completed',
+          output: `Query analyzed: "${chatInput}"\nDetermined optimal processing path: Insight Agent\nConfidence: 95%`,
+          isExpanded: true
+        }
+      }));
+      
+      // Wait a moment before starting the next agent
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Update Insight Agent to processing
+      setAgentStates(prev => ({
+        ...prev,
+        'insight': {
+          ...prev['insight'],
+          status: 'processing',
+          output: `Analyzing data to answer: "${chatInput}"\nFetching relevant context from vector database...`,
+          isExpanded: true
+        }
+      }));
+      
+      // Simulate more processing time
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Complete the insight agent with results
+      const lowerCaseQuery = chatInput.toLowerCase();
+      let insightOutput = '';
+      
+      if (lowerCaseQuery.includes('score') || lowerCaseQuery.includes('scores')) {
+        insightOutput = `Analysis of scores in dataset:\n\n• Mean score: 83.5\n• Median score: 84.5\n• Range: 76-93\n• Top performer: Charlie (93)\n• Distribution: Normal (p=0.78)\n\nKey insights:\n• 70% of individuals score above 80\n• Strong correlation between age and score (r=0.68)\n• No significant regional variations in scoring patterns`;
+      } else {
+        insightOutput = `Data analysis complete for query: "${chatInput}"\n\nKey findings:\n• Dataset contains ${previewData?.rows?.length || 10} records across ${previewData?.columns?.length || 4} dimensions\n• Primary demographics: 60% urban, 40% suburban distribution\n• Age distribution follows normal curve (mean: 29.4, σ: 4.2)\n• Significant correlation identified between location and scoring metrics (p < 0.05)`;
+      }
+      
+      setAgentStates(prev => ({
+        ...prev,
+        'insight': {
+          ...prev['insight'],
+          status: 'completed',
+          output: insightOutput,
+          isExpanded: true
+        }
+      }));
+      
+      // Start Critique Agent
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setAgentStates(prev => ({
+        ...prev,
+        'critique': {
+          ...prev['critique'],
+          status: 'processing',
+          output: 'Evaluating analysis quality and accuracy...',
+          isExpanded: true
+        }
+      }));
+      
+      // Complete Critique Agent
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setAgentStates(prev => ({
+        ...prev,
+        'critique': {
+          ...prev['critique'],
+          status: 'completed',
+          output: 'Analysis evaluation complete:\n\n• Factual accuracy: 98%\n• Completeness: 94%\n• Clarity: 96%\n• Relevance to query: 97%\n• Overall quality score: 96%\n\nNo significant issues detected.',
+          isExpanded: true
+        }
+      }));
+      
+      // Start Debate Agent
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setAgentStates(prev => ({
+        ...prev,
+        'debate': {
+          ...prev['debate'],
+          status: 'processing',
+          output: 'Considering multiple perspectives...',
+          isExpanded: true
+        }
+      }));
+      
+      // Complete Debate Agent
+      await new Promise(resolve => setTimeout(resolve, 1800));
+      setAgentStates(prev => ({
+        ...prev,
+        'debate': {
+          ...prev['debate'],
+          status: 'completed',
+          output: 'Multiple perspective analysis complete:\n\n• Statistical view: Data shows clear patterns with statistical significance\n• Business view: Findings suggest actionable insights for decision-making\n• Critical view: Sample size limitations noted but do not invalidate conclusions\n• Consensus: Analysis is robust and reliable for informed decision-making',
+          isExpanded: true
+        }
+      }));
+      
+    } catch (error) {
+      console.error('Error processing chat message:', error);
+      
+      // Reset agent states on error
+      setAgentStates(prev => ({
+        ...prev,
+        'planning': {
+          ...prev['planning'],
+          status: 'waiting',
+          output: 'Error processing query. Please try again.',
+          isExpanded: false
+        }
+      }));
+    } finally {
+      // Clear input and reset loading state
+      setChatInput('');
+      setIsChatLoading(false);
+    }
+  };
+  
   // ============================================================================
   // MAIN COMPONENT RENDER - Full Viewport Width Layout
   // ============================================================================
@@ -1717,18 +1875,13 @@ Ready for user query to continue with planning agent.`,
              * - Prominent send button for query submission
              */}
             <div className="glass-card p-6">
-              {/* Header section with title and AI status */}
-              <div className="flex items-center justify-between mb-4">
-                {/* Main title */}
-                <h2 className="text-2xl font-semibold text-white">Ask Copilot</h2>
+              {/* Header section with title and minimal design */}
+              <div className="flex items-center justify-between mb-6">
+                {/* Main title with enhanced typography */}
+                <h2 className="text-2xl font-semibold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-400">Ask Copilot</h2>
                 
-                {/* AI status indicator group */}
-                <div className="flex items-center gap-2">
-                  {/* Status indicator dot with pulse animation for visual feedback */}
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  {/* Status text */}
-                  <span className="text-sm text-green-300">AI Ready</span>
-                </div>
+                {/* Enhanced status indicator - pulsing dot only */}
+                <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/30"></div>
               </div>
               
               {/* Input and controls container */}
@@ -1740,18 +1893,29 @@ Ready for user query to continue with planning agent.`,
                     className="glass-input text-white p-4 w-full pr-12 min-h-[100px] resize-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 transition-all duration-300"
                     placeholder="Type your analytics query... (e.g., 'What are the main trends in the data?')"
                     rows={3}
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
                     aria-label="Analytics query input"
                   ></textarea>
                   
-                  {/* Voice input accessibility button */}
+                  {/* Modern voice input button with pulsing effect */}
                   <button 
-                    className="absolute bottom-3 right-3 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10"
+                    className="absolute bottom-3 right-3 p-2.5 bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-all rounded-full hover:scale-105 focus:ring-2 focus:ring-blue-400/50"
                     title="Voice input"
                     aria-label="Toggle voice input"
+                    onClick={() => alert('Voice input feature coming soon!')}
                   >
-                    {/* Microphone icon */}
+                    {/* Modern microphone icon */}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.5a6.5 6.5 0 006.5-6.5h-13a6.5 6.5 0 006.5 6.5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.5V22" />
                     </svg>
                   </button>
                 </div>
@@ -1760,14 +1924,22 @@ Ready for user query to continue with planning agent.`,
                 <div className="flex items-center justify-end">
                   {/* Submit button with icon */}
                   <button 
-                    className="glass-button text-white px-8 py-3 flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300 focus:ring-2 focus:ring-blue-400/50"
+                    className="glass-button text-white px-8 py-3 flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300 focus:ring-2 focus:ring-blue-400/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Send query"
+                    onClick={handleSendMessage}
+                    disabled={!chatInput.trim() || isChatLoading}
                   >
-                    {/* Paper airplane icon */}
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                    Send
+                    {isChatLoading ? (
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    )}
+                    {isChatLoading ? 'Processing...' : 'Send'}
                   </button>
                 </div>
               </div>

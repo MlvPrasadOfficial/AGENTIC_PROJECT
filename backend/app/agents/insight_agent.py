@@ -322,10 +322,29 @@ Question: {input}
                 insights=insights
             )
             
+            # Add placeholder and real tags to the response
+            # The placeholder tag provides a generic description for UI loading states
+            # The real tag contains specific details about the actual content generated
+            tagged_result = {
+                # Preserve all original keys from the result
+                "file_id": result["file_id"],
+                "filename": result["filename"],
+                "insights": result["insights"],
+                "query": result["query"],
+                "is_ready_for_visualization": result["is_ready_for_visualization"],
+                # Add output tags for UI display with both placeholder and real content
+                "output": {
+                    # Generic placeholder for loading states or previews
+                    "placeholder": "[placeholder] These insights reveal key patterns and trends from your data. The analysis includes statistical findings, correlations, and anomalies relevant to your query.",
+                    # Specific details about the actual insights generated
+                    "real": f"[real] Generated {len(result['insights'])} insights from {file_metadata.filename} based on your query about {query[:50]}{'...' if len(query) > 50 else ''}."
+                }
+            }
+            
             return self._create_response(
                 status="success",
                 message=f"Successfully generated insights for {file_metadata.filename}",
-                result=result,
+                result=tagged_result,
                 processing_time=processing_time
             )
             

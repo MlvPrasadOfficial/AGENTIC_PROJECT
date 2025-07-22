@@ -264,10 +264,37 @@ Question: {input}
             processing_time = time.time() - start_time
             self.logger.info(f"Report generated successfully in {processing_time:.2f}s")
             
+            # Add placeholder and real tags to the response
+            # These tags provide content for different UI states (loading vs. completed)
+            
+            # Truncate the query if it's too long for display
+            truncated_query = query[:50] + ('...' if len(query) > 50 else '')
+            
+            # Count the number of sections in the report
+            section_count = len(result['report'].get('sections', []))
+            
+            # Count the number of agents involved
+            agent_count = len(result['metadata']['agents_involved'])
+            
+            # Create the tagged result with both placeholder and real content
+            tagged_result = {
+                # Preserve the original report data
+                "report": result["report"],
+                "metadata": result["metadata"],
+                # Add output tags for UI display
+                "output": {
+                    # Generic placeholder for loading states or previews
+                    "placeholder": "[placeholder] This comprehensive report summarizes the analysis findings. It includes key insights, visualizations, critique points, and debate perspectives organized into a cohesive narrative.",
+                    
+                    # Specific details about the actual report generated
+                    "real": f"[real] Report generated successfully for query: '{truncated_query}'. Report includes {section_count} sections with findings from {agent_count} agents."
+                }
+            }
+            
             return self._create_response(
                 status="success",
                 message="Report generated successfully",
-                result=result,
+                result=tagged_result,
                 processing_time=processing_time
             )
             

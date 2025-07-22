@@ -451,10 +451,41 @@ class FileUploadAgent(BaseAgent):
                 )
             
             # Step 11: Return successful response with all results
+            # Add placeholder and real tags to the response
+            # These tags provide content for different UI states (loading vs. completed)
+            
+            # Calculate file size in KB for display
+            file_size_kb = round(file_metadata.size_bytes/1024, 1)
+            
+            # Count the number of Pinecone tests performed
+            pinecone_test_count = len(result.get('pinecone_tests', {}))
+            
+            # Create the tagged result with both placeholder and real content
+            tagged_result = {
+                # Preserve all original keys from the result
+                "file_id": result["file_id"],
+                "filename": result["filename"],
+                "file_type": result["file_type"],
+                "size_bytes": result["size_bytes"],
+                "structure": result["structure"],
+                "summary": result["summary"],
+                "pinecone_tests": result["pinecone_tests"],
+                "is_ready_for_profiling": result["is_ready_for_profiling"],
+                
+                # Add output tags for UI display
+                "output": {
+                    # Generic placeholder for loading states or previews
+                    "placeholder": "[placeholder] Your file has been successfully uploaded and validated. The system has analyzed its structure and prepared it for further processing.",
+                    
+                    # Specific details about the actual file processed
+                    "real": f"[real] Uploaded {file_metadata.filename} ({file_metadata.file_type}, {file_size_kb} KB) successfully. File structure validated with {pinecone_test_count} Pinecone tests."
+                }
+            }
+            
             return self._create_response(
                 status="success",
                 message=f"Successfully processed file {file_metadata.filename}",
-                result=result,
+                result=tagged_result,
                 processing_time=processing_time
             )
             

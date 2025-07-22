@@ -292,10 +292,34 @@ Question: {input}
                 critique=critique_results
             )
             
+            # Add placeholder and real tags to the response
+            # These tags help the UI display appropriate content during loading and after completion
+            
+            # Format validation result for readability
+            validation_status = "PASSED" if result["validation_passed"] else "FAILED"
+            
+            # Create the result object with added output tags
+            tagged_result = {
+                # Preserve all original keys from the result
+                "file_id": result["file_id"],
+                "filename": result["filename"],
+                "critique": result["critique"],
+                "query": result["query"],
+                "validation_passed": result["validation_passed"],
+                "is_ready_for_debate": result["is_ready_for_debate"],
+                # Add output tags for UI display
+                "output": {
+                    # Generic placeholder for loading states or previews
+                    "placeholder": "[placeholder] This critique evaluates the quality of analysis and visualizations. It identifies strengths, weaknesses, and areas for improvement in the findings.",
+                    # Specific details about the actual critique generated
+                    "real": f"[real] Quality assessment for {file_metadata.filename}: Overall quality {result['critique']['overall_quality'].upper()}. {len(result['critique']['recommendations'])} recommendations provided. Validation {validation_status}."
+                }
+            }
+            
             return self._create_response(
                 status="success",
                 message=f"Successfully critiqued analysis for {file_metadata.filename}",
-                result=result,
+                result=tagged_result,
                 processing_time=processing_time
             )
             

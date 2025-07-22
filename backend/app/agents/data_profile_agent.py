@@ -190,10 +190,38 @@ class DataProfileAgent(BaseAgent):
                 profile=profile
             )
             
+            # Add placeholder and real tags to the response
+            # These tags provide content for different UI states (loading vs. completed)
+            
+            # Extract key metrics for the real tag description
+            row_count = profile['row_count']
+            column_count = profile['column_count']
+            missing_count = profile['missing_values']['total_missing']
+            missing_percentage = profile['missing_values']['missing_percentage']
+            
+            # Create the tagged result with both placeholder and real content
+            tagged_result = {
+                # Preserve all original keys from the result
+                "file_id": result["file_id"],
+                "filename": result["filename"],
+                "profile": result["profile"],
+                "insights": result["insights"],
+                "is_ready_for_planning": result["is_ready_for_planning"],
+                
+                # Add output tags for UI display
+                "output": {
+                    # Generic placeholder for loading states or previews
+                    "placeholder": "[placeholder] This data profile provides a comprehensive analysis of your dataset. It includes statistical summaries, data types, missing values, and potential quality issues.",
+                    
+                    # Specific details about the actual profile generated
+                    "real": f"[real] Data profile for {file_metadata.filename}: {row_count} rows, {column_count} columns. Contains {missing_count} missing values ({missing_percentage}%)."
+                }
+            }
+            
             return self._create_response(
                 status="success",
                 message=f"Successfully profiled data in {file_metadata.filename}",
-                result=result,
+                result=tagged_result,
                 processing_time=processing_time
             )
             

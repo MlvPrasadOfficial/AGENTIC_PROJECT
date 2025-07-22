@@ -266,6 +266,20 @@ Question: {input}
                 "agent_name": self.name
             }
             
+            # Add placeholder and real tags for UI display
+            # The placeholder provides generic content for loading states
+            # The real tag provides specific details about the actual debate content generated
+            
+            # Add the output tags to the debate summary
+            debate_summary["output"] = {
+                # Generic placeholder description for loading states or previews
+                "placeholder": "[placeholder] This debate explores multiple perspectives on the analysis. It challenges key assumptions, provides alternative interpretations, and evaluates the strength of evidence.",
+                
+                # Specific details about the actual debate content generated
+                # Counts the number of arguments, challenged assumptions, and alternative perspectives
+                "real": f"[real] Generated {len(debate_results)} debate arguments with {len(challenged_assumptions)} challenged assumptions and {len(alternative_perspectives)} alternative perspectives."
+            }
+            
             # Update state
             state["debate_results"] = debate_summary
             state["last_agent"] = self.name

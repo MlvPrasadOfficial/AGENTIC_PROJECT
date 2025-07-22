@@ -11,7 +11,6 @@ import json
 import asyncio
 from datetime import datetime
 
-from app.workflow.agent_workflow import AgentWorkflow
 from app.utils.logger import setup_logger
 from app.core.config import settings
 
@@ -140,8 +139,9 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
 async def handle_workflow_start(session_id: str, query: str):
     """Handle workflow start request via WebSocket"""
     try:
-        # Initialize workflow
-        workflow = AgentWorkflow()
+        # Get the singleton workflow instance
+        from app.workflow.agent_workflow import get_workflow_instance
+        workflow = get_workflow_instance()
         
         # Send workflow started message
         await manager.broadcast_agent_update(
@@ -163,7 +163,7 @@ async def handle_workflow_start(session_id: str, query: str):
             {"error": str(e)}
         )
 
-async def execute_workflow_with_updates(session_id: str, workflow: AgentWorkflow, query: str):
+async def execute_workflow_with_updates(session_id: str, workflow, query: str):
     """Execute agent workflow with real-time updates"""
     try:
         # Mock workflow execution with status updates

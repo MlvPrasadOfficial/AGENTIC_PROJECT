@@ -72,17 +72,41 @@ async def upload_file(
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        # Process file in background
-        background_tasks.add_task(process_file, file_path, file_id)
+        # Create FileService instance and initialize metadata
+        from app.services.file_service import FileService
+        file_service = FileService()
         
-        # Initialize FileUploadAgent and run the 6 Pinecone tests
-        file_upload_agent = FileUploadAgent()
+        # Create initial metadata entry so FileUploadAgent can find the file
+        from datetime import datetime
+        from pathlib import Path
         
-        # Create agent request
+        file_stats = os.stat(file_path)
+        file_service.metadata_store[file_id] = {
+            "file_id": file_id,
+            "filename": file.filename,
+            "upload_time": datetime.now(),
+            "size_bytes": file_stats.st_size,
+            "file_type": Path(file.filename).suffix.lower().replace(".", ""),
+            "status": "uploaded"
+        }
+        
+        # Process the file to extract structure and profile
+        await file_service.process_file(file_id)
+        
+        # Get FileUploadAgent from singleton workflow to prevent duplicate instantiation
+        from app.workflow.agent_workflow import get_workflow_instance
+        workflow = get_workflow_instance()
+        file_upload_agent = workflow.file_upload_agent
+        
+        # Create agent request with file metadata to avoid lookup issues
         agent_request = BaseAgentRequest(
             query="Process uploaded file with Pinecone validation tests",
             file_id=file_id,
-            context={"filename": file.filename, "file_path": file_path}
+            context_data={
+                "filename": file.filename, 
+                "file_path": file_path,
+                "file_metadata": file_service.metadata_store[file_id]  # Pass metadata directly
+            }
         )
         
         # Run the agent to get the 6 test results
@@ -99,7 +123,7 @@ async def upload_file(
                 file_id=file_id,
                 filename=file.filename,
                 status="uploaded",
-                message="File uploaded successfully and processing started",
+                message="File uploaded successfully and processing completed",
                 pinecone_tests=pinecone_tests,
             )
         

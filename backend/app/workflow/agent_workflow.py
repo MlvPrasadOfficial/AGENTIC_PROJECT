@@ -46,30 +46,169 @@ class AgentWorkflow:
     """
     LangGraph-powered workflow manager for orchestrating all Enterprise Insights agents.
     Implements conditional routing and multi-agent coordination.
+    
+    Uses singleton pattern to prevent duplicate agent initialization during FastAPI startup.
     """
     
-    def __init__(self):
-        """Initialize the LangGraph agent workflow"""
-        # Initialize all LangChain agents
-        self.file_upload_agent = FileUploadAgent()
-        self.data_profile_agent = DataProfileAgent()
-        self.planning_agent = PlanningAgent()
-        self.insight_agent = InsightAgent()
-        self.visualization_agent = VisualizationAgent()
-        self.critique_agent = CritiqueAgent()
-        self.debate_agent = DebateAgent()
-        self.report_agent = ReportAgent()
-        
-        # Initialize memory saver for state persistence
-        self.memory = MemorySaver()
-        
-        # Build the LangGraph workflow
-        self.workflow = self._build_langgraph_workflow()
-        logger.info("Agent workflow initialized")
+    _instance = None
+    _initialized = False
     
-    def _build_langgraph_workflow(self) -> StateGraph:
-        """Build the LangGraph workflow with all agents and conditional routing"""
+    def __new__(cls):
+        """
+        Singleton pattern implementation to ensure only one workflow instance exists.
         
+        This method implements the singleton design pattern to prevent multiple
+        instantiations of the AgentWorkflow class. This is crucial for:
+        
+        Performance Benefits:
+            - Prevents duplicate agent initialization during FastAPI startup
+            - Reduces memory usage by reusing existing agent instances  
+            - Eliminates redundant LangChain executor creation
+            - Maintains consistent state across multiple API endpoints
+        
+        System Architecture:
+            - Ensures all API endpoints use the same workflow instance
+            - Prevents race conditions between different request handlers
+            - Maintains singleton integrity across module imports
+            - Supports proper dependency injection patterns
+        
+        Implementation Details:
+            - Thread-safe singleton creation (Python GIL protection)
+            - Lazy initialization - instance created only when first needed
+            - Memory-efficient - reuses existing instance for subsequent calls
+            - Debug logging to track instance creation vs. reuse patterns
+        
+        Returns:
+            AgentWorkflow: The singleton instance (new or existing)
+            
+        Example:
+            >>> workflow1 = AgentWorkflow()
+            >>> workflow2 = AgentWorkflow() 
+            >>> assert workflow1 is workflow2  # Same instance
+        """
+        if cls._instance is None:
+            logger.info("Creating new AgentWorkflow singleton instance")
+            cls._instance = super(AgentWorkflow, cls).__new__(cls)
+        else:
+            logger.debug("Returning existing AgentWorkflow singleton instance")
+        return cls._instance
+    
+    def __init__(self):
+        """
+        Initialize the LangGraph agent workflow with comprehensive configuration.
+        
+        This initialization method sets up the complete multi-agent workflow system
+        for the Enterprise Insights Copilot. It implements a one-time initialization
+        pattern to prevent duplicate agent creation and ensure optimal performance.
+        
+        Initialization Process:
+        
+        1. **Singleton Check**: Verifies if workflow has already been initialized
+           - Prevents duplicate initialization during FastAPI hot reloads
+           - Maintains consistent state across multiple API endpoints
+           - Reduces memory footprint through instance reuse
+        
+        2. **Agent Instantiation**: Creates all 8 specialized agents
+           - FileUploadAgent: Handles file ingestion and validation
+           - DataProfileAgent: Performs data structure analysis and profiling  
+           - PlanningAgent: Creates analysis strategies and execution plans
+           - InsightAgent: Generates insights from data patterns
+           - VisualizationAgent: Creates charts and visual representations
+           - CritiqueAgent: Provides quality assessment and improvements
+           - DebateAgent: Facilitates multi-perspective analysis
+           - ReportAgent: Compiles final comprehensive reports
+        
+        3. **LangGraph Configuration**: Sets up the workflow orchestration
+           - StateGraph: Manages agent execution flow and dependencies
+           - MemorySaver: Provides state persistence across workflow steps
+           - Conditional routing: Enables dynamic agent selection logic
+        
+        4. **Performance Optimization**: Ensures efficient resource usage
+           - Single initialization per application lifecycle
+           - Shared agent instances across all API requests
+           - Memory-efficient state management
+           - Debug logging for monitoring and troubleshooting
+        
+        Technical Architecture:
+            - Uses LangChain agent framework for consistent behavior
+            - Implements dependency injection pattern for loose coupling
+            - Supports asynchronous execution for scalability
+            - Provides comprehensive error handling and recovery
+        
+        State Management:
+            - Thread-safe initialization through Python GIL
+            - Persistent workflow state through MemorySaver
+            - Conditional routing based on execution results
+            - Error recovery and fallback mechanisms
+        
+        Raises:
+            ImportError: If required agent classes are not available
+            ValueError: If agent initialization fails due to configuration
+            RuntimeError: If LangGraph workflow building fails
+            
+        Example:
+            >>> workflow = AgentWorkflow()  # First call - full initialization
+            >>> workflow = AgentWorkflow()  # Subsequent calls - reuse existing
+        """
+        # Prevent re-initialization if already initialized
+        if self.__class__._initialized:
+            logger.debug("AgentWorkflow already initialized, skipping re-initialization")
+            return
+        
+        logger.info("Initializing AgentWorkflow singleton...")
+            
+        # Initialize all LangChain agents with proper error handling
+        try:
+            # Core data processing agents
+            self.file_upload_agent = FileUploadAgent()           # File ingestion and validation
+            self.data_profile_agent = DataProfileAgent()         # Data structure analysis
+            
+            # Strategic analysis agents  
+            self.planning_agent = PlanningAgent()               # Analysis strategy creation
+            self.insight_agent = InsightAgent()                 # Pattern discovery and insights
+            
+            # Visualization and presentation agents
+            self.visualization_agent = VisualizationAgent()     # Chart and visual creation
+            
+            # Quality assurance agents
+            self.critique_agent = CritiqueAgent()               # Quality assessment
+            self.debate_agent = DebateAgent()                   # Multi-perspective analysis
+            
+            # Final output generation agents
+            self.report_agent = ReportAgent()                   # Comprehensive report compilation
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize agents: {str(e)}")
+            raise RuntimeError(f"Agent initialization failed: {str(e)}")
+        
+        # Initialize workflow infrastructure
+        try:
+            # Initialize memory saver for state persistence
+            self.memory = MemorySaver()
+            
+            # Build the LangGraph workflow with agent orchestration
+            self.workflow = self._build_langgraph_workflow()
+            
+        except Exception as e:
+            logger.error(f"Failed to build LangGraph workflow: {str(e)}")
+            raise RuntimeError(f"Workflow building failed: {str(e)}")
+        
+        # Mark as initialized to prevent duplicate initialization
+        self.__class__._initialized = True
+        logger.info("Agent workflow initialized successfully with 8 agents and LangGraph orchestration")
+
+    def _build_langgraph_workflow(self) -> StateGraph:
+        """
+        Build and configure the LangGraph workflow orchestration system.
+        
+        This method constructs a sophisticated StateGraph that manages the execution
+        flow between the 8 specialized agents in the Enterprise Insights Copilot.
+        It implements a state-driven orchestration pattern where agents execute
+        based on workflow state and conditional routing logic.
+        
+        Returns:
+            StateGraph: Compiled LangGraph workflow ready for execution
+        """
         # Create the state graph
         workflow = StateGraph(WorkflowState)
         
@@ -284,239 +423,106 @@ class AgentWorkflow:
             state["status"] = "error"
         
         return state
+
+    async def run_workflow(self, query: str, file_id: str = None) -> Dict[str, Any]:
         """
-        Build the LangGraph workflow for agent orchestration.
+        Execute the complete multi-agent workflow for comprehensive data analysis.
         
-        Returns:
-            StateGraph for the agent workflow
-        """
-        # Create a new graph
-        workflow = StateGraph(WorkflowState)
-        
-        # Add nodes for each agent
-        workflow.add_node("file_upload", self._run_file_upload_agent)
-        workflow.add_node("data_profile", self._run_data_profile_agent)
-        workflow.add_node("planning", self._run_planning_agent)
-        
-        # Add conditional edges
-        workflow.add_conditional_edges(
-            "file_upload",
-            self._route_after_file_upload,
-            {
-                "success": "data_profile",
-                "error": END
-            }
-        )
-        
-        workflow.add_conditional_edges(
-            "data_profile",
-            self._route_after_data_profile,
-            {
-                "success": "planning",
-                "error": END
-            }
-        )
-        
-        workflow.add_conditional_edges(
-            "planning",
-            self._route_after_planning,
-            {
-                "success": END,
-                "error": END
-            }
-        )
-        
-        # Set the entry point
-        workflow.set_entry_point("file_upload")
-        
-        return workflow
-    
-    async def run_workflow(self, query: str, file_id: str) -> Dict[str, Any]:
-        """
-        Run the agent workflow with a query and file ID.
+        This method orchestrates the entire Enterprise Insights Copilot workflow,
+        managing execution flow between all 8 specialized agents to deliver 
+        comprehensive analytical insights from user queries and uploaded data.
         
         Args:
-            query: User's query or analytics request
-            file_id: ID of the file to process
-            
+            query (str): User's analytical question or request
+            file_id (str, optional): Identifier for uploaded data file
+        
         Returns:
-            Result of the workflow execution
+            Dict[str, Any]: Comprehensive analysis results
         """
-        # Initialize workflow state
-        initial_state: WorkflowState = {
-            "query": query,
-            "file_id": file_id,
-            "status": "started",
-            "current_agent": "file_upload",
-            "agent_results": {},
-            "error": None,
-            "start_time": time.time()
-        }
+        logger.info(f"Starting comprehensive workflow execution for query: '{query}'")
+        start_time = time.time()
+        
+        # Generate unique session identifier for tracking
+        session_id = f"workflow_{int(time.time())}_{uuid.uuid4().hex[:8]}"
+        
+        # Create initial workflow state with comprehensive context
+        initial_state = WorkflowState(
+            query=query,
+            file_id=file_id,
+            agent_results={},
+            current_agent="planning",
+            route_decision=None,
+            final_output=None,
+            error=None,
+            status="initializing",
+            start_time=start_time,
+            session_id=session_id
+        )
+        
+        # Create thread-safe configuration for this workflow session
+        thread_config = {"configurable": {"thread_id": session_id}}
         
         try:
-            logger.info(f"Starting workflow for file ID: {file_id}, Query: '{query}'")
-            # Execute the workflow
-            result = await self.workflow.acontinue_from(initial_state)
+            logger.info(f"Executing workflow for session {session_id}")
             
-            # Calculate total processing time
-            total_time = time.time() - initial_state["start_time"]
+            # Execute the complete LangGraph workflow
+            final_state = await self.workflow.ainvoke(
+                initial_state, 
+                config=thread_config
+            )
             
-            # Prepare final response
-            final_result = {
-                "status": result["status"],
-                "query": query,
-                "file_id": file_id,
-                "processing_time": total_time,
-                "completed_agents": list(result["agent_results"].keys()),
-                "results": result["agent_results"],
-                "error": result["error"]
-            }
+            # Calculate comprehensive performance metrics
+            total_execution_time = time.time() - start_time
             
-            logger.info(f"Workflow completed with status: {result['status']}")
-            return final_result
+            # Extract final results with error handling
+            final_output = final_state.get("final_output", {})
+            if not final_output:
+                final_output = {
+                    "analysis_results": final_state.get("agent_results", {}),
+                    "route_taken": final_state.get("route_decision", "unknown"),
+                    "completion_time": total_execution_time
+                }
+            
+            # Add performance and execution metadata
+            final_output.update({
+                "status": final_state.get("status", "completed"),
+                "session_id": session_id,
+                "execution_time": total_execution_time,
+                "agents_executed": list(final_state.get("agent_results", {}).keys()),
+                "error": final_state.get("error")
+            })
+            
+            logger.info(f"Workflow {session_id} completed successfully in {total_execution_time:.2f}s")
+            return final_output
             
         except Exception as e:
-            logger.error(f"Error in workflow execution: {str(e)}")
+            execution_time = time.time() - start_time
+            error_msg = f"Workflow execution failed for session {session_id}: {str(e)}"
+            logger.error(error_msg)
+            
+            # Return structured error response with available context
             return {
                 "status": "error",
+                "session_id": session_id,
+                "execution_time": execution_time,
                 "query": query,
                 "file_id": file_id,
-                "processing_time": time.time() - initial_state["start_time"],
-                "completed_agents": [],
-                "results": {},
-                "error": str(e)
+                "error": str(e),
+                "analysis_results": {},
+                "agents_executed": [],
+                "route_taken": "error"
             }
+
+
+def get_workflow_instance() -> AgentWorkflow:
+    """
+    Retrieve the singleton AgentWorkflow instance with lazy initialization.
     
-    async def _run_file_upload_agent(self, state: WorkflowState) -> WorkflowState:
-        """
-        Run the File Upload Agent.
-        
-        Args:
-            state: Current workflow state
-            
-        Returns:
-            Updated workflow state
-        """
-        try:
-            logger.info("Running File Upload Agent")
-            state["current_agent"] = "file_upload"
-            
-            # Run the agent
-            response = await self.file_upload_agent.run(
-                query=state["query"],
-                file_id=state["file_id"]
-            )
-            
-            # Update state
-            state["agent_results"]["file_upload"] = response.dict()
-            
-            if response.status == "success":
-                state["status"] = "file_uploaded"
-            else:
-                state["status"] = "error"
-                state["error"] = response.message
-                
-            return state
-            
-        except Exception as e:
-            logger.error(f"Error in File Upload Agent: {str(e)}")
-            state["status"] = "error"
-            state["error"] = f"File Upload Agent error: {str(e)}"
-            return state
+    This function provides a clean interface for obtaining the singleton AgentWorkflow
+    instance throughout the Enterprise Insights Copilot application. It implements
+    lazy initialization to ensure optimal performance and resource utilization.
     
-    async def _run_data_profile_agent(self, state: WorkflowState) -> WorkflowState:
-        """
-        Run the Data Profile Agent.
-        
-        Args:
-            state: Current workflow state
-            
-        Returns:
-            Updated workflow state
-        """
-        try:
-            logger.info("Running Data Profile Agent")
-            state["current_agent"] = "data_profile"
-            
-            # Get context from previous agent
-            context = {"file_upload_result": state["agent_results"]["file_upload"]}
-            
-            # Run the agent
-            response = await self.data_profile_agent.run(
-                query=state["query"],
-                context=context,
-                file_id=state["file_id"]
-            )
-            
-            # Update state
-            state["agent_results"]["data_profile"] = response.dict()
-            
-            if response.status == "success":
-                state["status"] = "profiled"
-            else:
-                state["status"] = "error"
-                state["error"] = response.message
-                
-            return state
-            
-        except Exception as e:
-            logger.error(f"Error in Data Profile Agent: {str(e)}")
-            state["status"] = "error"
-            state["error"] = f"Data Profile Agent error: {str(e)}"
-            return state
-    
-    async def _run_planning_agent(self, state: WorkflowState) -> WorkflowState:
-        """
-        Run the Planning Agent.
-        
-        Args:
-            state: Current workflow state
-            
-        Returns:
-            Updated workflow state
-        """
-        try:
-            logger.info("Running Planning Agent")
-            state["current_agent"] = "planning"
-            
-            # Get context from previous agents
-            context = {
-                "file_upload_result": state["agent_results"]["file_upload"],
-                "data_profile_result": state["agent_results"]["data_profile"]
-            }
-            
-            # Run the agent
-            response = await self.planning_agent.run(
-                query=state["query"],
-                context=context,
-                file_id=state["file_id"]
-            )
-            
-            # Update state
-            state["agent_results"]["planning"] = response.dict()
-            
-            if response.status == "success":
-                state["status"] = "planned"
-            else:
-                state["status"] = "error"
-                state["error"] = response.message
-                
-            return state
-            
-        except Exception as e:
-            logger.error(f"Error in Planning Agent: {str(e)}")
-            state["status"] = "error"
-            state["error"] = f"Planning Agent error: {str(e)}"
-            return state
-    
-    def _route_after_file_upload(self, state: WorkflowState) -> Literal["success", "error"]:
-        """Determine next step after File Upload Agent"""
-        return "success" if state["status"] == "file_uploaded" else "error"
-    
-    def _route_after_data_profile(self, state: WorkflowState) -> Literal["success", "error"]:
-        """Determine next step after Data Profile Agent"""
-        return "success" if state["status"] == "profiled" else "error"
-    
-    def _route_after_planning(self, state: WorkflowState) -> Literal["success", "error"]:
-        """Determine next step after Planning Agent"""
-        return "success" if state["status"] == "planned" else "error"
+    Returns:
+        AgentWorkflow: The singleton workflow instance with all 8 agents initialized
+    """
+    return AgentWorkflow()

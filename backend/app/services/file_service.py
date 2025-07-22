@@ -151,10 +151,27 @@ class FileService:
         Returns:
             FileMetadata object or None if not found
         """
+        # DEBUG: Log the metadata retrieval attempt
+        logger.info(f"🔍 get_file_metadata called for file_id: {file_id}")
+        logger.info(f"📋 Available files in metadata_store: {list(self.metadata_store.keys())}")
+        
         if file_id not in self.metadata_store:
+            logger.warning(f"❌ File {file_id} not found in metadata_store")
             return None
         
-        return FileMetadata(**self.metadata_store[file_id])
+        try:
+            # DEBUG: Log the raw metadata before creating FileMetadata object
+            raw_metadata = self.metadata_store[file_id]
+            logger.info(f"📄 Raw metadata for {file_id}: {raw_metadata}")
+            
+            file_metadata = FileMetadata(**raw_metadata)
+            logger.info(f"✅ Successfully created FileMetadata object for {file_id}")
+            return file_metadata
+            
+        except Exception as e:
+            logger.error(f"💥 Error creating FileMetadata object for {file_id}: {str(e)}")
+            logger.error(f"📄 Raw metadata was: {self.metadata_store[file_id]}")
+            return None
     
     async def update_file_metadata(self, file_id: str, **updates) -> None:
         """

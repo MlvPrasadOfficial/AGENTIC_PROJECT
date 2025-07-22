@@ -18,13 +18,9 @@ from app.schemas.agent import (
     AgentType
 )
 from app.services.agent_service import run_agent, get_pipeline_status, start_pipeline
-from app.workflow.agent_workflow import AgentWorkflow
 
 logger = setup_logger(__name__)
 router = APIRouter()
-
-# Initialize agent workflow
-workflow = AgentWorkflow()
 
 @router.post("/workflow/run", response_model=Dict[str, Any])
 async def run_agent_workflow(
@@ -48,6 +44,12 @@ async def run_agent_workflow(
         raise HTTPException(status_code=400, detail="file_id is required")
     
     try:
+        # Import workflow instance function to prevent early initialization
+        from app.workflow.agent_workflow import get_workflow_instance
+        
+        # Get the singleton workflow instance
+        workflow = get_workflow_instance()
+        
         # Run the workflow
         result = await workflow.run_workflow(
             query=request.query,

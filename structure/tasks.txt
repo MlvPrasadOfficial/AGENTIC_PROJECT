@@ -5,19 +5,16 @@ Note-03: always use powershell syntax only ( use ; instead of && )
 note-04 :always remember 4 notes and start with a strategical approach to solve the tasks
 
 Task-01 : 
-1. in the screenshot, it still showing the 
-"File "employee_data.csv" successfully uploaded and validated. Ready for processing. 
-• File ID: 1753187287_employee_data.csv • Size: Processing... 
-• Status: Upload Complete • Pinecone Tests: Validation suite completed 
-• Test 2.0: PASSED - Connection URL: [REAL] pineindex-z6a2ifp.svc.aped-4627-b74a.pinecone.io 
-• Test 2.1: PASSED - Index Name: [REAL] pineindex 
-• Test 2.2: PASSED - Vector Count Before: [REAL] 550 
-• Test 2.3: PASSED - CSV Filename: [REAL] employee_data.csv 
-• Test 2.4: PASSED - Embedding Status: [REAL] Successfully embedded 5 documents 
-• Test 2.5: PASSED - Vector Count After: [REAL] 555"
-" i uploaded 10 rows employee csv , but only 5 embeded , check whether its hardcoded embedding logic in backend
-
-
+1. I want to make Ask copilot card in home ui ( left column - bottom card) minimal and beautiful
+remove
+1.1 "💡 Quick suggestions:
+1.2 📊 Show data overview
+1.3 📈 Find trends
+1.4 🔍 Analyze patterns
+1.5 📋 Generate report
+1.6 Ctrl +Enter to send
+1.7 Recent conversations
+1.8 No recent chats - start a conversation above!"
 
 2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
     After every change, check for compilation errors in terminal tasks: 'Backend Development Server' (port 8000) and 'Next.js Development Server' (port 3000)

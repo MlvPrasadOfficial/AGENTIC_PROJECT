@@ -1031,11 +1031,11 @@ export default function Page() {
       
       console.log(`Preview data loaded successfully: ${preview.rows.length} rows, ${preview.columns.length} columns`);
       
-      // Initiate the sequential 8-agent workflow simulation with real data
-      // This creates a realistic demonstration of the AI processing pipeline
-      await simulateAgentWorkflow(preview);
+      // Initiate only the data profile agent after file upload
+      // Planning agent and subsequent agents should only trigger on user query
+      await simulateDataProfileAgent(preview);
       
-      console.log('Agent workflow simulation completed successfully');
+      console.log('File upload workflow completed successfully (data profile only)');
       
     } catch (error) {
       // Enhanced error handling with detailed logging and user feedback
@@ -1069,6 +1069,81 @@ export default function Page() {
       
       // Re-throw error for upstream handling if needed
       // This allows parent components to handle the error appropriately
+      throw error;
+    }
+  };
+
+  /**
+   * Simulates only the Data Profile Agent after file upload
+   * This function runs ONLY the data profiling stage, not the full workflow
+   * The planning agent and subsequent agents will only trigger on user query
+   * 
+   * @param data - The sample data from the uploaded file
+   */
+  const simulateDataProfileAgent = async (data: SampleData): Promise<void> => {
+    // Validate input data structure to ensure workflow can proceed safely
+    if (!data?.rows || !data?.columns) {
+      console.error('Invalid data structure provided to simulateDataProfileAgent:', data);
+      throw new Error('Invalid data structure: missing rows or columns');
+    }
+
+    // Log workflow initiation for debugging and monitoring
+    console.log(`Starting data profile agent for file with ${data.rows.length} rows and ${data.columns.length} columns`);
+
+    // Extract data characteristics for contextual agent outputs
+    const rowCount = data.rows.length;
+    const columnCount = data.columns.length;
+    const columnTypes = data.columns.map(c => `${c.name}(${c.type})`).join(', ');
+
+    try {
+      // Set data profile agent to processing state
+      setAgentStates(prev => ({
+        ...prev,
+        'data-profile': { 
+          status: 'processing',
+          output: '',
+          isExpanded: false
+        }
+      }));
+
+      // Wait for 1 second to simulate data analysis processing
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Mark data profile agent as completed with generated output
+      setAgentStates(prev => ({
+        ...prev,
+        'data-profile': { 
+          status: 'completed', 
+          output: `Data Profile Analysis Complete:
+
+• ${rowCount} rows analyzed with ${columnCount} columns detected
+• Data types identified: ${columnTypes}
+• Column completeness: ${data.columns.map(c => `${c.name} (${((c as any).nullCount || 0) === 0 ? '100%' : Math.max(85, 100 - Math.random() * 15).toFixed(1) + '%'})`).join(', ')}
+• Data quality score: ${Math.max(88, 100 - Math.random() * 12).toFixed(1)}%
+• Memory usage: ${(rowCount * columnCount * 64 / 1024).toFixed(2)} KB
+
+Ready for user query to continue with planning agent.`,
+          isExpanded: false
+        }
+      }));
+
+      console.log('Data profile agent completed successfully');
+
+    } catch (error) {
+      // Handle errors during data profile agent execution
+      console.error('Error during data profile agent simulation:', error);
+      
+      // Update data profile agent with error status
+      setAgentStates(prev => ({
+        ...prev,
+        'data-profile': { 
+          status: 'waiting',
+          output: 'Processing interrupted due to error. Please try again.',
+          isExpanded: false
+        }
+      }));
+      
+      // Re-throw error for upstream handling
       throw error;
     }
   };

@@ -859,33 +859,35 @@ class FileUploadAgent(BaseAgent):
                 # coverage while maintaining performance for the Pinecone validation testing
                 documents = []
                 
-                # INTELLIGENT EMBEDDING STRATEGY:
-                # The strategy dynamically adjusts embedding count based on file characteristics
-                # to provide meaningful validation while respecting performance constraints
+                # INTELLIGENT EMBEDDING STRATEGY - Enhanced for user-friendly validation:
+                # The strategy dynamically adjusts embedding count to maximize validation coverage
+                # while maintaining performance, prioritizing user data representation over arbitrary limits
                 # 
-                # Strategy Rules:
-                # - Small files (≤5 rows): Embed all rows for complete coverage validation
-                # - Medium files (6-20 rows): Embed majority of rows for comprehensive testing  
-                # - Large files (21+ rows): Embed representative sample to balance coverage and performance
+                # Enhanced Strategy Rules:
+                # - Small files (≤10 rows): Embed ALL rows for complete validation coverage
+                # - Medium files (11-50 rows): Embed up to 20 rows for comprehensive testing  
+                # - Large files (51+ rows): Embed representative sample (25 rows) for thorough validation
                 total_rows = len(df)
-                if total_rows <= 5:
-                    # Small file strategy: embed all available rows
-                    # Rationale: Complete coverage possible without performance impact
+                if total_rows <= 10:
+                    # Small file strategy: embed all available rows for complete validation
+                    # Rationale: Full coverage achievable without performance impact, maximizes user data representation
                     embedding_rows = total_rows
-                    strategy_note = "all rows (small file)"
-                elif total_rows <= 20:
-                    # Medium file strategy: embed majority of rows for thorough validation
+                    strategy_note = "all rows (complete validation)"
+                elif total_rows <= 50:
+                    # Medium file strategy: embed majority of rows for comprehensive validation
                     # Rationale: Significant coverage while maintaining reasonable processing time
-                    embedding_rows = min(10, total_rows)
-                    strategy_note = "majority of rows (medium file)"
+                    embedding_rows = min(20, total_rows)
+                    strategy_note = "majority of rows (comprehensive validation)"
                 else:
-                    # Large file strategy: embed representative sample for validation
-                    # Rationale: Sufficient coverage for testing without overwhelming Pinecone resources
-                    embedding_rows = 10
-                    strategy_note = "representative sample (large file)"
+                    # Large file strategy: embed substantial sample for thorough validation
+                    # Rationale: Comprehensive coverage for testing without overwhelming Pinecone resources
+                    embedding_rows = 25
+                    strategy_note = "substantial sample (thorough validation)"
                 
                 # Log the selected strategy for debugging and monitoring purposes
-                self.logger.info(f"Embedding strategy: Processing {embedding_rows} of {total_rows} rows ({strategy_note})")
+                self.logger.info(f"🔍 EMBEDDING STRATEGY DEBUG: File has {total_rows} rows")
+                self.logger.info(f"🔍 EMBEDDING STRATEGY DECISION: Processing {embedding_rows} of {total_rows} rows ({strategy_note})")
+                self.logger.info(f"🔍 STRATEGY VALIDATION: Should embed {'ALL' if total_rows <= 10 else 'SAMPLE'} rows for this file size")
                 
                 # Convert DataFrame rows to VectorDocument format for embedding
                 for i, (_, row) in enumerate(df.head(embedding_rows).iterrows()):

@@ -164,18 +164,22 @@ class ChatService {
   }
   
   /**
-   * Create a new conversation
+   * Create a new conversation (chat session)
    * 
-   * @param title - Conversation title
+   * @param title - Conversation title (not used by backend, kept for compatibility)
    * @param fileId - Optional file ID to associate with the conversation
    * @returns Promise resolving to the created conversation
    */
   async createConversation(title: string, fileId?: string): Promise<ChatConversation> {
-    const response = await apiClient.post<ChatConversation>('/conversations', {
-      title,
-      fileId
-    });
-    return response.data;
+    const response = await apiClient.post<any>('/chat/sessions');
+    
+    // Convert backend ChatSession to frontend ChatConversation format
+    return {
+      id: response.data.session_id,
+      title: title || 'New Conversation',
+      createdAt: response.data.created_at,
+      updatedAt: response.data.created_at
+    };
   }
   
   /**
@@ -191,7 +195,7 @@ class ChatService {
   /**
    * Send a message to a conversation
    * 
-   * @param conversationId - The conversation ID
+   * @param conversationId - The conversation ID (session_id in backend)
    * @param content - Message content
    * @param fileId - Optional file ID for data-related queries
    * @returns Promise resolving to the created message
@@ -201,12 +205,23 @@ class ChatService {
     content: string,
     fileId?: string
   ): Promise<ChatMessage> {
-    const response = await apiClient.post<ChatMessage>(`/conversations/${conversationId}/messages`, {
-      content,
-      role: 'user',
-      fileId
+    const response = await apiClient.post<any>(`/chat/sessions/${conversationId}/messages`, {
+      message: content,
+      file_id: fileId,
+      use_rag: true,
+      stream: false
     });
-    return response.data;
+    
+    // Convert backend ChatResponse to frontend ChatMessage format
+    const backendMessage = response.data.message;
+    return {
+      id: backendMessage.message_id,
+      conversationId: backendMessage.session_id,
+      role: backendMessage.role,
+      content: backendMessage.content,
+      createdAt: backendMessage.timestamp,
+      metadata: backendMessage.metadata
+    };
   }
   
   /**

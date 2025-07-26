@@ -7,14 +7,12 @@
 import os
 import shutil
 from typing import List, Dict, Any
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, BackgroundTasks
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Form
 
 from app.utils.logger import setup_logger
 from app.core.config import settings
-from app.services.file_service import process_file, get_file_metadata, list_files
+from app.services.file_service import get_file_metadata, list_files
 from app.schemas.file import FileResponse, FileMetadata
-from app.agents.file_upload_agent import FileUploadAgent
 from app.agents.base import BaseAgentRequest
 
 # Initialize module-level logger for endpoint operations
@@ -27,6 +25,7 @@ router = APIRouter()
 async def upload_file(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    metadata: str = Form(None),  # Optional metadata as JSON string
 ) -> FileResponse:
     """
     Upload a file for analysis with comprehensive Pinecone validation testing.
@@ -51,7 +50,22 @@ async def upload_file(
     Raises:
         HTTPException if file format is not supported or other error occurs
     """
-    logger.info(f"File upload request received: {file.filename}")
+    logger.info(f"🚀 [UPLOAD START] File upload request received: {file.filename}")
+    logger.info(f"🔍 [UPLOAD DEBUG] Content type: {file.content_type}")
+    logger.info(f"🔍 [UPLOAD DEBUG] File size: {file.size if hasattr(file, 'size') else 'unknown'}")
+    logger.info(f"🔍 [UPLOAD DEBUG] Metadata received: {metadata}")
+    
+    # Parse metadata if provided
+    parsed_metadata = {}
+    if metadata:
+        try:
+            import json
+            parsed_metadata = json.loads(metadata)
+            logger.info(f"🔍 [UPLOAD DEBUG] Parsed metadata: {parsed_metadata}")
+        except json.JSONDecodeError:
+            logger.warning(f"⚠️ [UPLOAD WARNING] Invalid metadata JSON: {metadata}")
+    
+    logger.info(f"🔍 [UPLOAD DEBUG] Final metadata: {parsed_metadata}")
     
     # Validate file extension
     file_ext = os.path.splitext(file.filename)[1].lower().replace(".", "")

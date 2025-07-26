@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * File: page.tsx
  * Author: GitHub Copilot
@@ -20,8 +18,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { FileUpload } from '@/components/upload/FileUpload';
 import { FilePreview } from '@/features/upload/FilePreview';
-import fileService, { SampleData } from '@/lib/api/fileService';
-import chatService from '@/lib/api/chatService';
+import fileService, { SampleData, FileMetadata } from '@/lib/api/fileService';
+import chatService, { ChatMessage } from '@/lib/api/chatService';
 import { Navbar } from '@/components/layout/Navbar';
 
 /**

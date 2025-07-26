@@ -19,7 +19,7 @@ from pathlib import Path
 
 from app.core.config import settings
 from app.utils.logger import setup_logger
-from app.schemas.file import FileMetadata, FileResponse, DataProfile
+from app.schemas.file import FileMetadata
 
 # Setup logger
 logger = setup_logger(__name__)

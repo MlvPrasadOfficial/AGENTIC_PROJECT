@@ -210,32 +210,57 @@ class FileService {
         status: 'completed'            // Final status for UI state management
       });
       
+      // DEBUG: Log the actual response structure to understand the issue
+      console.log('📊 Full response object:', response);
+      console.log('📊 Response data:', response.data);
+      console.log('📊 Response data type:', typeof response.data);
+      
+      // DEFENSIVE CODING: Handle different response structures
+      let responseData;
+      
+      if (response && response.data) {
+        // Standard case: response.data exists (from interceptor)
+        responseData = response.data;
+      } else if (response && response.file_id) {
+        // Direct case: response is the data itself
+        responseData = response;
+      } else {
+        console.error('❌ Unexpected response structure:', { response });
+        throw new Error('Invalid response structure from server. Expected file_id but got: ' + JSON.stringify(response));
+      }
+      
+      // Validate that we have the required fields
+      if (!responseData.file_id) {
+        console.error('❌ Missing file_id in response data:', responseData);
+        throw new Error('Server response missing file_id field');
+      }
+      
       // Transform server response to standardized FileMetadata interface
       // Handles potential differences in backend response field naming
       return {
-        // Use server-provided file ID or fallback to response.fileId for compatibility
-        fileId: response.data.file_id || response.data.fileId,
+        // Use server-provided file ID - backend returns 'file_id'
+        fileId: responseData.file_id,
         
         // Prefer server filename but fallback to original client filename
-        filename: response.data.filename || file.name,
+        filename: responseData.filename || file.name,
         
         // Use actual uploaded size or original file size for consistency
-        size: response.data.size || file.size,
+        size: responseData.size || file.size,
         
         // MIME type from server validation or original file type
-        mimeType: response.data.mime_type || file.type,
+        mimeType: responseData.mime_type || file.type,
         
         // Upload status from server or default to 'completed' for success cases
-        uploadStatus: response.data.status || 'completed',
+        uploadStatus: responseData.status || 'completed',
         
         // Server timestamp or current time for upload completion tracking
-        createdAt: response.data.created_at || new Date().toISOString(),
+        createdAt: responseData.created_at || new Date().toISOString(),
         
         // Include Pinecone test results from backend if available
-        pineconeTests: response.data.pinecone_tests,
+        pineconeTests: responseData.pinecone_tests,
         
         // Optional processing information from server (analysis results, etc.)
-        processingInfo: response.data.processing_info
+        processingInfo: responseData.processing_info
       };
     } catch (error: any) {
       // Comprehensive error handling with user-friendly message generation

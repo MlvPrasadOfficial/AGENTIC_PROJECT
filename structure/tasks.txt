@@ -5,7 +5,7 @@ Note-03: always use powershell syntax only ( use ; instead of && )
 note-04 :always remember 4 notes and start with a strategical approach to solve the tasks
 
 Task-01 : 
-1. add [placeholder] and [real] tags for outputs to planning agent, insight agent m viz agent , critique agent , debate agent and report agent 
+1. tried manual uploading and shared screenshot debug the issue 
 
 2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
     After every change, check for compilation errors in terminal tasks: 'Backend Development Server' (port 8000) and 'Next.js Development Server' (port 3000)
@@ -16,3 +16,4 @@ Task-02: After completing above tasks go to the files created or edited for abov
      2.Add detailed docstrings to all functions and components
      3.Add comprehensive line-by-line comments
      4.Ensure code quality and maintainability
+     5.In the end check whether front end task and backend task are running fine or not, if not fix them

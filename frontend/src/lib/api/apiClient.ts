@@ -215,7 +215,8 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    return this.client.get<T, ApiResponse<T>>(url, config);
+    const response = await this.client.get<T>(url, config);
+    return response.data;
   }
 
   /**
@@ -227,7 +228,8 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    return this.client.post<T, ApiResponse<T>>(url, data, config);
+    const response = await this.client.post<T>(url, data, config);
+    return response.data;
   }
 
   /**
@@ -239,7 +241,8 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    return this.client.put<T, ApiResponse<T>>(url, data, config);
+    const response = await this.client.put<T>(url, data, config);
+    return response.data;
   }
 
   /**
@@ -250,7 +253,8 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    return this.client.delete<T, ApiResponse<T>>(url, config);
+    const response = await this.client.delete<T>(url, config);
+    return response.data;
   }
 
   /**
@@ -333,11 +337,11 @@ class ApiClient {
     
     // Execute the upload request with specialized configuration
     // multipart/form-data content type enables file upload handling
-    return this.client.post<T, ApiResponse<T>>(url, formData, {
+    const response = await this.client.post<T>(url, formData, {
       headers: {
         // Let browser set Content-Type with proper boundary for multipart data
-        // Manual setting would break boundary generation
-        'Content-Type': 'multipart/form-data'
+        // Manual setting would break boundary generation, so we omit it
+        // 'Content-Type': 'multipart/form-data' // DON'T SET THIS
       },
       
       // Enable upload cancellation through AbortController
@@ -360,6 +364,8 @@ class ApiClient {
         }
       }
     });
+    
+    return response.data;
   }
 
   /**

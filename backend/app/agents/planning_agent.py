@@ -1,42 +1,131 @@
-# Planning Agent
-# File: planning_agent.py
-# Author: GitHub Copilot
-# Date: 2025-07-08
-# Purpose: Planning Agent for creating analysis plans based on data profile and user query
+"""
+Planning Agent for Enterprise Insights Copilot
+
+This module implements the Planning Agent responsible for creating comprehensive
+analysis plans based on data profiles and user queries. The agent analyzes uploaded
+data and generates structured plans for data exploration, visualization, and insights.
+
+Author: GitHub Copilot
+Date: 2025-07-08
+Purpose: Planning Agent for creating analysis plans based on data profile and user query
+
+Key Features:
+    - Data profile analysis and interpretation
+    - Structured analysis plan generation
+    - Visualization requirement identification
+    - Metric and KPI recommendation
+    - Insight focus area determination
+
+Classes:
+    AnalysisPlan: Pydantic model for structured analysis plans
+    PlanningToolKit: Custom tools for data profiling and plan creation
+    PlanningAgentResponse: Response structure for planning operations
+    PlanningAgent: Main agent class for planning functionality
+"""
 
 import time
 import json
 from typing import Dict, Any, Optional, List
-from datetime import datetime
 from pydantic import BaseModel
 
 from langchain_core.tools import Tool
 from langchain_core.prompts import PromptTemplate
-from langchain.tools.base import BaseTool
 
-from app.agents.base import BaseAgent, BaseAgentRequest, BaseAgentResponse
+from app.agents.base import BaseAgent, BaseAgentResponse
 from app.services.file_service import FileService
 from app.schemas.file import FileMetadata
-from app.utils.prompts import PLANNING_PROMPT, DEFAULT_SYSTEM_MESSAGE
-from app.core.config import settings
+from app.utils.prompts import DEFAULT_SYSTEM_MESSAGE
 
 class AnalysisPlan(BaseModel):
-    """Model for an analysis plan"""
+    """
+    Pydantic model representing a comprehensive data analysis plan.
+    
+    This model structures the output of the planning agent, providing a complete
+    roadmap for data analysis including steps, visualizations, metrics, and focus areas.
+    
+    Attributes:
+        steps (List[Dict[str, Any]]): Sequential analysis steps with descriptions,
+            required data transformations, and expected outputs
+        required_visualizations (List[Dict[str, Any]]): Visualization requirements
+            including chart types, data mappings, and styling preferences
+        metrics (List[Dict[str, Any]]): Key performance indicators and metrics
+            to be calculated and tracked throughout the analysis
+        insights_focus (List[str]): Priority areas for insight generation,
+            guiding the analysis toward business-relevant conclusions
+    
+    Example:
+        ```python
+        plan = AnalysisPlan(
+            steps=[{"step": 1, "action": "data_cleaning", "description": "..."}],
+            required_visualizations=[{"type": "bar_chart", "columns": ["x", "y"]}],
+            metrics=[{"name": "conversion_rate", "formula": "..."}],
+            insights_focus=["customer_behavior", "revenue_trends"]
+        )
+        ```
+    """
     steps: List[Dict[str, Any]]
     required_visualizations: List[Dict[str, Any]]
     metrics: List[Dict[str, Any]]
     insights_focus: List[str]
 
 class PlanningToolKit:
-    """Custom tools for the Planning Agent"""
+    """
+    Custom toolkit providing specialized tools for the Planning Agent.
+    
+    This class encapsulates the tools and utilities required by the Planning Agent
+    to perform data analysis planning. It provides integration with the file service
+    and creates structured tools for data profiling and plan generation.
+    
+    The toolkit follows the LangChain Tool pattern, enabling seamless integration
+    with the agent's reasoning and planning capabilities.
+    
+    Attributes:
+        file_service (FileService): Service for file operations and data profiling
+    
+    Methods:
+        get_data_profile_tool(): Creates a tool for retrieving data profiles
+        create_analysis_plan_tool(): Creates a tool for generating analysis plans
+        validate_plan_tool(): Creates a tool for validating generated plans
+    """
     
     def __init__(self, file_service: FileService):
+        """
+        Initialize the PlanningToolKit with required services.
+        
+        Args:
+            file_service (FileService): File service instance for data operations
+        """
         self.file_service = file_service
     
     def get_data_profile_tool(self) -> Tool:
-        """Tool to get data profile from file service"""
+        """
+        Create a LangChain Tool for retrieving data profiles.
+        
+        This tool provides the Planning Agent with access to detailed data profiles
+        including column information, data types, statistical summaries, and quality metrics.
+        The profile data is essential for creating informed analysis plans.
+        
+        Returns:
+            Tool: A LangChain Tool instance that can retrieve data profiles by file ID
+        
+        Tool Usage:
+            The returned tool expects a file_id parameter and returns a JSON string
+            containing the complete data profile for analysis planning.
+        """
         def get_data_profile(file_id: str) -> str:
-            """Get data profile for planning purposes"""
+            """
+            Retrieve data profile for a specific file.
+            
+            Args:
+                file_id (str): Unique identifier for the uploaded file
+                
+            Returns:
+                str: JSON string containing detailed data profile information
+                     including columns, types, statistics, and quality metrics
+                     
+            Raises:
+                Returns error message string if profile retrieval fails
+            """
             try:
                 profile = self.file_service.get_data_profile(file_id)
                 return json.dumps(profile, indent=2)

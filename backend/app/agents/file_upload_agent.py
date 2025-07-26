@@ -6,8 +6,7 @@
 
 # Standard library imports for core functionality
 import time                    # For performance timing and processing delays
-from typing import Dict, Any, Optional, List  # Type hints for better code clarity
-import os                      # Operating system interface for file paths
+from typing import Dict, Any, List  # Type hints for better code clarity
 from pathlib import Path       # Modern path handling and file operations
 
 # Application-specific imports for agent functionality

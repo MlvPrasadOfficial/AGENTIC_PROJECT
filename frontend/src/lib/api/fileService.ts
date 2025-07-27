@@ -432,30 +432,91 @@ class FileService {
   }
   
   /**
-   * Get sample data from a file
+   * Get sample data from uploaded file for preview display
    * 
-   * @param fileId - The ID of the file
-   * @param rows - Number of sample rows (default: 10)
-   * @param columns - Specific columns to include
-   * @returns Promise resolving to the sample data
+   * Task-01 Enhancement: Enhanced error handling and response structure validation
+   * to ensure robust data preview functionality with proper fallback mechanisms
+   * 
+   * This method fetches a limited sample of data from the uploaded file for:
+   * - Data table preview in the UI
+   * - Column analysis and structure validation
+   * - Data quality assessment before processing
+   * 
+   * Features:
+   * - Configurable row limit for performance
+   * - Optional column filtering for focused analysis
+   * - Robust error handling with mock data fallback
+   * - Support for multiple response structures
+   * 
+   * @param {string} fileId - Unique file identifier (timestamp-based from upload)
+   * @param {number} rows - Maximum number of sample rows to return (default: 10)
+   * @param {string[]} columns - Optional array of specific column names to include
+   * @returns {Promise<SampleData>} Promise resolving to structured sample data with columns and rows
+   * 
+   * @throws {Error} When API call fails and mock data generation also fails
+   * 
+   * @example
+   * ```typescript
+   * // Basic usage - get 10 rows of all columns
+   * const sampleData = await fileService.getSampleData('1753640794_sample.csv');
+   * 
+   * // Custom row limit
+   * const sampleData = await fileService.getSampleData('1753640794_sample.csv', 5);
+   * 
+   * // Specific columns only
+   * const sampleData = await fileService.getSampleData('1753640794_sample.csv', 10, ['name', 'age']);
+   * ```
    */
   async getSampleData(fileId: string, rows = 10, columns?: string[]): Promise<SampleData> {
     try {
-      // Build query params
+      // ========================================================================
+      // 1. BUILD QUERY PARAMETERS FOR API ENDPOINT
+      // ========================================================================
+      // Create URLSearchParams to properly encode query parameters
+      // This ensures special characters in file IDs and column names are handled correctly
       const params = new URLSearchParams();
+      
+      // Add row limit parameter - controls how many sample rows to fetch
+      // Backend will limit this to prevent performance issues with large files
       params.append('rows', rows.toString());
       
+      // Add column filtering if specific columns are requested
+      // This allows users to preview only relevant columns for analysis
       if (columns?.length) {
         params.append('columns', columns.join(','));
       }
       
-      // Use real API endpoint - note: apiClient already has /api/v1 prefix
+      // ========================================================================
+      // 2. MAKE API CALL TO BACKEND PREVIEW ENDPOINT
+      // ========================================================================
+      // Call the /api/v1/data/preview/{fileId} endpoint
+      // Note: apiClient already includes the /api/v1 prefix in the base URL
       const response = await apiClient.get<SampleData>(`/data/preview/${fileId}?${params.toString()}`);
-      return response.data;
+      
+      // ========================================================================
+      // 3. HANDLE DIFFERENT RESPONSE STRUCTURES (TASK-01 FIX)
+      // ========================================================================
+      // Handle potential variations in response structure based on API client configuration
+      // This ensures compatibility with different response interceptors and transformations
+      if (response.data) {
+        // Standard response structure - data is in response.data property
+        return response.data;
+      } else if (response) {
+        // Alternative structure - data might be at root level
+        // This handles cases where response interceptors modify the structure
+        return response as any;
+      } else {
+        // No valid data received - throw error to trigger fallback
+        throw new Error('No data received from API');
+      }
     } catch (error) {
+      // ========================================================================
+      // 4. ERROR HANDLING WITH MOCK DATA FALLBACK
+      // ========================================================================
+      // Log the error for debugging but don't break the user experience
       console.error("Error fetching sample data:", error);
       
-      // Fallback to mock data if API call fails
+      // Provide user-friendly fallback for development and demo purposes
       console.warn("Falling back to mock data for preview");
       
       // Mock columns based on uploaded file type

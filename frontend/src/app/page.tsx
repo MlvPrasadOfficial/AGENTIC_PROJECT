@@ -85,6 +85,11 @@ export default function Page(): JSX.Element {
   const [uploadedFile, setUploadedFile] = useState<{ id: string; name: string } | null>(null);
   
   /**
+   * Preview visibility state for smooth animations
+   */
+  const [showPreview, setShowPreview] = useState<boolean>(false);
+  
+  /**
    * Chat interface state management
    */
   const [chatInput, setChatInput] = useState<string>('');                    // User input text
@@ -143,12 +148,23 @@ export default function Page(): JSX.Element {
   // ============================================================================
 
   /**
-   * Handle file upload completion with agent workflow integration
-   * Triggers the file upload and data profiling agents automatically
+   * Handle successful file upload and trigger agent workflow
    * 
-   * @param {string} fileId - The unique file identifier from the upload
-   * @param {string} filename - The original filename
-   * @param {FileMetadata} uploadResponse - Complete upload response including Pinecone tests
+   * This function is the core handler for file upload completion and manages:
+   * 1. File metadata storage for RAG context
+   * 2. Agent workflow initiation (File Upload → Data Profile)
+   * 3. Automatic data preview fetching and display (Task-01 Enhancement)
+   * 4. UI state management and smooth animations
+   * 
+   * Task-01 Enhancement: Added automatic preview functionality with:
+   * - Real-time sample data fetching from backend API
+   * - Smooth fade-in animations for preview section
+   * - Auto-scroll to preview area for better UX
+   * 
+   * @param {string} fileId - Unique file identifier from backend (timestamp-based)
+   * @param {string} filename - Original filename for display purposes
+   * @param {any} uploadResponse - Complete upload response metadata (optional)
+   * @returns {Promise<void>} Async operation with no return value
    */
   const handleFileUploaded = async (fileId: string, filename: string, uploadResponse?: any): Promise<void> => {
     console.log('📁 File uploaded:', { fileId, filename, uploadResponse });
@@ -194,6 +210,20 @@ export default function Page(): JSX.Element {
     try {
       const sampleData = await fileService.getSampleData(fileId);
       setPreviewData(sampleData);
+      
+      // Show preview with animation after short delay
+      setTimeout(() => {
+        setShowPreview(true);
+      }, 300);
+      
+      // Automatically scroll to preview section after data loads
+      setTimeout(() => {
+        const previewElement = document.querySelector('.file-preview-section');
+        if (previewElement) {
+          previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 800); // Delay to allow animation to start
+      
     } catch (error) {
       console.error('Error fetching preview data:', error);
     }
@@ -211,6 +241,7 @@ export default function Page(): JSX.Element {
     // Clear file-related state
     setUploadedFile(null);
     setPreviewData(null);
+    setShowPreview(false); // Reset preview animation state
     
     // Reset all agent states to waiting
     setAgentStates({
@@ -252,13 +283,18 @@ export default function Page(): JSX.Element {
       setPreviewData(sampleData);
       setUploadedFile({ id: fileId, name: filename });
       
+      // Show preview with animation
+      setTimeout(() => {
+        setShowPreview(true);
+      }, 100);
+      
       // Scroll to preview after data loads
       setTimeout(() => {
         const previewElement = document.querySelector('.file-preview-section');
         if (previewElement) {
           previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-      }, 100);
+      }, 300);
       
     } catch (error) {
       console.error('Error fetching preview data:', error);
@@ -450,9 +486,14 @@ export default function Page(): JSX.Element {
                   onError={(error) => console.error('Upload error:', error.message)}
                 />
                 
-                {/* File Preview Section */}
+                {/* File Preview Section - Clean Data Preview (Task-01: Checkmark header removed) */}
                 {previewData && uploadedFile && (
-                  <div className="mt-4 file-preview-section">
+                  <div className={`mt-6 file-preview-section transition-all duration-500 ease-in-out ${
+                    showPreview 
+                      ? 'opacity-100 transform translate-y-0' 
+                      : 'opacity-0 transform translate-y-4'
+                  }`}>
+                    {/* Direct data preview without any header decorations */}
                     <FilePreview
                       data={previewData.rows.map(row => ({ ...row }))}
                       status="completed"
@@ -548,7 +589,7 @@ export default function Page(): JSX.Element {
                     <div className="space-y-4">
                       
                       {/* Agent Card Template - File Upload Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('file-upload')}
@@ -560,7 +601,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/file-upload-agent-icon-black.svg" alt="File Upload" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">📁 File Upload Agent</h3>
+                            <h3 className="text-white font-semibold">File Upload Agent</h3>
                             <p className="text-gray-400 text-sm">File processing and validation</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -597,7 +638,7 @@ export default function Page(): JSX.Element {
                       </div>
 
                       {/* Repeat for other agents - Data Profile Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('data-profile')}
@@ -609,7 +650,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/data-profile-agent-icon-black.svg" alt="Data Profile" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">📊 Data Profile Agent</h3>
+                            <h3 className="text-white font-semibold">Data Profile Agent</h3>
                             <p className="text-gray-400 text-sm">Data structure analysis</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -645,7 +686,7 @@ export default function Page(): JSX.Element {
                       </div>
 
                       {/* Planning Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('planning')}
@@ -657,7 +698,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/planning-agent-icon-black.svg" alt="Planning" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">🎯 Planning Agent</h3>
+                            <h3 className="text-white font-semibold">Planning Agent</h3>
                             <p className="text-gray-400 text-sm">Query analysis and routing</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -693,7 +734,7 @@ export default function Page(): JSX.Element {
                       </div>
 
                       {/* Insight Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('insight')}
@@ -705,7 +746,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/insight-agent-icon-black.svg" alt="Insight" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">💡 Insight Agent</h3>
+                            <h3 className="text-white font-semibold">Insight Agent</h3>
                             <p className="text-gray-400 text-sm">Data analysis and insights</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -741,7 +782,7 @@ export default function Page(): JSX.Element {
                       </div>
 
                       {/* Visualization Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('viz')}
@@ -753,7 +794,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/viz-agent-icon-black.svg" alt="Visualization" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">📈 Viz Agent</h3>
+                            <h3 className="text-white font-semibold">Viz Agent</h3>
                             <p className="text-gray-400 text-sm">Chart and graph generation</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -789,7 +830,7 @@ export default function Page(): JSX.Element {
                       </div>
 
                       {/* Critique Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('critique')}
@@ -801,7 +842,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/critique-agent-icon-black.svg" alt="Critique" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">🔍 Critique Agent</h3>
+                            <h3 className="text-white font-semibold">Critique Agent</h3>
                             <p className="text-gray-400 text-sm">Quality assessment and review</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -837,7 +878,7 @@ export default function Page(): JSX.Element {
                       </div>
 
                       {/* Debate Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('debate')}
@@ -849,7 +890,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/debate-agent-icon-black.svg" alt="Debate" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">💬 Debate Agent</h3>
+                            <h3 className="text-white font-semibold">Debate Agent</h3>
                             <p className="text-gray-400 text-sm">Multi-perspective analysis</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -885,7 +926,7 @@ export default function Page(): JSX.Element {
                       </div>
 
                       {/* Report Agent */}
-                      <div className="glass-agent-card p-4 rounded-lg border border-white/10 backdrop-blur-sm">
+                      <div className="glass-agent-card p-4">
                         <div
                           className="flex items-center gap-4 cursor-pointer"
                           onClick={() => toggleAgent('report')}
@@ -897,7 +938,7 @@ export default function Page(): JSX.Element {
                             <Image src="/icons/report-agent-icon-black.svg" alt="Report" width={22} height={22} />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-white font-medium">📋 Report Agent</h3>
+                            <h3 className="text-white font-semibold">Report Agent</h3>
                             <p className="text-gray-400 text-sm">Final report generation</p>
                           </div>
                           <div className="flex items-center gap-2">

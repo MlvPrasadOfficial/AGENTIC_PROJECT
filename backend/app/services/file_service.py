@@ -152,11 +152,11 @@ class FileService:
             FileMetadata object or None if not found
         """
         # DEBUG: Log the metadata retrieval attempt
-        logger.info(f"🔍 get_file_metadata called for file_id: {file_id}")
+        logger.info(f"[SEARCH] get_file_metadata called for file_id: {file_id}")
         logger.info(f"📋 Available files in metadata_store: {list(self.metadata_store.keys())}")
         
         if file_id not in self.metadata_store:
-            logger.warning(f"❌ File {file_id} not found in metadata_store")
+            logger.warning(f"[ERROR] File {file_id} not found in metadata_store")
             return None
         
         try:
@@ -165,7 +165,7 @@ class FileService:
             logger.info(f"📄 Raw metadata for {file_id}: {raw_metadata}")
             
             file_metadata = FileMetadata(**raw_metadata)
-            logger.info(f"✅ Successfully created FileMetadata object for {file_id}")
+            logger.info(f"[SUCCESS] Successfully created FileMetadata object for {file_id}")
             return file_metadata
             
         except Exception as e:

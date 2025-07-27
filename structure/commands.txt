@@ -5,9 +5,10 @@ cd c:\JUL7PROJECT\backend ; python main.py
 
 cd c:\JUL7PROJECT\frontend ; npm run build
 
+conda activate jul7 ; cd c:\JUL7PROJECT\backend ; python main.py
 
 git add .
-git commit -m "JUL27 inc only"
+git commit -m "JUL27 8pm check point"
 git push origin main
 
 

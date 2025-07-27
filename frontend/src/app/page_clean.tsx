@@ -18,8 +18,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { FileUpload } from '@/components/upload/FileUpload';
 import { FilePreview } from '@/features/upload/FilePreview';
-import fileService, { SampleData, FileMetadata } from '@/lib/api/fileService';
-import chatService, { ChatMessage } from '@/lib/api/chatService';
+import fileService, { SampleData } from '@/lib/api/fileService';
+import chatService from '@/lib/api/chatService';
 import { Navbar } from '@/components/layout/Navbar';
 
 /**
@@ -115,7 +115,8 @@ export default function Page(): JSX.Element {
     setAgentStates(prev => ({
       ...prev,
       [agentId]: {
-        ...prev[agentId],
+        status: prev[agentId]?.status || 'waiting',
+        output: prev[agentId]?.output || '',
         isExpanded: !prev[agentId]?.isExpanded
       }
     }));

@@ -117,7 +117,8 @@ export default function Page(): JSX.Element {
     setAgentStates(prev => ({
       ...prev,
       [agentId]: {
-        ...prev[agentId],
+        status: prev[agentId]?.status || 'waiting',
+        output: prev[agentId]?.output || '',
         isExpanded: !prev[agentId]?.isExpanded
       }
     }));
@@ -145,20 +146,22 @@ export default function Page(): JSX.Element {
    * Handle file upload completion with agent workflow integration
    * Triggers the file upload and data profiling agents automatically
    * 
-   * @param {any} file - The uploaded file object from FileUpload component
+   * @param {string} fileId - The unique file identifier from the upload
+   * @param {string} filename - The original filename
+   * @param {FileMetadata} uploadResponse - Complete upload response including Pinecone tests
    */
-  const handleFileUploaded = async (file: any): Promise<void> => {
-    console.log('📁 File uploaded:', file);
+  const handleFileUploaded = async (fileId: string, filename: string, uploadResponse?: any): Promise<void> => {
+    console.log('📁 File uploaded:', { fileId, filename, uploadResponse });
     
-    // Store file metadata for RAG context
-    setUploadedFile({ id: file.id, name: file.name });
+    // Store file metadata for RAG context using the correct fileId parameter
+    setUploadedFile({ id: fileId, name: filename });
     
     // Trigger File Upload Agent
     setAgentStates(prev => ({
       ...prev,
       'file-upload': {
         status: 'completed',
-        output: `✅ File uploaded successfully: ${file.name}\nFile ID: ${file.id}\nReady for processing.`,
+        output: `✅ File uploaded successfully: ${filename}\nFile ID: ${fileId}\nReady for processing.`,
         isExpanded: true
       }
     }));
@@ -187,9 +190,9 @@ export default function Page(): JSX.Element {
       }, 2000);
     }, 1000);
 
-    // Fetch preview data for display
+    // Fetch preview data for display using the correct fileId
     try {
-      const sampleData = await fileService.getSampleData(file.id);
+      const sampleData = await fileService.getSampleData(fileId);
       setPreviewData(sampleData);
     } catch (error) {
       console.error('Error fetching preview data:', error);
@@ -220,6 +223,47 @@ export default function Page(): JSX.Element {
       'debate': { status: 'waiting', output: '', isExpanded: false },
       'report': { status: 'waiting', output: '', isExpanded: false }
     });
+  };
+
+  /**
+   * Handle preview request - shows existing preview data without re-processing
+   * Scrolls to the preview section if data exists, fetches data if not available
+   * 
+   * @param {string} fileId - The ID of the file to preview
+   * @param {string} filename - The name of the file to preview
+   */
+  const handlePreviewRequested = async (fileId: string, filename: string): Promise<void> => {
+    console.log('👁️ Preview requested for:', filename, 'with ID:', fileId);
+    
+    try {
+      // If preview data already exists, just scroll to it
+      if (previewData && uploadedFile) {
+        // Scroll to the preview section smoothly
+        const previewElement = document.querySelector('.file-preview-section');
+        if (previewElement) {
+          previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+      
+      // If no preview data exists, fetch it
+      console.log('Fetching preview data for:', filename);
+      const sampleData = await fileService.getSampleData(fileId);
+      setPreviewData(sampleData);
+      setUploadedFile({ id: fileId, name: filename });
+      
+      // Scroll to preview after data loads
+      setTimeout(() => {
+        const previewElement = document.querySelector('.file-preview-section');
+        if (previewElement) {
+          previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error fetching preview data:', error);
+      // Handle error without affecting agent workflow
+    }
   };
 
   /**
@@ -402,12 +446,13 @@ export default function Page(): JSX.Element {
                 <FileUpload
                   onFileUploaded={handleFileUploaded}
                   onFileDeleted={handleFileDeleted}
+                  onPreviewRequested={handlePreviewRequested}
                   onError={(error) => console.error('Upload error:', error.message)}
                 />
                 
                 {/* File Preview Section */}
                 {previewData && uploadedFile && (
-                  <div className="mt-4">
+                  <div className="mt-4 file-preview-section">
                     <FilePreview
                       data={previewData.rows.map(row => ({ ...row }))}
                       status="completed"

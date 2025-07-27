@@ -140,6 +140,22 @@ interface FileUploadProps {
   onFileDeleted?: (fileId: string) => void;
   
   /** 
+   * Callback function triggered when user requests to view data preview
+   * Receives the file identifier and filename for preview display
+   * 
+   * @param {string} fileId - Unique identifier for the uploaded file
+   * @param {string} filename - Original name of the uploaded file
+   * @example
+   * ```tsx
+   * const handlePreviewRequest = (fileId: string, filename: string) => {
+   *   console.log('Preview requested for:', filename, 'with ID:', fileId);
+   *   // Show preview modal or scroll to preview section...
+   * };
+   * ```
+   */
+  onPreviewRequested?: (fileId: string, filename: string) => void;
+  
+  /** 
    * Callback function triggered when an error occurs during upload
    * Receives Error object with detailed error information
    * 
@@ -209,6 +225,7 @@ interface FileUploadProps {
 export const FileUpload: React.FC<FileUploadProps> = ({
   onFileUploaded,
   onFileDeleted,
+  onPreviewRequested,
   onError,
 }) => {
   // ============================================================================
@@ -625,19 +642,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 * ACCESSIBILITY: Keyboard accessible with semantic button element
                 * PERFORMANCE: Optimized with transition animations for smooth user experience
                 */}
-              <button 
-                onClick={() => {
-                  // Call parent callback with complete file information for preview processing
-                  // fileId: Used for backend API calls to fetch sample data
-                  // filename: Used for user display and workflow notifications
-                  onFileUploaded?.(currentFile.id, currentFile.name);
-                }}
-                className="glass-button-secondary px-4 py-2 text-sm flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300"
-              >
-                <PreviewIcon className="icon text-white" /> Preview
-              </button>
-              
-              {/* Delete Button - Removes uploaded file from component state
+            <button 
+              onClick={() => {
+                // Call preview callback instead of triggering upload workflow
+                // This prevents re-processing and shows proper data preview
+                onPreviewRequested?.(currentFile.id, currentFile.name);
+              }}
+              className="glass-button-secondary px-4 py-2 text-sm flex items-center gap-2 hover:bg-blue-600/20 transition-all duration-300"
+            >
+              <PreviewIcon className="icon text-white" /> Preview
+            </button>              {/* Delete Button - Removes uploaded file from component state
                 * FUNCTIONALITY: Clears current file and resets component to initial state
                 * UI BEHAVIOR: Red hover effect with delete icon for clear user intent
                 * CONFIRMATION: Immediate deletion without confirmation dialog
@@ -673,10 +687,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               */}
             <button 
               onClick={() => {
-                // Trigger file preview workflow with complete file information
-                // This initiates: 1) Backend API call for sample data, 2) Agent workflow simulation
-                // Parameters ensure proper data retrieval and user feedback display
-                onFileUploaded?.(currentFile.id, currentFile.name);
+                // Trigger data preview display instead of upload workflow
+                // This prevents agent re-processing and shows actual data preview
+                onPreviewRequested?.(currentFile.id, currentFile.name);
               }}
               className="glass-button flex-1 py-3 mt-2 flex items-center justify-center gap-2 hover:bg-blue-600/20 transition-all duration-300"
             >

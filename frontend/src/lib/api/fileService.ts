@@ -12,6 +12,22 @@
 import apiClient from './apiClient';
 
 /**
+ * Response from backend file upload endpoint
+ */
+interface FileResponse {
+  /** Unique file identifier */
+  file_id: string;
+  /** Original filename */
+  filename: string;
+  /** Upload status */
+  status: string;
+  /** Status message */
+  message: string;
+  /** Optional Pinecone test results */
+  pinecone_tests?: Record<string, any>;
+}
+
+/**
  * File metadata returned from the server
  */
 export interface FileMetadata {
@@ -174,21 +190,48 @@ class FileService {
     // Ensures consistent behavior when options are partially provided
     const { metadata = {}, onProgress, signal } = options || {};
     
+    // DETAILED LOGGING: Track upload attempt start
+    console.log('🚀 [UPLOAD START] === FILE UPLOAD ATTEMPT ===');
+    console.log('🚀 [UPLOAD START] File details:', {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified
+    });
+    console.log('🚀 [UPLOAD START] Options:', { metadata, hasOnProgress: !!onProgress, hasSignal: !!signal });
+    
     try {
       // Initialize FormData for multipart/form-data HTTP request
       // Required format for file uploads with additional metadata support
       const formData = new FormData();
       formData.append('file', file);
       
+      // DETAILED LOGGING: Track FormData construction
+      console.log('📦 [FORMDATA] FormData created, appended file:', file.name);
+      
       // Attach optional metadata as JSON string for server processing
       // Allows additional context like file categories, tags, or user info
       if (Object.keys(metadata).length > 0) {
-        formData.append('metadata', JSON.stringify(metadata));
+        const metadataJson = JSON.stringify(metadata);
+        formData.append('metadata', metadataJson);
+        console.log('📦 [FORMDATA] Appended metadata:', metadataJson);
+      } else {
+        console.log('📦 [FORMDATA] No metadata to append');
+      }
+      
+      // DETAILED LOGGING: Log FormData contents
+      console.log('📦 [FORMDATA] Final FormData entries:');
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`📦 [FORMDATA] ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+        } else {
+          console.log(`📦 [FORMDATA] ${key}: ${value}`);
+        }
       }
       
       // Execute upload request with real-time progress tracking
       // Uses configured API client with proper endpoint and error handling
-      const response = await apiClient.uploadFile<any>(
+      const response = await apiClient.uploadFile<FileResponse>(
         '/files/upload',               // Backend upload endpoint (without duplicate /api/v1/ prefix)
         file,                          // File object for upload
         (progress) => {                // Progress callback for UI updates
@@ -212,25 +255,15 @@ class FileService {
       
       // DEBUG: Log the actual response structure to understand the issue
       console.log('📊 Full response object:', response);
-      console.log('📊 Response data:', response.data);
-      console.log('📊 Response data type:', typeof response.data);
+      console.log('📊 Response data:', response);
+      console.log('📊 Response data type:', typeof response);
       
-      // DEFENSIVE CODING: Handle different response structures
-      let responseData;
-      
-      if (response && response.data) {
-        // Standard case: response.data exists (from interceptor)
-        responseData = response.data;
-      } else if (response && response.file_id) {
-        // Direct case: response is the data itself
-        responseData = response;
-      } else {
-        console.error('❌ Unexpected response structure:', { response });
-        throw new Error('Invalid response structure from server. Expected file_id but got: ' + JSON.stringify(response));
-      }
+      // The uploadFile method returns response.data from axios
+      // Backend returns FileResponse directly, not wrapped in ApiResponse
+      const responseData = response as any;
       
       // Validate that we have the required fields
-      if (!responseData.file_id) {
+      if (!responseData || !responseData.file_id) {
         console.error('❌ Missing file_id in response data:', responseData);
         throw new Error('Server response missing file_id field');
       }
@@ -263,6 +296,40 @@ class FileService {
         processingInfo: responseData.processing_info
       };
     } catch (error: any) {
+      // DETAILED ERROR LOGGING: Capture all error details for debugging
+      console.error('🚨 [UPLOAD ERROR] === FILE UPLOAD FAILED ===');
+      console.error('🚨 [UPLOAD ERROR] Full error object:', error);
+      console.error('🚨 [UPLOAD ERROR] Error message:', error.message);
+      console.error('🚨 [UPLOAD ERROR] Error code:', error.code);
+      console.error('🚨 [UPLOAD ERROR] Error stack:', error.stack);
+      
+      if (error.response) {
+        console.error('🚨 [UPLOAD ERROR] Response status:', error.response.status);
+        console.error('🚨 [UPLOAD ERROR] Response statusText:', error.response.statusText);
+        console.error('🚨 [UPLOAD ERROR] Response headers:', error.response.headers);
+        console.error('🚨 [UPLOAD ERROR] Response data:', error.response.data);
+        
+        // Special handling for 422 Unprocessable Content
+        if (error.response.status === 422) {
+          console.error('🚨 [422 VALIDATION ERROR] Unprocessable Content Details:');
+          console.error('🚨 [422 VALIDATION ERROR] Response data type:', typeof error.response.data);
+          console.error('🚨 [422 VALIDATION ERROR] Response data structure:', JSON.stringify(error.response.data, null, 2));
+          
+          if (error.response.data && error.response.data.detail) {
+            console.error('🚨 [422 VALIDATION ERROR] Validation details:', error.response.data.detail);
+            if (Array.isArray(error.response.data.detail)) {
+              error.response.data.detail.forEach((detail: any, index: number) => {
+                console.error(`🚨 [422 VALIDATION ERROR] Detail ${index + 1}:`, detail);
+              });
+            }
+          }
+        }
+      } else if (error.request) {
+        console.error('🚨 [UPLOAD ERROR] Request object:', error.request);
+      } else {
+        console.error('🚨 [UPLOAD ERROR] Error during request setup:', error.message);
+      }
+      
       // Comprehensive error handling with user-friendly message generation
       // Categorizes different error types for appropriate user feedback
       let errorMessage = 'File upload failed';

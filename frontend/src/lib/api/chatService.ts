@@ -170,7 +170,7 @@ class ChatService {
    * @param fileId - Optional file ID to associate with the conversation
    * @returns Promise resolving to the created conversation
    */
-  async createConversation(title: string, fileId?: string): Promise<ChatConversation> {
+  async createConversation(title: string, _fileId?: string): Promise<ChatConversation> {
     const response = await apiClient.post<any>('/chat/sessions');
     
     // Convert backend ChatSession to frontend ChatConversation format

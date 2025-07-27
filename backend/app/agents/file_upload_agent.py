@@ -915,9 +915,9 @@ class FileUploadAgent(BaseAgent):
                     strategy_note = "substantial sample (thorough validation)"
                 
                 # Log the selected strategy for debugging and monitoring purposes
-                self.logger.info(f"🔍 EMBEDDING STRATEGY DEBUG: File has {total_rows} rows")
-                self.logger.info(f"🔍 EMBEDDING STRATEGY DECISION: Processing {embedding_rows} of {total_rows} rows ({strategy_note})")
-                self.logger.info(f"🔍 STRATEGY VALIDATION: Should embed {'ALL' if total_rows <= 10 else 'SAMPLE'} rows for this file size")
+                self.logger.info(f"[EMBEDDING STRATEGY DEBUG] File has {total_rows} rows")
+                self.logger.info(f"[EMBEDDING STRATEGY DECISION] Processing {embedding_rows} of {total_rows} rows ({strategy_note})")
+                self.logger.info(f"[STRATEGY VALIDATION] Should embed {'ALL' if total_rows <= 10 else 'SAMPLE'} rows for this file size")
                 
                 # Convert DataFrame rows to VectorDocument format for embedding
                 for i, (_, row) in enumerate(df.head(embedding_rows).iterrows()):

@@ -87,7 +87,7 @@ class ApiClient {
       
     this.client = axios.create({
       baseURL,
-      timeout: config.timeout || 30000,
+      timeout: config.timeout || 60000, // Increased to 60 seconds for Pinecone processing
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -189,21 +189,63 @@ class ApiClient {
    * @returns A user-friendly error message
    * @private
    */
+  /**
+   * Extract meaningful error messages from API error responses
+   * 
+   * This method intelligently extracts error messages from various API response formats,
+   * with special handling for FastAPI validation errors (422 status codes).
+   * 
+   * @param error - The Axios error object containing response information
+   * @returns A user-friendly error message string
+   * @private
+   */
   private getErrorMessage(error: AxiosError): string {
+    // Enhanced error logging for comprehensive debugging of API failures
+    console.log('🔍 [ERROR ANALYSIS] Full error object:', error);
+    console.log('🔍 [ERROR ANALYSIS] Response status:', error.response?.status);
+    console.log('🔍 [ERROR ANALYSIS] Response data:', error.response?.data);
+    console.log('🔍 [ERROR ANALYSIS] Response headers:', error.response?.headers);
+    
+    // Extract error message from structured API response
     if (error.response?.data && typeof error.response.data === 'object') {
-      // Try to get error message from response data
       const data = error.response.data as any;
-      return data.message || data.error || data.errors?.[0] || 'Unknown error occurred';
+      
+      // Special handling for FastAPI validation errors (422 Unprocessable Entity)
+      if (error.response.status === 422 && data.detail) {
+        // FastAPI validation errors contain detailed field-level validation information
+        if (Array.isArray(data.detail)) {
+          // Convert array of validation errors to readable format
+          const validationErrors = data.detail.map((err: any) => 
+            `${err.loc?.join('.')} - ${err.msg}`
+          ).join(', ');
+          console.log('🔍 [422 VALIDATION] Extracted errors:', validationErrors);
+          return `Validation error: ${validationErrors}`;
+        } else if (typeof data.detail === 'string') {
+          // Handle simple string detail messages  
+          console.log('🔍 [422 VALIDATION] String detail:', data.detail);
+          return `Validation error: ${data.detail}`;
+        }
+      }
+      
+      // Standard error message extraction with fallback hierarchy
+      // Priority: message > error > detail > errors array > fallback
+      const errorMsg = data.message || data.error || data.detail || data.errors?.[0] || 'Unknown error occurred';
+      console.log('🔍 [ERROR ANALYSIS] Extracted message:', errorMsg);
+      return errorMsg;
     }
     
+    // Handle specific network-level errors with user-friendly messages
     if (error.message === 'Network Error') {
       return 'Network error. Please check your connection and try again.';
     }
     
+    // Handle timeout errors with actionable guidance
     if (error.code === 'ECONNABORTED') {
       return 'Request timed out. Please try again.';
     }
     
+    // Final fallback for unexpected error types
+    console.log('🔍 [ERROR ANALYSIS] Final fallback message:', error.message);
     return error.message || 'Unknown error occurred';
   }
 
@@ -215,7 +257,7 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.get<T>(url, config);
+    const response = await this.client.get<ApiResponse<T>>(url, config);
     return response.data;
   }
 
@@ -228,7 +270,7 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.post<T>(url, data, config);
+    const response = await this.client.post<ApiResponse<T>>(url, data, config);
     return response.data;
   }
 
@@ -241,7 +283,7 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.put<T>(url, data, config);
+    const response = await this.client.put<ApiResponse<T>>(url, data, config);
     return response.data;
   }
 
@@ -253,7 +295,7 @@ class ApiClient {
    * @returns Promise resolving to the response data
    */
   async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.delete<T>(url, config);
+    const response = await this.client.delete<ApiResponse<T>>(url, config);
     return response.data;
   }
 
@@ -317,6 +359,13 @@ class ApiClient {
     additionalData?: Record<string, any>,
     signal?: AbortSignal
   ): Promise<ApiResponse<T>> {
+    // DETAILED LOGGING: Track API client upload start
+    console.log('[API CLIENT] === UPLOAD REQUEST START ===');
+    console.log('[API CLIENT] URL:', url);
+    console.log('[API CLIENT] Full URL:', `${this.client.defaults.baseURL}${url}`);
+    console.log('[API CLIENT] File:', { name: file.name, size: file.size, type: file.type });
+    console.log('[API CLIENT] Additional data:', additionalData);
+    
     // Create FormData container for multipart upload
     // Required for file uploads with proper MIME boundary handling
     const formData = new FormData();
@@ -324,48 +373,78 @@ class ApiClient {
     // Attach the primary file with standard 'file' field name
     // Backend expects this specific field name for file processing
     formData.append('file', file);
+    console.log('[API CLIENT] Appended file to FormData');
     
     // Process additional metadata if provided
-    // Converts objects to JSON strings for backend compatibility
-    if (additionalData) {
-      Object.entries(additionalData).forEach(([key, value]) => {
-        // Serialize complex objects to JSON for form data transmission
-        // Simple values are automatically stringified by FormData
-        formData.append(key, JSON.stringify(value));
-      });
+    // Send metadata as single JSON string field as expected by backend
+    if (additionalData && Object.keys(additionalData).length > 0) {
+      // Backend expects metadata as single JSON string in 'metadata' field
+      const metadataJson = JSON.stringify(additionalData);
+      formData.append('metadata', metadataJson);
+      console.log('[API CLIENT] Appended metadata to FormData:', metadataJson);
+    } else {
+      console.log('[API CLIENT] No additional data to append');
+    }
+    
+    // LOG FormData contents
+    console.log('[API CLIENT] Final FormData entries:');
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`[API CLIENT] ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+      } else {
+        console.log(`[API CLIENT] ${key}: ${value}`);
+      }
     }
     
     // Execute the upload request with specialized configuration
     // multipart/form-data content type enables file upload handling
-    const response = await this.client.post<T>(url, formData, {
-      headers: {
-        // Let browser set Content-Type with proper boundary for multipart data
-        // Manual setting would break boundary generation, so we omit it
-        // 'Content-Type': 'multipart/form-data' // DON'T SET THIS
-      },
-      
-      // Enable upload cancellation through AbortController
-      // Allows users to cancel long-running uploads
-      ...(signal && { signal }),
-      
-      // Configure real-time progress tracking
-      // Calculates percentage completion for UI feedback
-      onUploadProgress: (event) => {
-        // Ensure both progress callback and total size are available
-        // Prevents division by zero and callback errors
-        if (onProgress && event.total) {
-          // Calculate percentage completion with rounding for clean UI display
-          // Math.round ensures integer percentages for consistent progress bars
-          const progress = Math.round((event.loaded * 100) / event.total);
-          
-          // Invoke progress callback with current upload percentage
-          // UI can use this for progress bars, status messages, etc.
-          onProgress(progress);
-        }
-      }
-    });
+    console.log('[API CLIENT] Starting axios.post request...');
     
-    return response.data;
+    try {
+      // Create config without Content-Type to let browser set multipart/form-data boundary
+      const config: AxiosRequestConfig = {
+        // Enable upload cancellation through AbortController
+        // Allows users to cancel long-running uploads
+        ...(signal && { signal }),
+        
+        // Configure real-time progress tracking
+        // Calculates percentage completion for UI feedback
+        onUploadProgress: (event) => {
+          // Ensure both progress callback and total size are available
+          // Prevents division by zero and callback errors
+          if (onProgress && event.total) {
+            // Calculate percentage completion with rounding for clean UI display
+            // Math.round ensures integer percentages for consistent progress bars
+            const progress = Math.round((event.loaded * 100) / event.total);
+            
+            // Invoke progress callback with current upload percentage
+            // UI can use this for progress bars, status messages, etc.
+            onProgress(progress);
+          }
+        }
+      };
+      
+      // Use a specific axios instance for file uploads without Content-Type header
+      const uploadClient = axios.create({
+        baseURL: this.client.defaults.baseURL || 'http://localhost:8000/api/v1',
+        timeout: 120000, // Increased timeout for complex agent workflows and Pinecone operations
+        headers: {
+          // Only keep non-Content-Type headers for file uploads
+          'Accept': 'application/json',
+          'x-client-version': '1.0.0'
+        }
+      });
+      
+      const response = await uploadClient.post<ApiResponse<T>>(url, formData, config);
+      
+      console.log('[API CLIENT] Upload request completed successfully');
+      return response.data;
+      
+    } catch (error) {
+      console.error('[API CLIENT] Upload request failed:', error);
+      // Re-throw the error to be handled by the calling code
+      throw error;
+    }
   }
 
   /**
@@ -385,7 +464,7 @@ const apiClient = new ApiClient({
     console.log(`Environment service apiUrl: ${url}`);
     return url;
   })(),
-  timeout: 30000,
+  timeout: 120000, // Increased to 120 seconds for complex agent workflows and Pinecone operations
   defaultHeaders: {
     'X-Client-Version': '1.0.0'
   }

@@ -2,10 +2,12 @@ Note-01: Always run commands in the foreground. If a server is running, monitor 
 Note-02: front end and backend are running as tasks already, port 3000 and 8000 respectively. 
         if required, you can check frontend working at shell task : 'Next.js Development Server' and backend at shell task : 'Backend Development Server'
 Note-03: always use powershell syntax only ( use ; instead of && )
-note-04 :always remember 4 notes and start with a strategical approach to solve the tasks
+note-04 :always remember 4 notes and start with a strategical approach to solve the tasks in a sequential manner
+
 
 Task-01 : 
-1. tried manual uploading and shared screenshot debug the issue 
+1. when i uploaded a file , backend works fine , but frontend throws error
+1.1 sharing screenshots
 
 2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
     After every change, check for compilation errors in terminal tasks: 'Backend Development Server' (port 8000) and 'Next.js Development Server' (port 3000)

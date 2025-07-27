@@ -143,6 +143,77 @@ export default function Page(): JSX.Element {
     }
   };
 
+  /**
+   * Format Pinecone test results for display in File Upload Agent
+   * 
+   * This function takes the raw Pinecone test results from the backend and formats them
+   * into a user-friendly display with status indicators and detailed descriptions.
+   * 
+   * Test Structure Expected:
+   * - test_2_0: Pinecone Connection Test
+   * - test_2_1: Fetch Index Details  
+   * - test_2_2: Vector Count Before Embedding
+   * - test_2_3: CSV Filename Validation
+   * - test_2_4: Index Embedding Operation
+   * - test_2_5: Vector Count After Embedding
+   * 
+   * @param {any} pineconeTests - Raw Pinecone test results from backend
+   * @returns {string} Formatted string for display in agent output
+   */
+  const formatPineconeTestResults = (pineconeTests: any): string => {
+    if (!pineconeTests || typeof pineconeTests !== 'object') {
+      return '\n🔍 Pinecone Validation: No test results available';
+    }
+
+    const testOrder = ['test_2_0', 'test_2_1', 'test_2_2', 'test_2_3', 'test_2_4', 'test_2_5'];
+    const testNames = {
+      'test_2_0': 'Connection Test',
+      'test_2_1': 'Index Configuration', 
+      'test_2_2': 'Vector Count (Before)',
+      'test_2_3': 'File Validation',
+      'test_2_4': 'Embedding Operation',
+      'test_2_5': 'Vector Count (After)'
+    };
+
+    let output = '\n🔍 Pinecone Validation Results:\n';
+    output += '─'.repeat(40) + '\n';
+
+    let passedCount = 0;
+    let totalCount = 0;
+
+    // Process tests in order
+    for (const testId of testOrder) {
+      if (pineconeTests[testId]) {
+        totalCount++;
+        const test = pineconeTests[testId];
+        const status = test.status === 'PASSED' ? '✅' : '❌';
+        const name = testNames[testId] || test.name || testId;
+        
+        if (test.status === 'PASSED') passedCount++;
+        
+        output += `${status} ${name}\n`;
+        if (test.details) {
+          output += `   ${test.details}\n`;
+        }
+        output += '\n';
+      }
+    }
+
+    // Add summary
+    const successRate = totalCount > 0 ? Math.round((passedCount / totalCount) * 100) : 0;
+    output += `📊 Summary: ${passedCount}/${totalCount} tests passed (${successRate}%)\n`;
+    
+    if (successRate >= 80) {
+      output += '🎉 System integration: EXCELLENT\n';
+    } else if (successRate >= 60) {
+      output += '⚠️  System integration: GOOD (some issues detected)\n';
+    } else {
+      output += '🚨 System integration: NEEDS ATTENTION\n';
+    }
+
+    return output;
+  };
+
   // ============================================================================
   // EVENT HANDLERS
   // ============================================================================
@@ -172,12 +243,30 @@ export default function Page(): JSX.Element {
     // Store file metadata for RAG context using the correct fileId parameter
     setUploadedFile({ id: fileId, name: filename });
     
-    // Trigger File Upload Agent
+    // Parse Pinecone test results from uploadResponse (check both format variations)
+    let pineconeTestOutput = '';
+    const pineconeTests = uploadResponse?.pineconeTests || uploadResponse?.pinecone_tests;
+    
+    if (pineconeTests) {
+      pineconeTestOutput = '\n\n🧪 Pinecone Validation Tests:\n';
+      
+      Object.entries(pineconeTests).forEach(([testId, testData]: [string, any]) => {
+        const status = testData.status === 'PASSED' ? '✅' : '❌';
+        const testName = testData.name || testId;
+        const details = testData.details || 'No details available';
+        
+        pineconeTestOutput += `${status} ${testName}\n   ${details}\n\n`;
+      });
+    } else {
+      console.warn('⚠️ No Pinecone tests found in uploadResponse:', uploadResponse);
+    }
+    
+    // Trigger File Upload Agent with actual upload results
     setAgentStates(prev => ({
       ...prev,
       'file-upload': {
         status: 'completed',
-        output: `✅ File uploaded successfully: ${filename}\nFile ID: ${fileId}\nReady for processing.`,
+        output: `✅ File uploaded successfully: ${filename}\nFile ID: ${fileId}\nReady for processing.${pineconeTestOutput}`,
         isExpanded: true
       }
     }));

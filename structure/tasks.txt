@@ -6,10 +6,10 @@ Note-03: always use powershell syntax only ( use ; instead of && )
 note-04 :always remember 4 notes and start with a strategical approach to solve the tasks in a sequential manner
 
 Task-01 : 
-1. NOW ALL THE AGENTS HAVE Glass
-1.1 ADD 2 PX VERTICAL PADDING TO ALL AGENTS
-1.2 REMOVE THE EMOJI ICONS BEFORE FILE NAMES 
-1.3 CHANGE TYPOGRAPHY OF AGENTS SUITING SAME AS HEADER 'Agent Workflow'
+1. in the right column : file upload agent card 
+1.1 the backend file upload agent returns pinecone 6 test results , which are not being displayed in the frontend
+1.2 all   display the pinecone 6 test results in the file upload agent result card
+
 2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
     After every change, check for compilation errors in terminal tasks: 'Backend Development Server' (port 8000) and 'Next.js Development Server' (port 3000)
 3. Read the entire page you want to edit, for deep understanding of the changes required to do

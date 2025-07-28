@@ -135,16 +135,15 @@ class ApiClient {
         // Calculate request time
         const requestTime = Date.now() - ((response.config as any).meta?.requestStartTime || 0);
         
-        // Add meta information to response
-        response.data = {
-          ...response.data,
-          _meta: {
-            timestamp: new Date().toISOString(),
-            processingTime: requestTime,
-            requestId: response.headers['x-request-id'] || '',
-          }
+        // Add meta information to response WITHOUT modifying original data structure
+        // Store meta separately to avoid interfering with response parsing
+        (response as any)._meta = {
+          timestamp: new Date().toISOString(),
+          processingTime: requestTime,
+          requestId: response.headers['x-request-id'] || '',
         };
         
+        // Return response without modifying data structure
         return response;
       },
       (error: AxiosError) => {

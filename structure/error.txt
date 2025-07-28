@@ -1,0 +1,341 @@
+ Executing task: conda activate jul7 ; cd c:\JUL7PROJECT\backend ; python main.py 
+
+2025-07-28 21:25:42 | INFO     | app.llm.llm_client:65 | Initialized LangChain Ollama client with model: llama3.1:8b
+2025-07-28 21:25:42 | INFO     | app.llm.llm_client:70 | Initialized enhanced LLM client with model: llama3.1:8b, local: True
+(trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-07-28 21:25:42 | INFO     | app.services.file_service:46 | [SINGLETON] Created new FileService instance: 2098274619744
+2025-07-28 21:25:42 | INFO     | app.services.file_service:64 | FileService initialized with upload directory: uploads
+2025-07-28 21:25:42 | INFO     | app.services.file_service:65 | [SINGLETON] FileService instance 2098274619744 initialized with empty metadata_store
+2025-07-28 21:25:43 | INFO     | app.db.vector_store:61 | Initializing Pinecone vector store with dimension: 1024
+============================================================
+[BACKEND SERVER] STARTING | 2025-07-28 21:25:43
+============================================================
+INFO:     Will watch for changes in these directories: ['C:\\JUL7PROJECT\\backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [16892] using WatchFiles
+2025-07-28 21:25:48 | INFO     | app.llm.llm_client:65 | Initialized LangChain Ollama client with model: llama3.1:8b
+2025-07-28 21:25:48 | INFO     | app.llm.llm_client:70 | Initialized enhanced LLM client with model: llama3.1:8b, local: True
+(trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-07-28 21:25:49 | INFO     | app.services.file_service:46 | [SINGLETON] Created new FileService instance: 1458006889472
+2025-07-28 21:25:49 | INFO     | app.services.file_service:64 | FileService initialized with upload directory: uploads
+2025-07-28 21:25:49 | INFO     | app.services.file_service:65 | [SINGLETON] FileService instance 1458006889472 initialized with empty metadata_store
+2025-07-28 21:25:49 | INFO     | app.db.vector_store:61 | Initializing Pinecone vector store with dimension: 1024
+INFO:     Started server process [2256]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+[DEBUG] MIDDLEWARE EXECUTED!
+[REQUEST] OPTIONS http://localhost:8000/api/v1/files/upload
+[REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'accept': '*/*', 'access-control-request-method': 'POST', 'access-control-request-headers': 'x-client-version', 'origin': 'http://localhost:3000', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+[REQUEST] Query params: {}
+2025-07-28 21:28:36 | INFO     | main:110 | [REQUEST] OPTIONS http://localhost:8000/api/v1/files/upload  
+2025-07-28 21:28:36 | INFO     | main:111 | [REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'accept': '*/*', 'access-control-request-method': 'POST', 'access-control-request-headers': 'x-client-version', 'origin': 'http://localhost:3000', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+2025-07-28 21:28:36 | INFO     | main:112 | [REQUEST] Query params: {}
+2025-07-28 21:28:36 | INFO     | main:142 | [RESPONSE] Status: 200 | Time: 0.004s
+INFO:     127.0.0.1:64797 - "OPTIONS /api/v1/files/upload HTTP/1.1" 200 OK
+[DEBUG] MIDDLEWARE EXECUTED!
+[REQUEST] POST http://localhost:8000/api/v1/files/upload
+[REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'content-length': '436', 'sec-ch-ua-platform': '"Windows"', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'accept': 'application/json', 'x-client-version': '1.0.0', 'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryeoMvgkZZ1NundlbI', 'sec-ch-ua': '"Opera";v="120", "Not-A.Brand";v="8", "Chromium";v="135"', 'sec-ch-ua-mobile': '?0', 'origin': 'http://localhost:3000', 'sec-fetch-site': 'same-site', 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+[REQUEST] Query params: {}
+2025-07-28 21:28:36 | INFO     | main:110 | [REQUEST] POST http://localhost:8000/api/v1/files/upload     
+2025-07-28 21:28:36 | INFO     | main:111 | [REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'content-length': '436', 'sec-ch-ua-platform': '"Windows"', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'accept': 'application/json', 'x-client-version': '1.0.0', 'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryeoMvgkZZ1NundlbI', 'sec-ch-ua': '"Opera";v="120", "Not-A.Brand";v="8", "Chromium";v="135"', 'sec-ch-ua-mobile': '?0', 'origin': 'http://localhost:3000', 'sec-fetch-site': 'same-site', 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}        
+2025-07-28 21:28:36 | INFO     | main:112 | [REQUEST] Query params: {}
+[REQUEST] Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryeoMvgkZZ1NundlbI
+2025-07-28 21:28:36 | INFO     | main:121 | [REQUEST] Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryeoMvgkZZ1NundlbI
+[REQUEST] Multipart form data detected
+2025-07-28 21:28:36 | INFO     | main:126 | [REQUEST] Multipart form data detected
+[ENDPOINT ENTRY] === UPLOAD ENDPOINT CALLED ===
+[ENDPOINT ENTRY] Function upload_file() executed successfully!
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:42 | ================================================================================
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:43 | [UPLOAD ENDPOINT] === FILE UPLOAD REQUEST STARTED ===
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:44 | ================================================================================
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:48 | [MANUAL PARSING] Starting manual FormData extraction...
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:50 | [MANUAL PARSING] Form keys received: ['file']
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:53 | [MANUAL PARSING] All form items:        
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:56 | [MANUAL PARSING] Form field 'file': File(sample_data.csv, text/csv)
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:74 | [FILE INFO] Filename: sample_data.csv   
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:75 | [FILE INFO] Content type: text/csv      
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:76 | [METADATA INFO] Raw metadata: None      
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:96 | [METADATA INFO] No metadata provided    
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:98 | [METADATA INFO] Final parsed metadata: {}
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:99 | ================================================================================
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:102 | [VALIDATION] Starting file extension validation...
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:103 | [VALIDATION] File filename: sample_data.csv
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:110 | [VALIDATION] Extracted file extension: 'csv'
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:111 | [VALIDATION] Allowed extensions: ['csv', 'xlsx', 'xls', 'json', 'txt', 'pdf']
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:120 | [VALIDATION] File extension 'csv' is valid
+2025-07-28 21:28:36 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:36 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:138 | [UPLOAD] FileService instance ID: 1458006889472
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:139 | [UPLOAD] Current metadata_store keys: []
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:155 | [UPLOAD] About to store metadata for file_id: 1753718316_sample_data.csv
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:156 | [UPLOAD] Metadata to store: {'file_id': '1753718316_sample_data.csv', 'filename': 'sample_data.csv', 'upload_time': datetime.datetime(2025, 7, 28, 21, 28, 36, 979741), 'size_bytes': 249, 'file_type': 'csv', 'status': 'uploaded'}
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:161 | [UPLOAD] Metadata stored successfully. Current keys: ['1753718316_sample_data.csv']
+2025-07-28 21:28:36 | INFO     | app.api.v1.endpoints.files:162 | [UPLOAD] Verification - stored metadata: {'file_id': '1753718316_sample_data.csv', 'filename': 'sample_data.csv', 'upload_time': datetime.datetime(2025, 7, 28, 21, 28, 36, 979741), 'size_bytes': 249, 'file_type': 'csv', 'status': 'uploaded'}        
+2025-07-28 21:28:36 | INFO     | app.services.file_service:120 | Processing file: 1753718316_sample_data.csv
+2025-07-28 21:28:37 | INFO     | app.services.file_service:492 | Profiling DataFrame with 12 rows and 4 columns
+2025-07-28 21:28:37 | INFO     | app.services.file_service:157 | File processed successfully: 1753718316_sample_data.csv in 0.07s
+2025-07-28 21:28:37 | INFO     | app.workflow.agent_workflow:90 | Creating new AgentWorkflow singleton instance
+2025-07-28 21:28:37 | INFO     | app.workflow.agent_workflow:158 | Initializing AgentWorkflow singleton...
+2025-07-28 21:28:37 | INFO     | app.agents.file_upload:512 | Initializing LangChain agent: File Upload Agent (file_upload)
+2025-07-28 21:28:37 | INFO     | app.agents.file_upload:512 | Initializing LangChain agent: File Upload Agent (file_upload)
+2025-07-28 21:28:37 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:37 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:37 | INFO     | app.agents.file_upload:267 | Upload directory already exists at uploads 
+2025-07-28 21:28:37 | INFO     | app.agents.file_upload:267 | Upload directory already exists at uploads 
+2025-07-28 21:28:38 | INFO     | app.agents.data_profile:512 | Initializing LangChain agent: Data Profile Agent (data_profile)
+2025-07-28 21:28:38 | INFO     | app.agents.data_profile:512 | Initializing LangChain agent: Data Profile Agent (data_profile)
+2025-07-28 21:28:38 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:38 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:38 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:38 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:38 | INFO     | app.agents.planning:512 | Initializing LangChain agent: Planning Agent (planning)
+2025-07-28 21:28:38 | INFO     | app.agents.planning:512 | Initializing LangChain agent: Planning Agent (planning)
+2025-07-28 21:28:38 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:38 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:39 | INFO     | app.agents.insight:512 | Initializing LangChain agent: Insight Agent (insight)
+2025-07-28 21:28:39 | INFO     | app.agents.insight:512 | Initializing LangChain agent: Insight Agent (insight)
+2025-07-28 21:28:39 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:39 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:40 | INFO     | app.agents.visualization:512 | Initializing LangChain agent: Visualization Agent (visualization)
+2025-07-28 21:28:40 | INFO     | app.agents.visualization:512 | Initializing LangChain agent: Visualization Agent (visualization)
+2025-07-28 21:28:40 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:40 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:40 | INFO     | app.agents.critique:512 | Initializing LangChain agent: Critique Agent (critique)
+2025-07-28 21:28:40 | INFO     | app.agents.critique:512 | Initializing LangChain agent: Critique Agent (critique)
+2025-07-28 21:28:40 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:28:40 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:28:41 | INFO     | app.agents.debate:512 | Initializing LangChain agent: Debate Agent (debate)
+2025-07-28 21:28:41 | INFO     | app.agents.debate:512 | Initializing LangChain agent: Debate Agent (debate)
+2025-07-28 21:28:41 | INFO     | app.agents.report:512 | Initializing LangChain agent: Report Agent (report)
+2025-07-28 21:28:41 | INFO     | app.agents.report:512 | Initializing LangChain agent: Report Agent (report)
+2025-07-28 21:28:41 | INFO     | app.workflow.agent_workflow:198 | Agent workflow initialized successfully with 8 agents and LangGraph orchestration
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:331 | FileUploadAgent.run() called with file_id: 1753718316_sample_data.csv
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:331 | FileUploadAgent.run() called with file_id: 1753718316_sample_data.csv
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:350 | Processing file with ID: 1753718316_sample_data.csv
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:350 | Processing file with ID: 1753718316_sample_data.csv
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:351 | STEP 1: About to retrieve file metadata... 
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:351 | STEP 1: About to retrieve file metadata... 
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:355 | Using file metadata from context_data (avoiding FileService lookup)
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:355 | Using file metadata from context_data (avoiding FileService lookup)
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:361 | STEP 1 COMPLETED: Got file metadata from context - sample_data.csv
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:361 | STEP 1 COMPLETED: Got file metadata from context - sample_data.csv
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:378 | STEP 3: About to validate file...
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:378 | STEP 3: About to validate file...
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:380 | STEP 3 COMPLETED: File validation result - True
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:380 | STEP 3 COMPLETED: File validation result - True
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:393 | STEP 5 SKIPPED: Using metadata from context, bypassing FileService processing
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:393 | STEP 5 SKIPPED: Using metadata from context, bypassing FileService processing
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:401 | STEP 6 SKIPPED: Using mock file structure for context metadata
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:401 | STEP 6 SKIPPED: Using mock file structure for context metadata
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:415 | STEP 7 SKIPPED: File summary generation disabled for testing
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:415 | STEP 7 SKIPPED: File summary generation disabled for testing
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:418 | STEP 8: About to execute Pinecone validation tests...
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:418 | STEP 8: About to execute Pinecone validation tests...
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:676 | RUNNING REAL PINECONE VALIDATION TESTS     
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:676 | RUNNING REAL PINECONE VALIDATION TESTS     
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:700 | TEST 2.0: Testing Pinecone connection and authentication...
+2025-07-28 21:28:41 | INFO     | app.agents.file_upload:700 | TEST 2.0: Testing Pinecone connection and authentication...
+2025-07-28 21:28:47 | INFO     | app.agents.file_upload:748 | TEST 2.1: Fetching index details and configuration...
+2025-07-28 21:28:47 | INFO     | app.agents.file_upload:748 | TEST 2.1: Fetching index details and configuration...
+2025-07-28 21:28:50 | INFO     | app.agents.file_upload:788 | TEST 2.2: Getting vector count before embedding...
+2025-07-28 21:28:50 | INFO     | app.agents.file_upload:788 | TEST 2.2: Getting vector count before embedding...
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:814 | TEST 2.3: Validating CSV uploaded file...
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:814 | TEST 2.3: Validating CSV uploaded file...
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:820 | Original filename: sample_data.csv, Clean filename: sample_data.csv
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:820 | Original filename: sample_data.csv, Clean filename: sample_data.csv
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:872 | TEST 2.4: Testing index embedding operation with actual uploaded file...
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:872 | TEST 2.4: Testing index embedding operation with actual uploaded file...
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:877 | Reading uploaded file from: uploads\1753718316_sample_data.csv
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:877 | Reading uploaded file from: uploads\1753718316_sample_data.csv
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:881 | Uploaded CSV file found, reading data...   
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:881 | Uploaded CSV file found, reading data...   
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:885 | Successfully read uploaded CSV with 12 rows and 4 columns
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:885 | Successfully read uploaded CSV with 12 rows and 4 columns
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:918 | [EMBEDDING STRATEGY DEBUG] File has 12 rows
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:918 | [EMBEDDING STRATEGY DEBUG] File has 12 rows
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:919 | [EMBEDDING STRATEGY DECISION] Processing 12 of 12 rows (majority of rows (comprehensive validation))
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:919 | [EMBEDDING STRATEGY DECISION] Processing 12 of 12 rows (majority of rows (comprehensive validation))
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:920 | [STRATEGY VALIDATION] Should embed SAMPLE rows for this file size
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:920 | [STRATEGY VALIDATION] Should embed SAMPLE rows for this file size
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:949 | Prepared 12 documents for embedding from uploaded file
+2025-07-28 21:28:52 | INFO     | app.agents.file_upload:949 | Prepared 12 documents for embedding from uploaded file
+2025-07-28 21:28:52 | INFO     | app.db.vector_store:61 | Initializing Pinecone vector store with dimension: 1024
+2025-07-28 21:28:52 | INFO     | app.db.vector_store:80 | Initializing Pinecone with API key: pcsk_32s...RRjQ
+2025-07-28 21:28:55 | INFO     | app.db.vector_store:110 | Connected to Pinecone index: pineindex at pineindex-z6a2ifp.svc.aped-4627-b74a.pinecone.io
+2025-07-28 21:28:55 | INFO     | app.agents.file_upload:954 | Vector store initialization: SUCCESS
+2025-07-28 21:28:55 | INFO     | app.agents.file_upload:954 | Vector store initialization: SUCCESS       
+2025-07-28 21:28:56 | INFO     | app.agents.file_upload:989 | Prepared 12 vectors for upsert
+2025-07-28 21:28:56 | INFO     | app.agents.file_upload:989 | Prepared 12 vectors for upsert
+2025-07-28 21:28:59 | INFO     | app.agents.file_upload:993 | Upsert response: {'upserted_count': 12}
+2025-07-28 21:28:59 | INFO     | app.agents.file_upload:993 | Upsert response: {'upserted_count': 12}
+2025-07-28 21:28:59 | INFO     | app.agents.file_upload:1000 | Waiting 3 seconds for embedding to complete...
+2025-07-28 21:28:59 | INFO     | app.agents.file_upload:1000 | Waiting 3 seconds for embedding to complete...
+2025-07-28 21:29:02 | INFO     | app.agents.file_upload:1038 | TEST 2.5: Getting vector count after embedding...
+2025-07-28 21:29:02 | INFO     | app.agents.file_upload:1038 | TEST 2.5: Getting vector count after embedding...
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:1084 | PINECONE VALIDATION TESTS COMPLETED: 6/6 tests passed
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:1084 | PINECONE VALIDATION TESTS COMPLETED: 6/6 tests passed
+Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x00000153797C9F90>
+Unclosed connector
+connections: ['deque([(<aiohttp.client_proto.ResponseHandler object at 0x000001537865B7D0>, 182199.6821783)])']
+connector: <aiohttp.connector.TCPConnector object at 0x00000153785FB360>
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:420 | STEP 8 COMPLETED: Pinecone validation tests completed. Results: ['test_2_0', 'test_2_1', 'test_2_2', 'test_2_3', 'test_2_4', 'test_2_5']
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:420 | STEP 8 COMPLETED: Pinecone validation tests completed. Results: ['test_2_0', 'test_2_1', 'test_2_2', 'test_2_3', 'test_2_4', 'test_2_5']
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:435 | Agent result compiled. pinecone_tests included: Yes
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:435 | Agent result compiled. pinecone_tests included: Yes
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:437 | Pinecone tests: ['test_2_0', 'test_2_1', 'test_2_2', 'test_2_3', 'test_2_4', 'test_2_5']
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:437 | Pinecone tests: ['test_2_0', 'test_2_1', 'test_2_2', 'test_2_3', 'test_2_4', 'test_2_5']
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:444 | STEP 10 SKIPPED: Using context metadata, bypassing FileService update
+2025-07-28 21:29:04 | INFO     | app.agents.file_upload:444 | STEP 10 SKIPPED: Using context metadata, bypassing FileService update
+2025-07-28 21:29:04 | INFO     | main:142 | [RESPONSE] Status: 200 | Time: 27.998s
+INFO:     127.0.0.1:64797 - "POST /api/v1/files/upload HTTP/1.1" 200 OK
+[DEBUG] MIDDLEWARE EXECUTED!
+[REQUEST] OPTIONS http://localhost:8000/api/v1/data/preview/1753718316_sample_data.csv?rows=10
+[REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'accept': '*/*', 'access-control-request-method': 'GET', 'access-control-request-headers': 'x-client-version', 'origin': 'http://localhost:3000', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+[REQUEST] Query params: {'rows': '10'}
+2025-07-28 21:29:05 | INFO     | main:110 | [REQUEST] OPTIONS http://localhost:8000/api/v1/data/preview/1753718316_sample_data.csv?rows=10
+2025-07-28 21:29:05 | INFO     | main:111 | [REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'accept': '*/*', 'access-control-request-method': 'GET', 'access-control-request-headers': 'x-client-version', 'origin': 'http://localhost:3000', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+2025-07-28 21:29:05 | INFO     | main:112 | [REQUEST] Query params: {'rows': '10'}
+2025-07-28 21:29:05 | INFO     | main:142 | [RESPONSE] Status: 200 | Time: 0.002s
+INFO:     127.0.0.1:64797 - "OPTIONS /api/v1/data/preview/1753718316_sample_data.csv?rows=10 HTTP/1.1" 200 OK
+[DEBUG] MIDDLEWARE EXECUTED!
+[REQUEST] GET http://localhost:8000/api/v1/data/preview/1753718316_sample_data.csv?rows=10
+[REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'sec-ch-ua-platform': '"Windows"', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'accept': 'application/json', 'x-client-version': '1.0.0', 'sec-ch-ua': '"Opera";v="120", "Not-A.Brand";v="8", "Chromium";v="135"', 'sec-ch-ua-mobile': '?0', 'origin': 'http://localhost:3000', 'sec-fetch-site': 'same-site', 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+[REQUEST] Query params: {'rows': '10'}
+2025-07-28 21:29:05 | INFO     | main:110 | [REQUEST] GET http://localhost:8000/api/v1/data/preview/1753718316_sample_data.csv?rows=10
+2025-07-28 21:29:05 | INFO     | main:111 | [REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'sec-ch-ua-platform': '"Windows"', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'accept': 'application/json', 'x-client-version': '1.0.0', 'sec-ch-ua': '"Opera";v="120", "Not-A.Brand";v="8", "Chromium";v="135"', 'sec-ch-ua-mobile': '?0', 'origin': 'http://localhost:3000', 'sec-fetch-site': 'same-site', 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+2025-07-28 21:29:05 | INFO     | main:112 | [REQUEST] Query params: {'rows': '10'}
+2025-07-28 21:29:05 | INFO     | app.api.v1.endpoints.preview:43 | Getting sample data for file: 1753718316_sample_data.csv, rows: 10
+2025-07-28 21:29:05 | INFO     | app.services.file_service:400 | Getting preview for file: 1753718316_sample_data.csv, type: csv
+2025-07-28 21:29:05 | INFO     | main:142 | [RESPONSE] Status: 200 | Time: 0.008s
+INFO:     127.0.0.1:64797 - "GET /api/v1/data/preview/1753718316_sample_data.csv?rows=10 HTTP/1.1" 200 OK
+[DEBUG] MIDDLEWARE EXECUTED!
+[REQUEST] OPTIONS http://localhost:8000/api/v1/agents/data_profile/run
+[REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'accept': '*/*', 'access-control-request-method': 'POST', 'access-control-request-headers': 'content-type,x-client-version', 'origin': 'http://localhost:3000', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+[REQUEST] Query params: {}
+2025-07-28 21:29:06 | INFO     | main:110 | [REQUEST] OPTIONS http://localhost:8000/api/v1/agents/data_profile/run
+2025-07-28 21:29:06 | INFO     | main:111 | [REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'accept': '*/*', 'access-control-request-method': 'POST', 'access-control-request-headers': 'content-type,x-client-version', 'origin': 'http://localhost:3000', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'same-site', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+2025-07-28 21:29:06 | INFO     | main:112 | [REQUEST] Query params: {}
+2025-07-28 21:29:06 | INFO     | main:142 | [RESPONSE] Status: 200 | Time: 0.003s
+INFO:     127.0.0.1:64797 - "OPTIONS /api/v1/agents/data_profile/run HTTP/1.1" 200 OK
+[DEBUG] MIDDLEWARE EXECUTED!
+[REQUEST] POST http://localhost:8000/api/v1/agents/data_profile/run
+[REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'content-length': '113', 'sec-ch-ua-platform': '"Windows"', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'accept': 'application/json', 'x-client-version': '1.0.0', 'content-type': 'application/json', 'sec-ch-ua': '"Opera";v="120", "Not-A.Brand";v="8", "Chromium";v="135"', 'sec-ch-ua-mobile': '?0', 'origin': 'http://localhost:3000', 'sec-fetch-site': 'same-site', 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+[REQUEST] Query params: {}
+2025-07-28 21:29:06 | INFO     | main:110 | [REQUEST] POST http://localhost:8000/api/v1/agents/data_profile/run
+2025-07-28 21:29:06 | INFO     | main:111 | [REQUEST] Headers: {'host': 'localhost:8000', 'connection': 'keep-alive', 'content-length': '113', 'sec-ch-ua-platform': '"Windows"', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0', 'accept': 'application/json', 'x-client-version': '1.0.0', 'content-type': 'application/json', 'sec-ch-ua': '"Opera";v="120", "Not-A.Brand";v="8", "Chromium";v="135"', 'sec-ch-ua-mobile': '?0', 'origin': 'http://localhost:3000', 'sec-fetch-site': 'same-site', 'sec-fetch-mode': 'cors', 'sec-fetch-dest': 'empty', 'referer': 'http://localhost:3000/', 'accept-encoding': 'gzip, deflate, br, zstd', 'accept-language': 'en-US,en;q=0.9,nl;q=0.8,it;q=0.7,ru;q=0.6'}
+2025-07-28 21:29:06 | INFO     | main:112 | [REQUEST] Query params: {}
+2025-07-28 21:29:06 | INFO     | app.api.v1.endpoints.agents:83 | Running agent AgentType.DATA_PROFILE with request: Analyze this data file structure and quality...
+2025-07-28 21:29:06 | INFO     | app.services.file_service:48 | [SINGLETON] Returning existing FileService instance: 1458006889472
+2025-07-28 21:29:06 | INFO     | app.services.file_service:55 | [SINGLETON] FileService already initialized, skipping re-initialization
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:242 | Starting data profiling for file ID: 1753718316_sample_data.csv
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:242 | Starting data profiling for file ID: 1753718316_sample_data.csv
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:242 | Starting data profiling for file ID: 1753718316_sample_data.csv
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:242 | Starting data profiling for file ID: 1753718316_sample_data.csv
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:243 | [AGENT] DataProfileAgent FileService instance ID: 1458006889472
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:243 | [AGENT] DataProfileAgent FileService instance ID: 1458006889472
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:243 | [AGENT] DataProfileAgent FileService instance ID: 1458006889472
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:243 | [AGENT] DataProfileAgent FileService instance ID: 1458006889472
+2025-07-28 21:29:06 | INFO     | app.services.file_service:180 | [SEARCH] get_file_metadata called for file_id: 1753718316_sample_data.csv
+2025-07-28 21:29:06 | INFO     | app.services.file_service:181 | [SINGLETON] FileService instance 1458006889472 called for metadata retrieval
+2025-07-28 21:29:06 | INFO     | app.services.file_service:182 | [METADATA_STORE] Available files in metadata_store: ['1753718316_sample_data.csv']
+2025-07-28 21:29:06 | INFO     | app.services.file_service:191 | 📄 Raw metadata for 1753718316_sample_data.csv: {'file_id': '1753718316_sample_data.csv', 'filename': 'sample_data.csv', 'upload_time': datetime.datetime(2025, 7, 28, 21, 28, 36, 979741), 'size_bytes': 249, 'file_type': 'csv', 'status': 'processed', 'processing_time': 0.06537723541259766, 'row_count': 12, 'column_count': 4, 'profile': {'row_count': 12, 'column_count': 4, 'memory_usage': np.int64(1633), 'duplicated_rows': np.int64(0), 'duplicated_percentage': np.float64(0.0), 'columns': {'Name': {'name': 'Name', 'dtype': 'object', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'top_categories': {'Alice': 1, 'Bob': 1, 'Charlie': 1, 'David': 1, 'Eve': 1, 'Frank': 1, 'Grace': 1, 'Helen': 1, 'Ian': 1, 'Jack': 1}}, 'Age': {'name': 'Age', 'dtype': 'int64', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'min': 22, 'max': 35, 'mean': np.float64(28.5), 'std': 3.89638527122488, 'median': 28.5, 'histogram': [1, 1, 1, 2, 1, 1, 2, 1, 1, 1], 'histogram_bins': [22.0, 23.3, 24.6, 25.9, 27.2, 28.5, 29.8, 31.1, 32.4, 33.7, 35.0]}, 'City': {'name': 'City', 'dtype': 'object', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'top_categories': {'Delhi': 1, 'Mumbai': 1, 'Bangalore': 1, 'Chennai': 1, 'Kolkata': 1, 'Pune': 1, 'Hyderabad': 1, 'Ahmedabad': 1, 'Jaipur': 1, 'Surat': 1}}, 'Score': {'name': 'Score', 'dtype': 'int64', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'min': 76, 'max': 93, 'mean': np.float64(85.91666666666667), 'std': 5.838093296045665, 'median': 87.5, 'histogram': [2, 1, 0, 0, 1, 1, 1, 2, 2, 2], 'histogram_bins': [76.0, 77.7, 79.4, 81.1, 82.8, 84.5, 86.2, 87.9, 89.6, 91.3, 93.0]}}, 'missing_values': {'Name': np.int64(0), 'Age': np.int64(0), 'City': np.int64(0), 'Score': np.int64(0)}, 'sample_data': [{'Name': 'Alice', 'Age': 25, 'City': 'Delhi', 'Score': 88}, {'Name': 'Bob', 'Age': 30, 'City': 'Mumbai', 'Score': 76}, {'Name': 'Charlie', 'Age': 22, 'City': 'Bangalore', 'Score': 93}, {'Name': 'David', 'Age': 35, 'City': 'Chennai', 'Score': 85}, {'Name': 'Eve', 'Age': 28, 'City': 'Kolkata', 'Score': 90}], 'correlation_matrix': {'Age': {'Age': 1.0, 'Score': -0.46158998247248534}, 'Score': {'Age': -0.46158998247248534, 'Score': 1.0}}}}
+--- Logging error ---
+Traceback (most recent call last):
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\logging\__init__.py", line 1154, in emit
+    stream.write(msg + self.terminator)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4c4' in position 65: character maps to <undefined>
+Call stack:
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=16892, pipe_handle=1380)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\multiprocessing\spawn.py", line 122, in spawn_main        
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\multiprocessing\process.py", line 313, in _bootstrap      
+    self.run()
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\uvicorn\server.py", line 67, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\asyncio\base_events.py", line 712, in run_until_complete  
+    self.run_forever()
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\asyncio\base_events.py", line 683, in run_forever
+    self._run_once()
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\asyncio\base_events.py", line 2042, in _run_once
+    handle._run()
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\asyncio\events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\middleware\base.py", line 151, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\middleware\cors.py", line 148, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\routing.py", line 754, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\routing.py", line 774, in app     
+    await route.handle(scope, receive, send)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\routing.py", line 295, in handle  
+    await self.app(scope, receive, send)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\routing.py", line 77, in app      
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\starlette\routing.py", line 74, in app      
+    response = await f(request)
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\fastapi\routing.py", line 297, in app       
+    raw_response = await run_endpoint_function(
+  File "C:\Users\iampr\anaconda3\envs\jul7\Lib\site-packages\fastapi\routing.py", line 210, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\JUL7PROJECT\backend\app\api\v1\endpoints\agents.py", line 87, in run_single_agent
+    response = await run_agent(agent_type, request.query, request.file_id, request.context_data)
+  File "C:\JUL7PROJECT\backend\app\services\agent_service.py", line 449, in run_agent
+    return await service.run_agent(agent_type, query, file_id, context_data)
+  File "C:\JUL7PROJECT\backend\app\services\agent_service.py", line 136, in run_agent
+    result = await agent.run(request)
+  File "C:\JUL7PROJECT\backend\app\agents\data_profile_agent.py", line 244, in run
+    file_metadata = await self.file_service.get_file_metadata(file_id)
+  File "C:\JUL7PROJECT\backend\app\services\file_service.py", line 191, in get_file_metadata
+    logger.info(f"📄 Raw metadata for {file_id}: {raw_metadata}")
+Message: "📄 Raw metadata for 1753718316_sample_data.csv: {'file_id': '1753718316_sample_data.csv', 'filename': 'sample_data.csv', 'upload_time': datetime.datetime(2025, 7, 28, 21, 28, 36, 979741), 'size_bytes': 249, 'file_type': 'csv', 'status': 'processed', 'processing_time': 0.06537723541259766, 'row_count': 12, 'column_count': 4, 'profile': {'row_count': 12, 'column_count': 4, 'memory_usage': np.int64(1633), 'duplicated_rows': np.int64(0), 'duplicated_percentage': np.float64(0.0), 'columns': {'Name': {'name': 'Name', 'dtype': 'object', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'top_categories': {'Alice': 1, 'Bob': 1, 'Charlie': 1, 'David': 1, 'Eve': 1, 'Frank': 1, 'Grace': 1, 'Helen': 1, 'Ian': 1, 'Jack': 1}}, 'Age': {'name': 'Age', 'dtype': 'int64', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'min': 22, 'max': 35, 'mean': np.float64(28.5), 'std': 3.89638527122488, 'median': 28.5, 'histogram': [1, 1, 1, 2, 1, 1, 2, 1, 1, 1], 'histogram_bins': [22.0, 23.3, 24.6, 25.9, 27.2, 28.5, 29.8, 31.1, 32.4, 33.7, 35.0]}, 'City': {'name': 'City', 'dtype': 'object', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'top_categories': {'Delhi': 1, 'Mumbai': 1, 'Bangalore': 1, 'Chennai': 1, 'Kolkata': 1, 'Pune': 1, 'Hyderabad': 1, 'Ahmedabad': 1, 'Jaipur': 1, 'Surat': 1}}, 'Score': {'name': 'Score', 'dtype': 'int64', 'count': np.int64(12), 'missing': np.int64(0), 'missing_percentage': np.float64(0.0), 'unique': 12, 'unique_percentage': 100.0, 'min': 76, 'max': 93, 'mean': np.float64(85.91666666666667), 'std': 5.838093296045665, 'median': 87.5, 'histogram': [2, 1, 0, 0, 1, 1, 1, 2, 2, 2], 'histogram_bins': [76.0, 77.7, 79.4, 81.1, 82.8, 84.5, 86.2, 87.9, 89.6, 91.3, 93.0]}}, 'missing_values': {'Name': np.int64(0), 'Age': np.int64(0), 'City': np.int64(0), 'Score': np.int64(0)}, 'sample_data': [{'Name': 'Alice', 'Age': 25, 'City': 'Delhi', 'Score': 88}, {'Name': 'Bob', 'Age': 30, 'City': 'Mumbai', 'Score': 76}, {'Name': 'Charlie', 'Age': 22, 'City': 'Bangalore', 'Score': 93}, {'Name': 'David', 'Age': 35, 'City': 'Chennai', 'Score': 85}, {'Name': 'Eve', 'Age': 28, 'City': 'Kolkata', 'Score': 90}], 'correlation_matrix': {'Age': {'Age': 1.0, 'Score': -0.46158998247248534}, 'Score': {'Age': -0.46158998247248534, 'Score': 1.0}}}}"
+Arguments: ()
+2025-07-28 21:29:06 | INFO     | app.services.file_service:194 | [SUCCESS] Successfully created FileMetadata object for 1753718316_sample_data.csv
+2025-07-28 21:29:06 | INFO     | app.services.file_service:270 | [LOAD_DATA] Loading file from metadata store: 1753718316_sample_data.csv
+2025-07-28 21:29:06 | INFO     | app.services.file_service:292 | [LOAD_DATA] Loaded CSV file 1753718316_sample_data.csv with 12 rows and 4 columns
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:659 | Calling LLM with prompt: Create a comprehensive profile of the provided dat...
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:659 | Calling LLM with prompt: Create a comprehensive profile of the provided dat...
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:659 | Calling LLM with prompt: Create a comprehensive profile of the provided dat...
+2025-07-28 21:29:06 | INFO     | app.agents.data_profile:659 | Calling LLM with prompt: Create a comprehensive profile of the provided dat...
+2025-07-28 21:29:07 | INFO     | app.llm.llm_client:88 | Ollama server accessible. Available models: ['llama3.1:8b']
+2025-07-28 21:31:00 | INFO     | app.agents.data_profile:672 | LLM response received, tokens: 514
+2025-07-28 21:31:00 | INFO     | app.agents.data_profile:672 | LLM response received, tokens: 514
+2025-07-28 21:31:00 | INFO     | app.agents.data_profile:672 | LLM response received, tokens: 514        
+2025-07-28 21:31:00 | INFO     | app.agents.data_profile:672 | LLM response received, tokens: 514        
+2025-07-28 21:31:00 | INFO     | app.services.file_service:214 | Updated metadata for file 1753718316_sample_data.csv: {'status': 'profiled', 'processing_time': 113.6643614768982, 'profile': {'row_count': 12, 'column_count': 4, 'columns': {'Name': {'dtype': 'object', 'unique_values': 12, 'missing_values': 0, 'missing_percentage': 0.0, 'top_categories': {'Alice': 0.08333333333333333, 'Bob': 0.08333333333333333, 'Charlie': 0.08333333333333333, 'David': 0.08333333333333333, 'Eve': 0.08333333333333333, 'Frank': 0.08333333333333333, 'Grace': 0.08333333333333333, 'Helen': 0.08333333333333333, 'Ian': 0.08333333333333333, 'Jack': 0.08333333333333333}}, 'Age': {'dtype': 'int64', 'unique_values': 12, 'missing_values': 0, 'missing_percentage': 0.0, 'min': 22.0, 'max': 35.0, 'mean': 28.5, 'median': 28.5, 'std': 3.89638527122488, 'outlier_count': 0, 'outlier_percentage': 0.0}, 'City': {'dtype': 'object', 'unique_values': 12, 'missing_values': 0, 'missing_percentage': 0.0, 'top_categories': {'Delhi': 0.08333333333333333, 'Mumbai': 0.08333333333333333, 'Bangalore': 0.08333333333333333, 'Chennai': 0.08333333333333333, 'Kolkata': 0.08333333333333333, 'Pune': 0.08333333333333333, 'Hyderabad': 0.08333333333333333, 'Ahmedabad': 0.08333333333333333, 'Jaipur': 0.08333333333333333, 'Surat': 0.08333333333333333}}, 'Score': {'dtype': 'int64', 'unique_values': 12, 'missing_values': 0, 'missing_percentage': 0.0, 'min': 76.0, 'max': 93.0, 'mean': 85.91666666666667, 'median': 87.5, 'std': 5.838093296045665, 'outlier_count': 0, 'outlier_percentage': 0.0}}, 'missing_values': {'total_missing': 0, 'missing_percentage': 0.0, 'columns_with_missing': 0, 'columns_complete': 4}, 'correlations': {'Age': {'Age': 1.0, 'Score': -0.462}, 'Score': {'Age': -0.462, 'Score': 1.0}}, 'summary_statistics': {'numeric_columns': 2, 'categorical_columns': 2, 'datetime_columns': 0, 'boolean_columns': 0, 'complete_rows': 12, 'complete_rows_percentage': 100.0}}}
+2025-07-28 21:31:00 | INFO     | main:142 | [RESPONSE] Status: 200 | Time: 113.982s
+INFO:     127.0.0.1:64797 - "POST /api/v1/agents/data_profile/run HTTP/1.1" 200 OK

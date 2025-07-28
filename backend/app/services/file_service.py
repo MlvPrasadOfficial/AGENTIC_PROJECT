@@ -30,10 +30,31 @@ class FileService:
     
     This service manages file upload, processing, validation, and metadata storage.
     It provides a centralized interface for all file-related operations.
+    
+    SINGLETON PATTERN:
+    This class implements the singleton pattern to ensure that all parts of the 
+    application share the same metadata_store and file operations.
     """
+    
+    _instance = None
+    _initialized = False
+    
+    def __new__(cls):
+        """Ensure only one instance of FileService exists (Singleton pattern)."""
+        if cls._instance is None:
+            cls._instance = super(FileService, cls).__new__(cls)
+            logger.info(f"[SINGLETON] Created new FileService instance: {id(cls._instance)}")
+        else:
+            logger.info(f"[SINGLETON] Returning existing FileService instance: {id(cls._instance)}")
+        return cls._instance
     
     def __init__(self):
         """Initialize the file service with required directories and configuration."""
+        # Only initialize once due to singleton pattern
+        if self._initialized:
+            logger.info(f"[SINGLETON] FileService already initialized, skipping re-initialization")
+            return
+            
         self.upload_dir = Path(settings.UPLOAD_DIR)
         self.upload_dir.mkdir(parents=True, exist_ok=True)
         
@@ -41,6 +62,8 @@ class FileService:
         self.metadata_store: Dict[str, Dict[str, Any]] = {}
         
         logger.info(f"FileService initialized with upload directory: {self.upload_dir}")
+        logger.info(f"[SINGLETON] FileService instance {id(self)} initialized with empty metadata_store")
+        FileService._initialized = True
     
     async def save_uploaded_file(self, file_content: bytes, filename: str) -> str:
         """
@@ -73,6 +96,8 @@ class FileService:
         
         self.metadata_store[file_id] = metadata
         logger.info(f"File saved with ID: {file_id}, filename: {filename}")
+        logger.info(f"[SINGLETON] FileService instance {id(self)} stored metadata for {file_id}")
+        logger.info(f"[SINGLETON] Current metadata_store keys: {list(self.metadata_store.keys())}")
         
         return file_id
     
@@ -153,7 +178,8 @@ class FileService:
         """
         # DEBUG: Log the metadata retrieval attempt
         logger.info(f"[SEARCH] get_file_metadata called for file_id: {file_id}")
-        logger.info(f"📋 Available files in metadata_store: {list(self.metadata_store.keys())}")
+        logger.info(f"[SINGLETON] FileService instance {id(self)} called for metadata retrieval")
+        logger.info(f"[METADATA_STORE] Available files in metadata_store: {list(self.metadata_store.keys())}")
         
         if file_id not in self.metadata_store:
             logger.warning(f"[ERROR] File {file_id} not found in metadata_store")
@@ -216,6 +242,73 @@ class FileService:
             List of FileMetadata objects
         """
         return [FileMetadata(**metadata) for metadata in self.metadata_store.values()]
+    
+    async def load_file_data(self, file_id: str) -> pd.DataFrame:
+        """
+        Load complete file data into a pandas DataFrame for analysis.
+        
+        This method loads the entire file into memory for comprehensive analysis.
+        It supports both UUID-based files (from FileService.save_uploaded_file) 
+        and timestamp-based files (from upload endpoints).
+        
+        Args:
+            file_id (str): The unique identifier for the file
+            
+        Returns:
+            pd.DataFrame: Complete DataFrame with all file data
+            
+        Raises:
+            FileNotFoundError: If file not found in metadata store or filesystem
+            ValueError: If file type is not supported
+            Exception: For file reading errors or corruption
+        """
+        # Check if file exists in metadata store first
+        if file_id in self.metadata_store:
+            metadata = self.metadata_store[file_id]
+            file_path = self.upload_dir / file_id
+            file_type = metadata["file_type"]
+            logger.info(f"[LOAD_DATA] Loading file from metadata store: {file_id}")
+        else:
+            # Handle timestamp-based files from upload endpoint
+            file_path = self.upload_dir / file_id
+            
+            if not file_path.exists():
+                logger.error(f"[LOAD_DATA] File {file_id} not found in metadata_store")
+                logger.error(f"[LOAD_DATA] Physical file not found: {file_path}")
+                raise FileNotFoundError(f"File {file_id} not found")
+            
+            # Determine file type from extension
+            file_type = Path(file_id).suffix.lower().replace(".", "")
+            if not file_type and "_" in file_id:
+                original_filename = file_id.split("_", 1)[1]
+                file_type = Path(original_filename).suffix.lower().replace(".", "")
+            
+            logger.info(f"[LOAD_DATA] Loading file {file_id} with type: {file_type}")
+        
+        try:
+            # Load complete file based on file type
+            if file_type in ["csv", "txt"]:
+                df = pd.read_csv(file_path)
+                logger.info(f"[LOAD_DATA] Loaded CSV file {file_id} with {df.shape[0]} rows and {df.shape[1]} columns")
+            elif file_type in ["xlsx", "xls"]:
+                df = pd.read_excel(file_path)
+                logger.info(f"[LOAD_DATA] Loaded Excel file {file_id} with {df.shape[0]} rows and {df.shape[1]} columns")
+            elif file_type == "json":
+                with open(file_path, "r") as f:
+                    data = json.load(f)
+                if isinstance(data, list):
+                    df = pd.DataFrame(data)
+                else:
+                    df = pd.DataFrame([data])
+                logger.info(f"[LOAD_DATA] Loaded JSON file {file_id} with {df.shape[0]} rows and {df.shape[1]} columns")
+            else:
+                raise ValueError(f"Unsupported file type: {file_type}")
+            
+            return df
+            
+        except Exception as e:
+            logger.error(f"[LOAD_DATA] Error loading file {file_id}: {str(e)}")
+            raise
     
     def get_file_preview(self, file_id: str, rows: int = 10, columns: Optional[List[str]] = None) -> Dict[str, Any]:
         """

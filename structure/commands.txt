@@ -8,9 +8,9 @@ cd c:\JUL7PROJECT\frontend ; npm run build
 conda activate jul7 ; cd c:\JUL7PROJECT\backend ; python main.py
 
 git add .
-git commit -m "JUL 28 2AM imp  FILE UPLOAD PINCEONE READY "
+git commit -m "JUL 28 8pm +++++ base"
 git push origin main
-
+    
 
 1.5 now after resolving above all 4 issues, 
 1.5.1 create a test named 'test_upload' to check the upload success worflow,

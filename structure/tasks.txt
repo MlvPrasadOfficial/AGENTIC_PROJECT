@@ -5,17 +5,18 @@ Note-02: front end and backend are running as tasks already, port 3000 and 8000 
 Note-03: always use powershell syntax only ( use ; instead of && )
 note-04 :always remember 4 notes and start with a strategical approach to solve the tasks in a sequential manner
 
-Task-01 : 
-1. in the right column : file upload agent card 
-1.1 the backend file upload agent returns pinecone 6 test results , which are not being displayed in the frontend
-1.2 all   display the pinecone 6 test results in the file upload agent result card
+Task-01:1. getting placeholder in frontend ui of profiling agent (check ss) , even though getting the correct o/p in BACKEND TASK  TERMINAL ( check ss)
+"[placeholder] Backend response format not recognized
+[placeholder] Please check console for technical details
+[placeholder] Contact support if issue persists"
+1.1 add detailed console to debug the issue in frontend and also fix the issue via screensgot provided
+1.2 check error.txt
 
 2. The code in both frontend and backend is complex and sensitive, so do incremental changes.
     After every change, check for compilation errors in terminal tasks: 'Backend Development Server' (port 8000) and 'Next.js Development Server' (port 3000)
 3. Read the entire page you want to edit, for deep understanding of the changes required to do
 
-Task-02:
-After completing above tasks go to the files created or edited for above tasks,
+Task-02: After completing above tasks go to the files created or edited for above tasks,
      1.Remove any unused imports, variables, or code blocks
      2.Add detailed docstrings to all functions and components
      3.Add comprehensive line-by-line comments

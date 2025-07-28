@@ -237,19 +237,49 @@ export default function Page(): JSX.Element {
    * @param {any} uploadResponse - Complete upload response metadata (optional)
    * @returns {Promise<void>} Async operation with no return value
    */
+  /**
+   * CORE FILE UPLOAD HANDLER WITH AUTOMATED AGENT WORKFLOW
+   * 
+   * This comprehensive function manages the complete file upload lifecycle
+   * including metadata storage, Pinecone validation parsing, UI state updates,
+   * and automatic Data Profile Agent execution.
+   * 
+   * @param fileId - Unique identifier for the uploaded file (from backend)
+   * @param filename - Original filename for display and logging
+   * @param uploadResponse - Optional response containing Pinecone test results and metadata
+   * 
+   * EXECUTION PHASES:
+   * 1. File Metadata Storage - Preserve file context for RAG operations
+   * 2. Pinecone Test Parsing - Extract and format validation results  
+   * 3. UI State Updates - Update File Upload Agent status
+   * 4. Automated Data Profile Agent - Trigger statistical analysis
+   * 5. Preview Data Fetching - Load sample data for user inspection
+   * 
+   * TASK-01 INTEGRATION:
+   * - Implements tagged output format validation ([real]/[placeholder])
+   * - Provides seamless backend-frontend agent communication
+   * - Handles extended timeouts for LLM processing operations
+   * - Ensures proper error handling with user-friendly messages
+   */
   const handleFileUploaded = async (fileId: string, filename: string, uploadResponse?: any): Promise<void> => {
+    // === PHASE 1: INITIALIZE FILE PROCESSING ===
+    // Log upload event with structured data for debugging
     console.log('📁 File uploaded:', { fileId, filename, uploadResponse });
     
-    // Store file metadata for RAG context using the correct fileId parameter
+    // Store file metadata in React state for RAG context and agent operations
+    // This enables other components to access file information without re-fetching
     setUploadedFile({ id: fileId, name: filename });
     
-    // Parse Pinecone test results from uploadResponse (check both format variations)
+    // === PHASE 2: PARSE PINECONE VALIDATION RESULTS ===
+    // Extract Pinecone test results from upload response (supporting multiple formats)
+    // This provides immediate feedback on vector database compatibility
     let pineconeTestOutput = '';
     const pineconeTests = uploadResponse?.pineconeTests || uploadResponse?.pinecone_tests;
     
     if (pineconeTests) {
       pineconeTestOutput = '\n\n🧪 Pinecone Validation Tests:\n';
       
+      // Iterate through test results and format for display
       Object.entries(pineconeTests).forEach(([testId, testData]: [string, any]) => {
         const status = testData.status === 'PASSED' ? '✅' : '❌';
         const testName = testData.name || testId;
@@ -258,81 +288,222 @@ export default function Page(): JSX.Element {
         pineconeTestOutput += `${status} ${testName}\n   ${details}\n\n`;
       });
     } else {
+      // Log warning when Pinecone tests are missing (helps with debugging)
       console.warn('⚠️ No Pinecone tests found in uploadResponse:', uploadResponse);
     }
     
-    // Trigger File Upload Agent with actual upload results
+    // === PHASE 3: UPDATE FILE UPLOAD AGENT STATUS ===
+    // Set File Upload Agent to completed state with comprehensive results
+    // This provides immediate visual feedback to users about upload success
     setAgentStates(prev => ({
       ...prev,
       'file-upload': {
         status: 'completed',
         output: `✅ File uploaded successfully: ${filename}\nFile ID: ${fileId}\nReady for processing.${pineconeTestOutput}`,
-        isExpanded: true
+        isExpanded: true  // Auto-expand to show results immediately
       }
     }));
 
-    // Auto-trigger Data Profile Agent
-    setTimeout(() => {
+    /**
+     * === PHASE 4: AUTOMATED DATA PROFILE AGENT EXECUTION ===
+     * 
+     * This section implements the core Task-01 requirement: automatic execution
+     * of the Data Profile Agent following successful file upload. The implementation
+     * demonstrates seamless integration between frontend UI and backend agent services.
+     * 
+     * ARCHITECTURAL DESIGN:
+     * - Uses setTimeout for non-blocking UI updates (prevents freeze during LLM calls)
+     * - Implements real-time status updates for user engagement
+     * - Provides comprehensive error handling with fallback responses
+     * - Integrates with extended timeout configuration for complex analysis
+     * 
+     * WORKFLOW IMPLEMENTATION:
+     * 1. Set processing status with loading message
+     * 2. Call backend Data Profile Agent API with file context
+     * 3. Parse response and validate tagged output format
+     * 4. Display results or handle errors gracefully
+     * 
+     * TASK-01 SPECIFIC FEATURES:
+     * - Uses backend's tagged output format directly ([real]/[placeholder] prefix)
+     * - Implements proper error handling with consistent tagging
+     * - Provides real-time UI feedback during LLM processing
+     * - Supports extended timeouts for complex statistical analysis
+     */
+    setTimeout(async () => {
+      // === STEP 1: SET PROCESSING STATE ===
+      // Update UI to show Data Profile Agent is actively working
+      // This provides immediate feedback while backend processes the request
       setAgentStates(prev => ({
         ...prev,
         'data-profile': {
           status: 'processing',
           output: '🔍 Analyzing file structure and content...',
-          isExpanded: true
+          isExpanded: true  // Auto-expand to show progress in real-time
         }
       }));
       
-      // Simulate data profiling completion
-      setTimeout(() => {
+      try {
+        // === STEP 2: EXECUTE DATA PROFILE AGENT ===
+        // Call backend API with uploaded file ID and analysis query
+        // The fileService handles timeout configuration and error retry logic
+        console.log('🔄 Starting Data Profile Agent call with fileId:', fileId);
+        console.log('🔄 Query:', 'Analyze this data file structure and quality');
+        
+        const profileResponse = await fileService.runDataProfileAgent(
+          fileId, 
+          'Analyze this data file structure and quality'
+        );
+        
+        console.log('🔍 Raw profileResponse received:', profileResponse);
+        console.log('🔍 Type of profileResponse:', typeof profileResponse);
+        console.log('🔍 Is profileResponse null?', profileResponse === null);
+        console.log('🔍 Is profileResponse undefined?', profileResponse === undefined);
+        
+        // === STEP 3: PARSE AND VALIDATE RESPONSE ===
+        // Extract result data and validate response structure with robust error handling
+        let displayOutput = '';
+        
+        try {
+          // === DEBUG: LOG COMPLETE RESPONSE STRUCTURE ===
+          console.log('🔍 Complete profileResponse:', JSON.stringify(profileResponse, null, 2));
+          console.log('🔍 profileResponse.result:', profileResponse?.result);
+          console.log('🔍 profileResponse.result.output:', profileResponse?.result?.output);
+          
+          // === ROBUST RESPONSE PARSING FOR BACKEND INTEGRATION ===
+          // Handle the BaseAgentResponse structure returned by the backend API
+          // Expected format: { status: "success", result: { output: { real: "...", placeholder: "..." } } }
+          
+          if (profileResponse?.result?.output?.real) {
+            // Primary path: Use real analysis results from LLM processing
+            displayOutput = profileResponse.result.output.real;
+            console.log('✅ Using real analysis output from backend');
+            console.log('📝 Real output content:', profileResponse.result.output.real.substring(0, 200) + '...');
+          } else if (profileResponse?.result?.output?.placeholder) {
+            // Fallback path: Use placeholder content for demonstration mode
+            displayOutput = profileResponse.result.output.placeholder;
+            console.log('✅ Using placeholder output from backend');
+            console.log('📝 Placeholder output content:', profileResponse.result.output.placeholder.substring(0, 200) + '...');
+          } else if (profileResponse?.result?.output) {
+            // Emergency fallback: Handle unexpected output format
+            displayOutput = String(profileResponse.result.output);
+            console.log('⚠️ Using stringified output as safety fallback');
+            console.log('📝 Stringified output:', String(profileResponse.result.output).substring(0, 200) + '...');
+          } else {
+            // Debug fallback: Provide diagnostic information for troubleshooting
+            displayOutput = [
+              '[placeholder] Backend response format not recognized',
+              `[placeholder] Please check console for technical details`,
+              '[placeholder] Contact support if issue persists'
+            ].join('\n');
+            console.error('❌ Unable to parse backend response:', {
+              hasResponse: !!profileResponse,
+              hasResult: !!profileResponse?.result,
+              responseStatus: profileResponse?.status,
+              responseKeys: profileResponse ? Object.keys(profileResponse) : 'None',
+              resultKeys: profileResponse?.result ? Object.keys(profileResponse.result) : 'None',
+              outputKeys: profileResponse?.result?.output ? Object.keys(profileResponse.result.output) : 'None'
+            });
+          }
+        } catch (parseError) {
+          // Handle critical parsing errors gracefully
+          console.error('❌ Critical error parsing Data Profile Agent response:', parseError);
+          displayOutput = '[placeholder] Technical error occurred during response processing\n[placeholder] Please try again or contact support';
+        }
+
+        // Update agent state with processed results
         setAgentStates(prev => ({
           ...prev,
           'data-profile': {
             status: 'completed',
-            output: `✅ Data profiling complete:\n• File type: CSV\n• Rows: ${Math.floor(Math.random() * 1000) + 100}\n• Columns: ${Math.floor(Math.random() * 10) + 3}\n• Quality score: ${(Math.random() * 15 + 85).toFixed(1)}%\n\nReady for user query.`,
-            isExpanded: true
+            output: displayOutput,
+            isExpanded: true  // Keep expanded to show results
           }
         }));
-      }, 2000);
-    }, 1000);
+        
+      } catch (error: any) {
+        // === COMPREHENSIVE ERROR HANDLING ===
+        // Log error details for debugging while providing user-friendly messages
+        console.error('Error running Data Profile Agent:', error);
+        setAgentStates(prev => ({
+          ...prev,
+          'data-profile': {
+            status: 'error',
+            output: `❌ Error running Data Profile Agent: ${error?.message || 'Unknown error'}`,
+            isExpanded: true  // Show error state to user
+          }
+        }));
+      }
+    }, 1000); // Delay allows UI to update smoothly before starting intensive operations
 
-    // Fetch preview data for display using the correct fileId
+    // === PHASE 5: FETCH PREVIEW DATA FOR USER INSPECTION ===
+    // Load sample data from the uploaded file for immediate user feedback
+    // This provides visual confirmation of successful upload and file structure
     try {
+      // Call backend API to get sample rows/data from uploaded file
       const sampleData = await fileService.getSampleData(fileId);
       setPreviewData(sampleData);
       
-      // Show preview with animation after short delay
+      // === SMOOTH UI ANIMATION SEQUENCE ===
+      // Show preview with animation after short delay for better UX
       setTimeout(() => {
-        setShowPreview(true);
+        setShowPreview(true);  // Trigger CSS transition animation
       }, 300);
       
+      // === AUTO-SCROLL FOR USER CONVENIENCE ===
       // Automatically scroll to preview section after data loads
+      // This ensures users see the results without manual scrolling
       setTimeout(() => {
         const previewElement = document.querySelector('.file-preview-section');
         if (previewElement) {
-          previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          previewElement.scrollIntoView({ 
+            behavior: 'smooth',    // Smooth animation instead of instant jump
+            block: 'center'        // Center the element in viewport
+          });
         }
-      }, 800); // Delay to allow animation to start
+      }, 800); // Delay allows animation to start before scrolling
       
     } catch (error) {
+      // Log preview data errors without blocking main upload workflow
       console.error('Error fetching preview data:', error);
+      // Note: Preview failure doesn't affect file upload success or agent execution
     }
   };
 
   /**
-   * Handle file deletion with state cleanup
-   * Resets all agent states and clears preview data
+   * COMPREHENSIVE FILE DELETION HANDLER WITH STATE CLEANUP
    * 
-   * @param {string} fileId - The ID of the file being deleted
+   * This function handles the complete cleanup process when a user deletes
+   * an uploaded file. It ensures all related state is properly reset to
+   * prevent stale data and UI inconsistencies.
+   * 
+   * @param fileId - The unique identifier of the file being deleted
+   * 
+   * CLEANUP PHASES:
+   * 1. File Metadata Removal - Clear stored file information
+   * 2. Preview Data Reset - Remove sample data and hide preview UI
+   * 3. Agent State Reset - Return all agents to waiting state
+   * 4. UI Animation Reset - Prepare for new file upload
+   * 
+   * STATE MANAGEMENT:
+   * - Prevents memory leaks from stale file references
+   * - Ensures clean slate for subsequent uploads
+   * - Maintains UI consistency across deletion operations
    */
   const handleFileDeleted = (fileId: string): void => {
+    // Log deletion event for debugging and audit trail
     console.log('🗑️ File deleted:', fileId);
     
-    // Clear file-related state
+    // === PHASE 1: CLEAR FILE METADATA ===
+    // Remove file information from React state to prevent stale references
     setUploadedFile(null);
-    setPreviewData(null);
-    setShowPreview(false); // Reset preview animation state
     
-    // Reset all agent states to waiting
+    // === PHASE 2: RESET PREVIEW DATA AND UI ===
+    // Clear sample data and hide preview section with animation
+    setPreviewData(null);
+    setShowPreview(false); // Triggers CSS transition to hide preview
+    
+    // === PHASE 3: RESET ALL AGENT STATES ===
+    // Return all agents to initial waiting state for clean restart
     setAgentStates({
       'file-upload': { status: 'waiting', output: '', isExpanded: false },
       'data-profile': { status: 'waiting', output: '', isExpanded: false },
@@ -767,7 +938,7 @@ export default function Page(): JSX.Element {
                         
                         {getAgentState('data-profile').isExpanded && (
                           <div className="mt-4 p-3 bg-black/20 rounded border border-white/5">
-                            <pre className="text-sm text-gray-300 whitespace-pre-wrap">
+                            <pre className="text-sm text-gray-300 whitespace-pre-wrap break-words overflow-hidden max-w-full">
                               {getAgentState('data-profile').output || 'No output available'}
                             </pre>
                           </div>

@@ -83,8 +83,8 @@ async def run_single_agent(
     logger.info(f"Running agent {agent_type} with request: {request.query[:50]}...")
     
     try:
-        # Run the agent
-        response = await run_agent(agent_type, request.query, request.context_data, request.file_id)
+        # Run the agent - fix parameter order: query, file_id, context_data
+        response = await run_agent(agent_type, request.query, request.file_id, request.context_data)
         return response
     except ValueError as e:
         logger.error(f"Invalid agent request: {str(e)}")

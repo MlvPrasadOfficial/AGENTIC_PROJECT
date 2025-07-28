@@ -134,12 +134,16 @@ async def upload_file(
         from app.services.file_service import FileService
         file_service = FileService()
         
+        # DEBUG: Log FileService instance information
+        logger.info(f"[UPLOAD] FileService instance ID: {id(file_service)}")
+        logger.info(f"[UPLOAD] Current metadata_store keys: {list(file_service.metadata_store.keys())}")
+        
         # Create initial metadata entry so FileUploadAgent can find the file
         from datetime import datetime
         from pathlib import Path
         
         file_stats = os.stat(file_path)
-        file_service.metadata_store[file_id] = {
+        metadata_entry = {
             "file_id": file_id,
             "filename": file.filename,
             "upload_time": datetime.now(),
@@ -147,6 +151,15 @@ async def upload_file(
             "file_type": Path(file.filename).suffix.lower().replace(".", ""),
             "status": "uploaded"
         }
+        
+        logger.info(f"[UPLOAD] About to store metadata for file_id: {file_id}")
+        logger.info(f"[UPLOAD] Metadata to store: {metadata_entry}")
+        
+        file_service.metadata_store[file_id] = metadata_entry
+        
+        # DEBUG: Verify metadata was stored
+        logger.info(f"[UPLOAD] Metadata stored successfully. Current keys: {list(file_service.metadata_store.keys())}")
+        logger.info(f"[UPLOAD] Verification - stored metadata: {file_service.metadata_store.get(file_id, 'NOT_FOUND')}")
         
         # Process the file to extract structure and profile
         await file_service.process_file(file_id)
